@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { supabase } from '@/lib/supabase';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -21,7 +21,7 @@ const planDetails = {
   premium: { name: 'Premium', price: 50, features: ['All Pro features', 'AI insights', '24/7 support', 'Custom strategies'] }
 };
 
-export default function PaymentPage() {
+function PaymentContent() {
   const { user, isLoaded } = useUser();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -29,12 +29,6 @@ export default function PaymentPage() {
   
   const [subscription, setSubscription] = useState<UserSubscription | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-
-  useEffect(() => {
-    if (isLoaded && user) {
-      fetchUserSubscription();
-    }
-  }, [isLoaded, user, fetchUserSubscription]);
 
   const fetchUserSubscription = useCallback(async () => {
     try {
@@ -56,6 +50,12 @@ export default function PaymentPage() {
       console.error('Error:', error);
     }
   }, [user?.id]);
+
+  useEffect(() => {
+    if (isLoaded && user) {
+      fetchUserSubscription();
+    }
+  }, [isLoaded, user, fetchUserSubscription]);
 
   const handlePayment = async () => {
     if (!isLoaded || !user) {
@@ -290,5 +290,13 @@ export default function PaymentPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PaymentPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center"><div className="text-white text-xl">Loading...</div></div>}>
+      <PaymentContent />
+    </Suspense>
   );
 }
