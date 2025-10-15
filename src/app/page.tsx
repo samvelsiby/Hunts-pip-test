@@ -19,12 +19,12 @@ export default function Home() {
 
       {/* Navigation */}
       <nav className="relative z-10 flex items-center justify-between px-8 py-6">
-        <div className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
           <div className="w-8 h-8 bg-white rounded flex items-center justify-center">
             <span className="text-black font-bold text-lg">{`{}`}</span>
           </div>
           <span className="text-white text-xl font-bold">MUNTS PIP</span>
-        </div>
+        </Link>
         
         <div className="hidden md:flex items-center gap-8">
           <div className="flex items-center gap-1 text-white hover:text-gray-300 cursor-pointer">

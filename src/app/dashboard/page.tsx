@@ -4,6 +4,7 @@ import { useUser, UserButton } from "@clerk/nextjs";
 import { SignInButton, SignUpButton } from "@clerk/nextjs";
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
+import Link from 'next/link';
 import KeywordInputComponent from '@/components/KeywordInputComponent';
 
 function DashboardContent() {
@@ -46,12 +47,12 @@ function DashboardContent() {
     <div className="min-h-screen bg-black">
       {/* Navigation */}
       <nav className="flex items-center justify-between p-6 border-b border-gray-800">
-        <div className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
           <div className="w-8 h-8 bg-white rounded flex items-center justify-center">
             <span className="text-black font-bold text-lg">{`{}`}</span>
           </div>
           <span className="text-white text-xl font-bold">MUNTS PIP</span>
-        </div>
+        </Link>
         
         <div className="flex items-center gap-4">
           <span className="text-white">Welcome, {user.firstName || user.emailAddresses[0]?.emailAddress}!</span>
