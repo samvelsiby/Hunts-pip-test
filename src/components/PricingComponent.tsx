@@ -74,17 +74,21 @@ export default function PricingComponent() {
 
     try {
       // Check if user has TradingView credentials
-      const { data: subscription } = await supabase
+      const { data: subscription, error } = await supabase
         .from('user_subscriptions')
         .select('tradingview_username')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle(); // Use maybeSingle() instead of single()
+
+      console.log('Subscription check result:', { subscription, error });
 
       if (subscription?.tradingview_username) {
         // User already has TradingView credentials, go directly to payment
+        console.log('User has existing TradingView username, going to payment');
         window.location.href = `/payment?plan=${planId}`;
       } else {
         // User needs to provide TradingView credentials first
+        console.log('User needs TradingView credentials, going to credentials page');
         window.location.href = `/tradingview-credentials?plan=${planId}`;
       }
     } catch (error) {

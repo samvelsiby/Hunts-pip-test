@@ -31,7 +31,7 @@ export default function TradingViewCredentialsComponent() {
         .from('user_subscriptions')
         .select('*')
         .eq('user_id', user?.id)
-        .single();
+        .maybeSingle(); // Use maybeSingle() instead of single()
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching subscription:', error);
@@ -49,9 +49,10 @@ export default function TradingViewCredentialsComponent() {
 
   useEffect(() => {
     if (isLoaded && user) {
+      console.log('TradingViewCredentialsComponent loaded with plan:', planId);
       fetchUserSubscription();
     }
-  }, [isLoaded, user, fetchUserSubscription]);
+  }, [isLoaded, user, fetchUserSubscription, planId]);
 
   const handleSaveCredentials = async () => {
     if (!tradingViewUsername.trim()) {
