@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 
 export default function SupabaseTest() {
   const [isConnected, setIsConnected] = useState(false);
-  const [testData, setTestData] = useState<any[]>([]);
+  const [testData, setTestData] = useState<unknown[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

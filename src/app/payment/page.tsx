@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { supabase } from '@/lib/supabase';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -34,9 +34,9 @@ export default function PaymentPage() {
     if (isLoaded && user) {
       fetchUserSubscription();
     }
-  }, [isLoaded, user]);
+  }, [isLoaded, user, fetchUserSubscription]);
 
-  const fetchUserSubscription = async () => {
+  const fetchUserSubscription = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('user_subscriptions')
@@ -55,7 +55,7 @@ export default function PaymentPage() {
     } catch (error) {
       console.error('Error:', error);
     }
-  };
+  }, [user?.id]);
 
   const handlePayment = async () => {
     if (!isLoaded || !user) {
@@ -149,7 +149,7 @@ export default function PaymentPage() {
             Complete Your <span className="text-green-400">{plan.name}</span> Subscription
           </h1>
           <p className="text-gray-400 text-lg">
-            You're almost ready to start trading with our premium signals
+            You&apos;re almost ready to start trading with our premium signals
           </p>
         </div>
 
@@ -178,7 +178,7 @@ export default function PaymentPage() {
             </div>
 
             <div className="border-t border-gray-700 pt-6">
-              <h3 className="text-lg font-semibold text-white mb-4">What's Included:</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">What&apos;s Included:</h3>
               <ul className="space-y-2">
                 {plan.features.map((feature, index) => (
                   <li key={index} className="flex items-center text-gray-300">

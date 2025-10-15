@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { supabase } from '@/lib/supabase';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -22,17 +22,10 @@ export default function TradingViewCredentialsComponent() {
   const planId = searchParams.get('plan');
   
   const [tradingViewUsername, setTradingViewUsername] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [subscription, setSubscription] = useState<UserSubscription | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    if (isLoaded && user) {
-      fetchUserSubscription();
-    }
-  }, [isLoaded, user]);
-
-  const fetchUserSubscription = async () => {
+  const fetchUserSubscription = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('user_subscriptions')
@@ -52,7 +45,13 @@ export default function TradingViewCredentialsComponent() {
     } catch (error) {
       console.error('Error:', error);
     }
-  };
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (isLoaded && user) {
+      fetchUserSubscription();
+    }
+  }, [isLoaded, user, fetchUserSubscription]);
 
   const handleSaveCredentials = async () => {
     if (!tradingViewUsername.trim()) {
@@ -228,7 +227,7 @@ export default function TradingViewCredentialsComponent() {
 
             <div className="text-center">
               <p className="text-gray-400 text-sm">
-                Don't have a TradingView account?{' '}
+                Don&apos;t have a TradingView account?{' '}
                 <a 
                   href="https://www.tradingview.com/" 
                   target="_blank" 

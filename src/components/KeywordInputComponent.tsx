@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { supabase } from '@/lib/supabase';
 
@@ -16,17 +16,10 @@ interface UserSubscription {
 export default function KeywordInputComponent() {
   const { user, isLoaded } = useUser();
   const [keyword, setKeyword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [subscription, setSubscription] = useState<UserSubscription | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    if (isLoaded && user) {
-      fetchUserSubscription();
-    }
-  }, [isLoaded, user]);
-
-  const fetchUserSubscription = async () => {
+  const fetchUserSubscription = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('user_subscriptions')
@@ -46,7 +39,13 @@ export default function KeywordInputComponent() {
     } catch (error) {
       console.error('Error:', error);
     }
-  };
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (isLoaded && user) {
+      fetchUserSubscription();
+    }
+  }, [isLoaded, user, fetchUserSubscription]);
 
   const handleSaveKeyword = async () => {
     if (!keyword.trim()) {
