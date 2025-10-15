@@ -67,36 +67,61 @@ export default function TradingViewCredentialsComponent() {
     setIsSaving(true);
 
     try {
+      console.log('Saving credentials for user:', user.id);
+      console.log('TradingView username:', tradingViewUsername.trim());
+      console.log('Plan ID:', planId);
+
       if (subscription) {
         // Update existing subscription
-        const { error } = await supabase
+        console.log('Updating existing subscription:', subscription.id);
+        const { data, error } = await supabase
           .from('user_subscriptions')
           .update({ 
             tradingview_username: tradingViewUsername.trim(),
             plan_id: planId || subscription.plan_id
           })
-          .eq('id', subscription.id);
+          .eq('id', subscription.id)
+          .select();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Update error:', error);
+          throw error;
+        }
+        console.log('Update successful:', data);
       } else {
         // Create new subscription
-        const { error } = await supabase
+        console.log('Creating new subscription');
+        const { data, error } = await supabase
           .from('user_subscriptions')
           .insert({
             user_id: user.id,
             plan_id: planId || 'free',
             status: 'active',
             tradingview_username: tradingViewUsername.trim()
-          });
+          })
+          .select();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Insert error:', error);
+          throw error;
+        }
+        console.log('Insert successful:', data);
       }
 
       // Redirect to payment page
       router.push(`/payment?plan=${planId || 'free'}`);
     } catch (error) {
       console.error('Error saving credentials:', error);
-      alert('Failed to save TradingView credentials. Please try again.');
+      
+      // More detailed error message
+      let errorMessage = 'Failed to save TradingView credentials. ';
+      if (error instanceof Error) {
+        errorMessage += `Error: ${error.message}`;
+      } else if (typeof error === 'object' && error !== null) {
+        errorMessage += `Error: ${JSON.stringify(error)}`;
+      }
+      
+      alert(errorMessage);
     } finally {
       setIsSaving(false);
     }
