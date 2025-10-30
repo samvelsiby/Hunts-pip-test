@@ -151,10 +151,10 @@ function DashboardContent() {
           <div className="bg-gray-900 rounded-xl p-8 border border-gray-700">
             <h3 className="text-2xl font-bold text-white mb-6">Quick Actions</h3>
             <div className="grid md:grid-cols-3 gap-4">
-              <button className="p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors text-left">
-                <div className="text-white font-semibold mb-2">View Trading Signals</div>
-                <div className="text-gray-400 text-sm">Access your personalized indicators</div>
-              </button>
+              <Link href="/library" className="p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors text-left block">
+                <div className="text-white font-semibold mb-2">📚 Indicator Library</div>
+                <div className="text-gray-400 text-sm">Browse all available indicators</div>
+              </Link>
               <button className="p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors text-left">
                 <div className="text-white font-semibold mb-2">Update Keywords</div>
                 <div className="text-gray-400 text-sm">Modify your trading preferences</div>

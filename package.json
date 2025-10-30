@@ -6,25 +6,32 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sanity": "sanity dev"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.33.4",
+    "@portabletext/react": "^4.0.3",
+    "@sanity/client": "^7.12.0",
+    "@sanity/image-url": "^1.2.0",
     "@stripe/stripe-js": "^8.0.0",
     "@supabase/supabase-js": "^2.75.0",
     "next": "15.5.5",
+    "next-sanity": "^11.6.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "stripe": "^19.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@sanity/vision": "^4.12.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.5",
+    "sanity": "^4.12.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

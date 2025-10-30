@@ -8,6 +8,7 @@ A complete TradingView Indicators SaaS application built with Next.js, featuring
 - **Dark Theme Landing Page** with MUNTS PIP branding
 - **Three-Tier Subscription System** (Free, Pro $30/month, Premium $50/month)
 - **User Authentication** with Clerk
+- **Indicator Library** with Sanity CMS integration
 - **TradingView Username Collection** workflow
 - **Supabase Database** integration
 - **Stripe Payment** integration (ready for production)
@@ -20,12 +21,14 @@ A complete TradingView Indicators SaaS application built with Next.js, featuring
 4. **TradingView Credentials** → Enter TradingView username
 5. **Payment** → Complete subscription
 6. **Dashboard** → Access trading indicators
+7. **Library** → Browse and view indicator details
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Next.js 14, React, TypeScript
+- **Frontend**: Next.js 15, React, TypeScript
 - **Styling**: Tailwind CSS
 - **Authentication**: Clerk
+- **CMS**: Sanity.io
 - **Database**: Supabase (PostgreSQL)
 - **Payments**: Stripe
 - **Deployment**: Vercel (recommended)
@@ -37,6 +40,8 @@ src/
 ├── app/
 │   ├── api/create-checkout-session/    # Stripe checkout API
 │   ├── dashboard/                       # User dashboard
+│   ├── library/                         # Indicator library
+│   │   └── [slug]/                     # Individual indicator pages
 │   ├── payment/                        # Payment page
 │   ├── pricing/                        # Pricing page
 │   ├── tradingview-credentials/        # TradingView username input
@@ -46,8 +51,14 @@ src/
 │   ├── TradingViewCredentialsComponent.tsx
 │   └── KeywordInputComponent.tsx
 ├── lib/
-│   └── supabase.ts                     # Supabase client
+│   ├── supabase.ts                     # Supabase client
+│   └── sanity.ts                       # Sanity client & queries
 └── middleware.ts                       # Route protection
+
+sanity/
+└── schemas/
+    ├── indicator.ts                    # Indicator schema
+    └── index.ts                        # Schema exports
 ```
 
 ## 🚀 Quick Start
@@ -74,6 +85,10 @@ CLERK_SECRET_KEY=sk_test_your_secret_here
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
+# Sanity CMS
+NEXT_PUBLIC_SANITY_PROJECT_ID=your_sanity_project_id
+NEXT_PUBLIC_SANITY_DATASET=production
+
 # Stripe Payments
 STRIPE_SECRET_KEY=sk_test_your_stripe_secret
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable
@@ -87,7 +102,14 @@ APP_BASE_URL=http://localhost:3000
 2. Run the SQL from `supabase-setup.sql` in the SQL Editor
 3. This creates the `user_subscriptions` table with proper policies
 
-### 5. Run Development Server
+### 5. Sanity CMS Setup
+1. Create a free account at [sanity.io](https://www.sanity.io/)
+2. Create a new project and get your Project ID
+3. Add credentials to `.env.local`
+4. Run Sanity Studio: `npm run sanity`
+5. See [SANITY_SETUP.md](./SANITY_SETUP.md) for detailed instructions
+
+### 6. Run Development Server
 ```bash
 npm run dev
 ```

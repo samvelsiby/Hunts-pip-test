@@ -65,7 +65,8 @@ export default function PricingComponent() {
 
   const handleSelectPlan = async (planId: string) => {
     if (!isLoaded || !user) {
-      alert('Please sign in to continue');
+      // Redirect to sign-in page instead of showing alert
+      window.location.href = `/sign-in?redirect_url=${encodeURIComponent(`/dashboard?plan=${planId}`)}`;
       return;
     }
 
@@ -78,7 +79,9 @@ export default function PricingComponent() {
       window.location.href = `/dashboard?plan=${planId}`;
     } catch (error) {
       console.error('Error selecting plan:', error);
-      alert('Something went wrong. Please try again.');
+      // Show a more user-friendly error without browser alert
+      setIsLoading(false);
+      setSelectedPlan(null);
     } finally {
       setIsLoading(false);
     }
