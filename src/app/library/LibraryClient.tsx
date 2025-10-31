@@ -9,7 +9,7 @@ interface Indicator {
   slug: { current: string }
   description: string
   category: string
-  icon?: any
+  icon?: unknown
   features?: string[]
   planAccess: 'free' | 'pro' | 'premium'
   tradingViewLink?: string
@@ -112,7 +112,7 @@ export default function LibraryClient({ indicators, categories }: LibraryClientP
           <div className="text-center text-gray-400 text-sm">
             Showing {filteredIndicators.length} of {indicators.length} indicator
             {filteredIndicators.length !== 1 ? 's' : ''}
-            {searchQuery && ` matching "${searchQuery}"`}
+            {searchQuery && ` matching ${searchQuery}`}
             {selectedCategory !== 'all' && ` in ${selectedCategory} category`}
           </div>
         )}

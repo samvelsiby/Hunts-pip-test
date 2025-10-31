@@ -23,7 +23,7 @@ export default async function DebugSanityPage() {
       <div style={{ color: '#9CA3AF' }}>Project ID: <span style={{ color: 'white' }}>{projectId}</span></div>
       <div style={{ color: '#9CA3AF' }}>Dataset: <span style={{ color: 'white' }}>{dataset}</span></div>
       <div style={{ height: 24 }} />
-      <div style={{ color: '#9CA3AF' }}>Query: <code>*[_type == "indicator" && isActive == true]</code></div>
+      <div style={{ color: '#9CA3AF' }}>Query: <code>*[_type == &quot;indicator&quot; && isActive == true]</code></div>
       <div style={{ height: 12 }} />
       {error ? (
         <pre style={{ color: '#F87171', background: '#111827', padding: 12, borderRadius: 8 }}>Error: {String(error)}</pre>

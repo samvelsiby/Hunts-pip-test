@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { supabase } from '@/lib/supabase';
 
 interface PricingPlan {
   id: string;

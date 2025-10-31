@@ -8,7 +8,7 @@ interface Indicator {
   slug: { current: string }
   description: string
   category: string
-  icon?: any
+  icon?: unknown
   features?: string[]
   planAccess: 'free' | 'pro' | 'premium'
   tradingViewLink?: string
@@ -70,7 +70,7 @@ export default async function LibraryPage() {
             </div>
             <h3 className="text-xl font-semibold text-white mb-2">No Indicators Available</h3>
             <p className="text-gray-400 mb-6">
-              Please check back soon. We're adding new indicators.
+              Please check back soon. We&apos;re adding new indicators.
             </p>
           </div>
         )}

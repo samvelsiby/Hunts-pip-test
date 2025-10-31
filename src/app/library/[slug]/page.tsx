@@ -2,6 +2,7 @@ import { client, indicatorBySlugQuery, urlFor } from '@/lib/sanity'
 import Image from 'next/image'
 import Link from 'next/link'
 import { PortableText, PortableTextComponents } from '@portabletext/react'
+import type { PortableTextBlock } from '@portabletext/types'
 
 interface Indicator {
   _id: string
@@ -9,11 +10,11 @@ interface Indicator {
   slug: { current: string }
   description: string
   category: string
-  icon?: any
+  icon?: unknown
   features?: string[]
   planAccess: 'free' | 'pro' | 'premium'
   tradingViewLink?: string
-  documentation?: any[]
+  documentation?: unknown[]
   isActive: boolean
 }
 
@@ -301,7 +302,7 @@ export default async function IndicatorDetailPage({
             <h2 className="text-3xl font-bold text-white mb-8">Documentation</h2>
             <div className="prose prose-invert max-w-none">
               <PortableText
-                value={indicator.documentation}
+                value={indicator.documentation as PortableTextBlock[]}
                 components={portableTextComponents}
               />
             </div>
@@ -319,7 +320,7 @@ export default async function IndicatorDetailPage({
               <div>
                 <strong className="text-white">Access TradingView</strong>
                 <p className="text-gray-400 mt-1">
-                  Click the "Open in TradingView" button above to access the indicator
+                  Click the Open in TradingView button above to access the indicator
                 </p>
               </div>
             </li>

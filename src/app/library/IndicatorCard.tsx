@@ -10,7 +10,7 @@ interface Indicator {
   slug: { current: string }
   description: string
   category: string
-  icon?: any
+  icon?: unknown
   features?: string[]
   planAccess: 'free' | 'pro' | 'premium'
   tradingViewLink?: string
