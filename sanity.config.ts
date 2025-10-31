@@ -7,8 +7,9 @@ export default defineConfig({
   name: 'default',
   title: 'MUNTS PIP Indicators',
 
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '',
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
+  // Hardcoded for deployment
+  projectId: '3zh3et0i',
+  dataset: 'production',
 
   plugins: [structureTool(), visionTool()],
 
