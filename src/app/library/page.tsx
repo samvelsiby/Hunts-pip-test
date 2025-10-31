@@ -1,4 +1,5 @@
 import { client, indicatorsQuery } from '@/lib/sanity'
+export const revalidate = 60
 import Link from 'next/link'
 import LibraryClient from './LibraryClient'
 

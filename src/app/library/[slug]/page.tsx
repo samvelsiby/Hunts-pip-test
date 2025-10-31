@@ -1,4 +1,5 @@
 import { client, indicatorBySlugQuery, urlFor } from '@/lib/sanity'
+export const revalidate = 60
 import Image from 'next/image'
 import Link from 'next/link'
 import { PortableText, PortableTextComponents } from '@portabletext/react'
