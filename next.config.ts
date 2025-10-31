@@ -15,12 +15,15 @@ const nextConfig: NextConfig = {
       "default-src 'self'",
       "base-uri 'self'",
       "object-src 'none'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com",
+      // Allow Clerk JS and supporting CDNs
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://cdn.clerk.com https://cdn.clerk.dev https://*.clerk.com https://*.clerk.dev",
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' https://cdn.sanity.io data: blob: https:",
+      "img-src 'self' https://cdn.sanity.io https://*.clerk.com https://*.clerk.dev data: blob: https:",
       "font-src 'self' data:",
-      "connect-src 'self' https://*.sanity.io https://cdn.sanity.io https://vitals.vercel-insights.com https://vercel.live",
-      "frame-src https://www.youtube.com",
+      // Allow Clerk APIs and realtime connections
+      "connect-src 'self' https://*.sanity.io https://cdn.sanity.io https://vitals.vercel-insights.com https://vercel.live https://api.clerk.com https://*.clerk.com https://*.clerk.dev",
+      // Allow Clerk hosted widgets and YouTube embeds
+      "frame-src https://www.youtube.com https://*.clerk.com https://*.clerk.dev",
       "media-src 'self' blob:",
       "worker-src 'self' blob:",
       'upgrade-insecure-requests',
