@@ -38,6 +38,18 @@ export const indicatorBySlugQuery = `*[_type == "indicator" && slug.current == $
   features,
   planAccess,
   tradingViewLink,
-  documentation,
+  documentation[]{
+    ...,
+    _type == "image" => {
+      ...,
+      asset->{
+        _id,
+        url,
+        metadata {
+          dimensions
+        }
+      }
+    }
+  },
   isActive
 }`

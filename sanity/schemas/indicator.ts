@@ -78,7 +78,125 @@ export default defineType({
       name: 'documentation',
       title: 'Documentation',
       type: 'array',
-      of: [{ type: 'block' }],
+      of: [
+        {
+          type: 'block',
+          styles: [
+            { title: 'Normal', value: 'normal' },
+            { title: 'H1', value: 'h1' },
+            { title: 'H2', value: 'h2' },
+            { title: 'H3', value: 'h3' },
+            { title: 'Quote', value: 'blockquote' },
+          ],
+          marks: {
+            decorators: [
+              { title: 'Strong', value: 'strong' },
+              { title: 'Emphasis', value: 'em' },
+              { title: 'Code', value: 'code' },
+            ],
+            annotations: [
+              {
+                name: 'link',
+                type: 'object',
+                title: 'Link',
+                fields: [
+                  {
+                    name: 'href',
+                    type: 'url',
+                    title: 'URL',
+                  },
+                ],
+              },
+            ],
+          },
+        },
+        {
+          type: 'image',
+          fields: [
+            {
+              name: 'alt',
+              type: 'string',
+              title: 'Alternative text',
+              description: 'Important for SEO and accessibility.',
+            },
+            {
+              name: 'caption',
+              type: 'string',
+              title: 'Caption',
+            },
+          ],
+          options: {
+            hotspot: true,
+          },
+        },
+        {
+          type: 'object',
+          name: 'codeBlock',
+          title: 'Code Block',
+          fields: [
+            {
+              name: 'filename',
+              type: 'string',
+              title: 'Filename',
+            },
+            {
+              name: 'language',
+              type: 'string',
+              title: 'Language',
+              options: {
+                list: [
+                  { title: 'JavaScript', value: 'javascript' },
+                  { title: 'TypeScript', value: 'typescript' },
+                  { title: 'JSON', value: 'json' },
+                  { title: 'Shell', value: 'bash' },
+                  { title: 'Markdown', value: 'markdown' },
+                ],
+              },
+            },
+            {
+              name: 'code',
+              type: 'text',
+              title: 'Code',
+            },
+          ],
+        },
+        {
+          type: 'object',
+          name: 'youtube',
+          title: 'YouTube Embed',
+          fields: [
+            {
+              name: 'url',
+              type: 'url',
+              title: 'YouTube URL',
+            },
+          ],
+        },
+        {
+          type: 'object',
+          name: 'callout',
+          title: 'Callout',
+          fields: [
+            {
+              name: 'tone',
+              type: 'string',
+              title: 'Tone',
+              options: {
+                list: [
+                  { title: 'Info', value: 'info' },
+                  { title: 'Warning', value: 'warning' },
+                  { title: 'Success', value: 'success' },
+                ],
+              },
+            },
+            {
+              name: 'text',
+              type: 'text',
+              title: 'Text',
+            },
+          ],
+        },
+      ],
     }),
     defineField({
       name: 'isActive',

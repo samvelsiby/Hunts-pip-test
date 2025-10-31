@@ -1,9 +1,7 @@
 import { client, indicatorBySlugQuery, urlFor } from '@/lib/sanity'
-import { auth } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { PortableText } from '@portabletext/react'
+import { PortableText, PortableTextComponents } from '@portabletext/react'
 
 interface Indicator {
   _id: string
@@ -29,17 +27,139 @@ async function getIndicator(slug: string): Promise<Indicator | null> {
   }
 }
 
+// Custom components for PortableText to render images and rich content
+const portableTextComponents: PortableTextComponents = {
+  types: {
+    image: ({ value }) => {
+      if (!value?.asset) return null
+      
+      return (
+        <figure className="my-8">
+          <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-gray-800">
+            <Image
+              src={urlFor(value).width(1200).height(675).url()}
+              alt={value.alt || 'Documentation image'}
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
+            />
+          </div>
+          {value.caption && (
+            <figcaption className="mt-4 text-center text-gray-400 text-sm italic">
+              {value.caption}
+            </figcaption>
+          )}
+        </figure>
+      )
+    },
+    codeBlock: ({ value }) => (
+      <pre className="bg-black/60 border border-gray-800 rounded-lg p-4 overflow-auto my-6 text-sm">
+        <code>
+          {value?.filename ? `// ${value.filename}\n` : ''}
+          {value?.code}
+        </code>
+      </pre>
+    ),
+    youtube: ({ value }) => {
+      const url: string | undefined = value?.url
+      if (!url) return null
+      const match = url.match(/(?:v=|\.be\/)\w+/)
+      const id = match ? match[0].split('=')[1] || match[0].split('/').pop() : undefined
+      if (!id) return null
+      return (
+        <div className="my-8 aspect-video w-full overflow-hidden rounded-lg border border-gray-800 bg-black">
+          <iframe
+            src={`https://www.youtube.com/embed/${id}`}
+            title="YouTube video"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            className="w-full h-full"
+          />
+        </div>
+      )
+    },
+    callout: ({ value }) => {
+      const tone = value?.tone || 'info'
+      const toneClasses: Record<string, string> = {
+        info: 'border-blue-500/30 bg-blue-500/10',
+        warning: 'border-yellow-500/30 bg-yellow-500/10',
+        success: 'border-green-500/30 bg-green-500/10',
+      }
+      return (
+        <div className={`my-6 p-4 rounded-lg border ${toneClasses[tone] || toneClasses.info}`}>
+          <p className="text-gray-200">{value?.text}</p>
+        </div>
+      )
+    },
+  },
+  block: {
+    h1: ({ children }) => (
+      <h1 className="text-4xl font-bold text-white mt-8 mb-4">{children}</h1>
+    ),
+    h2: ({ children }) => (
+      <h2 className="text-3xl font-bold text-white mt-8 mb-4">{children}</h2>
+    ),
+    h3: ({ children }) => (
+      <h3 className="text-2xl font-bold text-white mt-6 mb-3">{children}</h3>
+    ),
+    normal: ({ children }) => (
+      <p className="text-gray-300 leading-relaxed mb-4 text-lg">{children}</p>
+    ),
+    blockquote: ({ children }) => (
+      <blockquote className="border-l-4 border-blue-500 pl-6 py-2 my-6 italic text-gray-300 bg-gray-800/50 rounded-r-lg">
+        {children}
+      </blockquote>
+    ),
+  },
+  marks: {
+    strong: ({ children }) => (
+      <strong className="font-bold text-white">{children}</strong>
+    ),
+    em: ({ children }) => (
+      <em className="italic text-gray-200">{children}</em>
+    ),
+    code: ({ children }) => (
+      <code className="bg-gray-800 text-green-400 px-2 py-1 rounded text-sm font-mono">
+        {children}
+      </code>
+    ),
+    link: ({ value, children }) => {
+      const target = value?.href?.startsWith('http') ? '_blank' : undefined
+      return (
+        <a
+          href={value?.href}
+          target={target}
+          rel={target === '_blank' ? 'noopener noreferrer' : undefined}
+          className="text-blue-400 hover:text-blue-300 underline"
+        >
+          {children}
+        </a>
+      )
+    },
+  },
+  list: {
+    bullet: ({ children }) => (
+      <ul className="list-disc list-inside space-y-2 mb-6 text-gray-300 pl-4">
+        {children}
+      </ul>
+    ),
+    number: ({ children }) => (
+      <ol className="list-decimal list-inside space-y-2 mb-6 text-gray-300 pl-4">
+        {children}
+      </ol>
+    ),
+  },
+  listItem: {
+    bullet: ({ children }) => <li className="ml-4">{children}</li>,
+    number: ({ children }) => <li className="ml-4">{children}</li>,
+  },
+}
+
 export default async function IndicatorDetailPage({
   params,
 }: {
   params: Promise<{ slug: string }>
 }) {
-  const { userId } = await auth()
-
-  if (!userId) {
-    redirect('/sign-in')
-  }
-
   const { slug } = await params
   const indicator = await getIndicator(slug)
 
@@ -175,12 +295,15 @@ export default async function IndicatorDetailPage({
           </div>
         )}
 
-        {/* Documentation Section */}
+        {/* Documentation Section with Rich Content */}
         {indicator.documentation && indicator.documentation.length > 0 && (
           <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8 mb-8">
-            <h2 className="text-2xl font-bold text-white mb-6">Documentation</h2>
+            <h2 className="text-3xl font-bold text-white mb-8">Documentation</h2>
             <div className="prose prose-invert max-w-none">
-              <PortableText value={indicator.documentation} />
+              <PortableText
+                value={indicator.documentation}
+                components={portableTextComponents}
+              />
             </div>
           </div>
         )}

@@ -17,15 +17,15 @@ const isAdminRoute = createRouteMatcher([
 export default clerkMiddleware(async (auth, req) => {
   if (isProtectedRoute(req)) {
     await auth.protect({
-      unauthenticatedUrl: '/sign-in',
-      unauthorizedUrl: '/sign-in',
+      unauthenticatedUrl: new URL('/sign-in', req.url),
+      unauthorizedUrl: new URL('/sign-in', req.url),
     })
   }
   
   if (isAdminRoute(req)) {
     await auth.protect({
-      unauthenticatedUrl: '/sign-in',
-      unauthorizedUrl: '/sign-in',
+      unauthenticatedUrl: new URL('/sign-in', req.url),
+      unauthorizedUrl: new URL('/sign-in', req.url),
     })
     // TODO: Add admin role check when we implement user roles
   }
