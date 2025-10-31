@@ -63,8 +63,8 @@ export default defineType({
       options: {
         list: [
           { title: 'Free', value: 'free' },
+          { title: 'Pro', value: 'pro' },
           { title: 'Premium', value: 'premium' },
-          { title: 'Ultimate', value: 'ultimate' },
         ],
       },
       validation: (Rule) => Rule.required(),

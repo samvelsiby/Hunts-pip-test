@@ -11,7 +11,7 @@ interface Indicator {
   category: string
   icon?: unknown
   features?: string[]
-  planAccess: 'free' | 'pro' | 'premium'
+  planAccess: 'free' | 'premium' | 'ultimate'
   tradingViewLink?: string
   order: number
 }

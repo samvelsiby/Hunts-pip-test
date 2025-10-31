@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "sanity": "sanity dev"
+    "sanity": "sanity dev",
+    "migrate:plan-access": "node migrate-plan-access.js"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.33.4",
@@ -16,6 +17,7 @@
     "@sanity/image-url": "^1.2.0",
     "@stripe/stripe-js": "^8.0.0",
     "@supabase/supabase-js": "^2.75.0",
+    "dotenv": "^17.2.3",
     "next": "15.5.5",
     "next-sanity": "^11.6.2",
     "react": "19.1.0",

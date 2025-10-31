@@ -13,7 +13,7 @@ interface Indicator {
   category: string
   icon?: unknown
   features?: string[]
-  planAccess: 'free' | 'pro' | 'premium'
+  planAccess: 'free' | 'premium' | 'ultimate'
   tradingViewLink?: string
   documentation?: unknown[]
   isActive: boolean
@@ -183,8 +183,8 @@ export default async function IndicatorDetailPage({
 
   const planColors = {
     free: 'bg-green-500/10 text-green-400 border-green-500/20',
-    pro: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-    premium: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+    premium: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+    ultimate: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
   }
 
   const categoryIcons = {
