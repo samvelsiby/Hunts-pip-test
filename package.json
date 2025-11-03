@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "sanity": "sanity dev",
-    "migrate:plan-access": "node migrate-plan-access.js"
+    "migrate:plan-access": "node migrate-plan-access.js",
+    "ngrok": "npx ngrok http 3000"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.33.4",
@@ -40,6 +41,7 @@
     "react-hook-form": "^7.66.0",
     "stripe": "^19.1.0",
     "styled-components": "^6.1.19",
+    "svix": "^1.81.0",
     "tailwind-merge": "^3.3.1",
     "zod": "^4.1.12"
   },

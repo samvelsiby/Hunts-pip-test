@@ -24,8 +24,9 @@ interface LibraryClientProps {
 export default function LibraryClient({ indicators, categories }: LibraryClientProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const [selectedPlan, setSelectedPlan] = useState<'all' | 'free' | 'premium' | 'ultimate'>('all')
 
-  // Filter indicators based on search and category
+  // Filter indicators based on search, category, and plan access
   const filteredIndicators = useMemo(() => {
     return indicators.filter((indicator) => {
       const matchesSearch = 
@@ -39,9 +40,13 @@ export default function LibraryClient({ indicators, categories }: LibraryClientP
         selectedCategory === 'all' || 
         indicator.category.toLowerCase() === selectedCategory.toLowerCase()
 
-      return matchesSearch && matchesCategory
+      const matchesPlan = 
+        selectedPlan === 'all' || 
+        indicator.planAccess.toLowerCase() === selectedPlan.toLowerCase()
+
+      return matchesSearch && matchesCategory && matchesPlan
     })
-  }, [indicators, searchQuery, selectedCategory])
+  }, [indicators, searchQuery, selectedCategory, selectedPlan])
 
   return (
     <>
@@ -70,7 +75,7 @@ export default function LibraryClient({ indicators, categories }: LibraryClientP
               placeholder="Search indicators by name, description, or features..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF5B41] focus:border-transparent transition-all"
+              className="w-full pl-12 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-gray-600 transition-all"
             />
             {searchQuery && (
               <button
@@ -91,21 +96,35 @@ export default function LibraryClient({ indicators, categories }: LibraryClientP
         </div>
 
         {/* Category Filter */}
-        <div className="flex flex-wrap gap-3 justify-center">
+        <div className="flex flex-wrap gap-2 justify-center">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`px-6 py-2 rounded-full transition-all duration-200 border ${
+              className={`px-4 py-1.5 text-sm rounded-full transition-all duration-200 border ${
                 selectedCategory === category
-                  ? 'text-white shadow-lg shadow-[#FF5B41]/20 border-[#FF5B41]'
-                  : 'bg-gray-800 hover:bg-gray-700 text-white border-gray-700 hover:border-[#FF5B41]'
+                  ? 'bg-gray-700 text-white border-gray-600 shadow-lg'
+                  : 'bg-gray-800/50 hover:bg-gray-700 text-white border-gray-700 hover:border-gray-600'
               }`}
-              style={selectedCategory === category ? {
-                background: 'linear-gradient(135deg, #DD0000 0%, #FF5B41 100%)',
-              } : {}}
             >
               {category.charAt(0).toUpperCase() + category.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        {/* Plan Access Filter */}
+        <div className="flex flex-wrap gap-2 justify-center">
+          {(['all', 'free', 'premium', 'ultimate'] as const).map((plan) => (
+            <button
+              key={plan}
+              onClick={() => setSelectedPlan(plan)}
+              className={`px-4 py-1.5 text-sm rounded-full transition-all duration-200 border font-semibold ${
+                selectedPlan === plan
+                  ? 'bg-gray-700 text-white border-gray-600 shadow-lg'
+                  : 'bg-gray-800/50 hover:bg-gray-700 text-white border-gray-700 hover:border-gray-600'
+              }`}
+            >
+              {plan === 'all' ? 'All Plans' : plan.toUpperCase()}
             </button>
           ))}
         </div>
@@ -115,8 +134,9 @@ export default function LibraryClient({ indicators, categories }: LibraryClientP
           <div className="text-center text-gray-400 text-sm">
             Showing {filteredIndicators.length} of {indicators.length} indicator
             {filteredIndicators.length !== 1 ? 's' : ''}
-            {searchQuery && ` matching ${searchQuery}`}
+            {searchQuery && ` matching "${searchQuery}"`}
             {selectedCategory !== 'all' && ` in ${selectedCategory} category`}
+            {selectedPlan !== 'all' && ` for ${selectedPlan.toUpperCase()} plan`}
           </div>
         )}
       </div>
@@ -147,14 +167,15 @@ export default function LibraryClient({ indicators, categories }: LibraryClientP
           </div>
           <h3 className="text-xl font-semibold text-white mb-2">No indicators found</h3>
           <p className="text-gray-400 mb-4">
-            Try adjusting your search query or category filter
+            Try adjusting your search query, category, or plan filter
           </p>
           <button
             onClick={() => {
               setSearchQuery('')
               setSelectedCategory('all')
+              setSelectedPlan('all')
             }}
-            className="text-blue-400 hover:text-blue-300 underline"
+            className="text-gray-400 hover:text-white underline transition-colors"
           >
             Clear filters
           </button>

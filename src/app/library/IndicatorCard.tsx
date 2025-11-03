@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { urlFor, getBlurDataURL } from '@/lib/sanity'
+import { urlFor } from '@/lib/sanity'
 
 interface Indicator {
   _id: string
@@ -27,13 +27,17 @@ export default function IndicatorCard({ indicator }: { indicator: Indicator }) {
   };
 
   const planBadges = {
-    free: <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs font-semibold rounded-full border border-green-500/30">FREE</span>,
-    premium: <span className="px-2 py-1 bg-[#FF5B41]/20 text-[#FF5B41] text-xs font-semibold rounded-full border border-[#FF5B41]/30">PREMIUM</span>,
-    ultimate: <span className="px-2 py-1 bg-[#DD0000]/20 text-[#DD0000] text-xs font-semibold rounded-full border border-[#DD0000]/30">ULTIMATE</span>,
+    free: <span className="px-2 py-1 text-xs font-semibold rounded-full border-2" style={{ background: 'rgba(0, 221, 94, 0.2)', color: '#00dd5e', borderColor: '#00dd5e' }}>FREE</span>,
+    premium: <span className="px-2 py-1 text-xs font-semibold rounded-full border-2" style={{ background: 'rgba(255, 0, 0, 0.2)', color: '#ff0000', borderColor: '#ff0000' }}>PREMIUM</span>,
+    ultimate: <span className="px-2 py-1 text-xs font-semibold rounded-full border-2" style={{ background: 'rgba(255, 0, 0, 0.3)', color: '#ff0000', borderColor: '#00dd5e' }}>ULTIMATE</span>,
   };
   
   return (
-    <div className="bg-gray-900 rounded-xl overflow-hidden shadow-lg hover:shadow-[#FF5B41]/10 transition-all duration-300 h-full flex flex-col">
+    <div className="rounded-xl overflow-hidden shadow-lg transition-all duration-300 h-full flex flex-col border-2" style={{ 
+      background: 'linear-gradient(135deg, rgba(0, 221, 94, 0.1) 0%, rgba(0, 221, 94, 0.05) 30%, rgba(255, 0, 0, 0.05) 70%, rgba(255, 0, 0, 0.1) 100%)',
+      borderColor: 'rgba(0, 221, 94, 0.3)',
+      boxShadow: '0 4px 6px -1px rgba(0, 221, 94, 0.1), 0 2px 4px -1px rgba(255, 0, 0, 0.1)'
+    }}>
       {/* Card Header with Image */}
       <div className="relative h-48 w-full overflow-hidden">
         {indicator.icon ? (
@@ -42,31 +46,27 @@ export default function IndicatorCard({ indicator }: { indicator: Indicator }) {
             alt=""
             fill
             className="object-cover"
-            placeholder="blur"
-            blurDataURL={getBlurDataURL(indicator.icon)}
             priority
           />
         ) : (
-          <div className="h-full w-full" style={{ background: 'linear-gradient(135deg, #DD0000/50 0%, #FF5B41/50 100%)' }}></div>
+          <div className="h-full w-full" style={{ background: 'linear-gradient(135deg, #00dd5e 0%, #ff0000 100%)' }}></div>
         )}
-        
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/50 to-black/20"></div>
-        
-        {/* Plan Badge */}
-        <div className="absolute top-4 right-4">
-          {planBadges[indicator.planAccess]}
-        </div>
       </div>
       
       {/* Card Content */}
       <div className="p-4 flex-1 flex flex-col">
-        {/* Category */}
-        <div className="flex items-center gap-1 mb-2">
-          <span className="text-sm">{categoryIcons[indicator.category as keyof typeof categoryIcons]}</span>
-          <span className="text-sm text-gray-400 capitalize">
-            {indicator.category}
-          </span>
+        {/* Category and Plan Badge */}
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-1">
+            <span className="text-sm">{categoryIcons[indicator.category as keyof typeof categoryIcons]}</span>
+            <span className="text-sm text-gray-400 capitalize">
+              {indicator.category}
+            </span>
+          </div>
+          {/* Plan Badge */}
+          <div>
+            {planBadges[indicator.planAccess]}
+          </div>
         </div>
         
         {/* Title */}
@@ -82,7 +82,7 @@ export default function IndicatorCard({ indicator }: { indicator: Indicator }) {
         {/* Action Button */}
         <div className="flex justify-end mt-auto pt-2">
           <Link href={`/library/${indicator.slug.current}`}>
-            <button className="flex items-center gap-2 text-[#FF5B41] text-sm font-medium hover:text-[#DD0000] transition-colors">
+            <button className="flex items-center gap-2 text-sm font-medium transition-all hover:scale-105" style={{ color: '#00dd5e' }}>
               View Details
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />

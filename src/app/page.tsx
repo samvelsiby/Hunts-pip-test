@@ -4,7 +4,6 @@ import BackgroundParticles from '@/components/BackgroundParticles';
 import HeroSection from '@/components/HeroSection';
 import TrustedPartnersComponent from '@/components/TrustedPartnersComponent';
 import FeaturesComponent from '@/components/FeaturesComponent';
-import DevicesComponent from '@/components/DevicesComponent';
 import MoneyBackGuaranteeComponent from '@/components/MoneyBackGuaranteeComponent';
 import PricingComponent from '@/components/PricingComponent';
 import FAQComponent from '@/components/FAQComponent';
@@ -33,9 +32,6 @@ export default function Home() {
 
       {/* Features Section */}
       <FeaturesComponent />
-
-      {/* Devices Section */}
-      <DevicesComponent />
 
       {/* Money-Back Guarantee Section */}
       <MoneyBackGuaranteeComponent />

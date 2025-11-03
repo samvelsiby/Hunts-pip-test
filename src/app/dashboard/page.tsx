@@ -1,176 +1,185 @@
 'use client';
 
 import { useUser } from "@clerk/nextjs";
-import { useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BarChart3, LineChart, Zap, Award, ArrowRight } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Award, Check, AlertCircle, Loader2, ExternalLink } from "lucide-react";
 
-function DashboardOverview() {
-  const { user } = useUser();
-  const searchParams = useSearchParams();
-  const planId = searchParams.get('plan');
-
-  return (
-    <div className="space-y-6">
-      {/* Welcome header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-white">Welcome back, {user?.firstName || 'Trader'}!</h1>
-        <p className="text-gray-400 mt-1">Here&apos;s an overview of your trading setup and performance.</p>
-      </div>
-
-      {/* Plan Selection Success Message */}
-      {planId && (
-        <Card className="border-green-500/50 bg-green-950/20">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-green-400 flex items-center gap-2">
-              <Zap className="h-5 w-5" />
-              Plan Selected Successfully!
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-300">
-              You&apos;ve selected the <span className="text-green-400 font-semibold capitalize">{planId}</span> plan. 
-              Complete your setup below to start using your trading indicators.
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Dashboard Grid */}
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Trading Stats */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Trading Performance</CardTitle>
-            <CardDescription>Your recent trading activity and metrics</CardDescription>
-          </CardHeader>
-          <CardContent className="pb-2">
-            <div className="h-[200px] flex items-center justify-center bg-gray-800/50 rounded-md">
-              <div className="flex flex-col items-center text-center">
-                <BarChart3 className="h-10 w-10 text-gray-400 mb-2" />
-                <p className="text-sm text-gray-400">Performance charts will appear here once you connect your TradingView account</p>
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Link href="/dashboard/settings" className="text-sm text-[#FF5B41] hover:text-[#DD0000] flex items-center gap-1">
-              Connect TradingView <ArrowRight className="h-3 w-3" />
-            </Link>
-          </CardFooter>
-        </Card>
-
-        {/* Plan Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Your Plan</CardTitle>
-            <CardDescription>Current subscription and features</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-400">Current Plan</span>
-              <span className="text-green-400 font-semibold capitalize">{planId || 'Free'}</span>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <span className="text-gray-400">Status</span>
-              <span className="text-green-400 font-semibold">Active</span>
-            </div>
-
-            {(planId === 'free' || !planId) && (
-              <div className="mt-2 p-3 bg-[#FF5B41]/10 border border-[#FF5B41]/30 rounded-md">
-                <h4 className="text-[#FF5B41] font-semibold text-sm mb-2 flex items-center gap-2">
-                  <Award className="h-4 w-4" /> Free Plan Features
-                </h4>
-                <ul className="text-gray-300 text-xs space-y-1">
-                  <li className="flex items-center gap-2">• Basic trading signals</li>
-                  <li className="flex items-center gap-2">• Limited keyword access</li>
-                  <li className="flex items-center gap-2">• Community support</li>
-                </ul>
-              </div>
-            )}
-
-            {planId === 'pro' && (
-              <div className="mt-2 p-3 bg-green-950/20 border border-green-500/30 rounded-md">
-                <h4 className="text-green-400 font-semibold text-sm mb-2 flex items-center gap-2">
-                  <Award className="h-4 w-4" /> Pro Plan Features
-                </h4>
-                <ul className="text-gray-300 text-xs space-y-1">
-                  <li className="flex items-center gap-2">• Advanced trading signals</li>
-                  <li className="flex items-center gap-2">• Unlimited keyword access</li>
-                  <li className="flex items-center gap-2">• Priority support</li>
-                  <li className="flex items-center gap-2">• Custom alerts</li>
-                </ul>
-              </div>
-            )}
-
-            {planId === 'premium' && (
-              <div className="mt-2 p-3 bg-purple-950/20 border border-purple-500/30 rounded-md">
-                <h4 className="text-purple-400 font-semibold text-sm mb-2 flex items-center gap-2">
-                  <Award className="h-4 w-4" /> Premium Plan Features
-                </h4>
-                <ul className="text-gray-300 text-xs space-y-1">
-                  <li className="flex items-center gap-2">• All Pro features</li>
-                  <li className="flex items-center gap-2">• AI-powered insights</li>
-                  <li className="flex items-center gap-2">• 24/7 premium support</li>
-                  <li className="flex items-center gap-2">• Custom strategies</li>
-                  <li className="flex items-center gap-2">• API access</li>
-                </ul>
-              </div>
-            )}
-          </CardContent>
-          <CardFooter>
-            <Button className="w-full" variant="outline">
-              Manage Subscription
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
-
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>Frequently used tools and shortcuts</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-            <Link href="/library" className="group block">
-              <div className="p-4 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors border border-gray-700 group-hover:border-gray-600">
-                <div className="text-white font-medium mb-1 flex items-center gap-2">
-                  <LineChart className="h-4 w-4 text-[#FF5B41]" /> Indicator Library
-                </div>
-                <div className="text-gray-400 text-sm">Browse all available indicators</div>
-              </div>
-            </Link>
-            <Link href="/dashboard/settings" className="group block">
-              <div className="p-4 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors border border-gray-700 group-hover:border-gray-600">
-                <div className="text-white font-medium mb-1 flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-green-400" /> TradingView Setup
-                </div>
-                <div className="text-gray-400 text-sm">Connect your TradingView account</div>
-              </div>
-            </Link>
-            <Link href="/dashboard/profile" className="group block">
-              <div className="p-4 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors border border-gray-700 group-hover:border-gray-600">
-                <div className="text-white font-medium mb-1 flex items-center gap-2">
-                  <Award className="h-4 w-4 text-purple-400" /> Account Settings
-                </div>
-                <div className="text-gray-400 text-sm">Manage your profile and preferences</div>
-              </div>
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+interface Subscription {
+  plan_type: string;
+  status: string;
 }
 
-function DashboardContent() {
-  const { isLoaded, isSignedIn } = useUser();
+export default function Dashboard() {
+  const { user, isLoaded, isSignedIn } = useUser();
+  const [tradingViewUsername, setTradingViewUsername] = useState('');
+  const [originalUsername, setOriginalUsername] = useState('');
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const fetchUserData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      
+      // Only fetch if user is signed in
+      if (!isSignedIn || !user) {
+        setIsLoading(false);
+        return;
+      }
+
+      // Fetch TradingView username - sync with database
+      const usernameResponse = await fetch('/api/user/tradingview', {
+        credentials: 'include', // Include cookies for authentication
+      });
+      if (usernameResponse.ok) {
+        const usernameData = await usernameResponse.json();
+        // Handle both null and empty string cases
+        const username = usernameData.username || '';
+        setTradingViewUsername(username);
+        setOriginalUsername(username);
+      } else if (usernameResponse.status === 401) {
+        // User is not authenticated
+        console.error('Not authenticated to fetch TradingView username');
+      } else {
+        console.error('Failed to fetch TradingView username:', usernameResponse.status);
+      }
+
+      // Fetch subscription
+      const subscriptionResponse = await fetch('/api/user/subscription', {
+        credentials: 'include', // Include cookies for authentication
+      });
+      if (subscriptionResponse.ok) {
+        const subscriptionData = await subscriptionResponse.json();
+        setSubscription({
+          plan_type: subscriptionData.plan_type || 'free',
+          status: subscriptionData.status || 'active'
+        });
+      } else {
+        // Default to free plan if fetch fails
+        setSubscription({ plan_type: 'free', status: 'active' });
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      // Default to free plan on error
+      setSubscription({ plan_type: 'free', status: 'active' });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isSignedIn, user]);
+
+  useEffect(() => {
+    // Only fetch data when user is fully loaded and signed in
+    if (isLoaded && isSignedIn && user) {
+      fetchUserData();
+    }
+  }, [isLoaded, isSignedIn, user, fetchUserData]);
+
+  const handleSaveUsername = async () => {
+    const trimmedUsername = tradingViewUsername.trim();
+    
+    if (!trimmedUsername) {
+      setErrorMessage('Please enter a TradingView username');
+      setSaveStatus('error');
+      return;
+    }
+
+    // Don't save if nothing changed
+    if (trimmedUsername === originalUsername) {
+      setSaveStatus('success');
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      setSaveStatus('idle');
+      setErrorMessage('');
+
+      console.log('Saving TradingView username:', trimmedUsername);
+
+      const response = await fetch('/api/user/tradingview', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Include cookies for authentication
+        body: JSON.stringify({ username: trimmedUsername }),
+      });
+
+      console.log('Response status:', response.status, response.statusText);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
+      // Check if response is JSON
+      const contentType = response.headers.get('content-type');
+      let data: { success?: boolean; error?: string; username?: string } = {};
+      
+      if (contentType && contentType.includes('application/json')) {
+        try {
+          const responseText = await response.text();
+          console.log('Response text (raw):', responseText);
+          
+          if (!responseText || responseText.trim() === '') {
+            console.error('Empty response body');
+            setSaveStatus('error');
+            setErrorMessage('Empty response from server. Please try again.');
+            return;
+          }
+          
+          data = JSON.parse(responseText);
+          console.log('Response data (parsed):', data);
+        } catch (parseError) {
+          console.error('Failed to parse JSON response:', parseError);
+          setSaveStatus('error');
+          setErrorMessage('Invalid response from server. Please try again.');
+          return;
+        }
+      } else {
+        // Non-JSON response (likely HTML redirect)
+        const text = await response.text();
+        console.error('Non-JSON response received:', text.substring(0, 200));
+        setSaveStatus('error');
+        if (response.status === 401 || response.status === 403) {
+          setErrorMessage('You are not authorized. Please sign in again.');
+        } else {
+          setErrorMessage('Unexpected response from server. Please try again.');
+        }
+        return;
+      }
+
+      if (response.ok && data.success) {
+        // Use the username from the API response to ensure we have the correct value
+        const savedUsername = data.username || trimmedUsername;
+        console.log('Successfully saved username:', savedUsername);
+        
+        setTradingViewUsername(savedUsername);
+        setOriginalUsername(savedUsername);
+        setSaveStatus('success');
+        setErrorMessage('');
+        
+        // Refetch data to ensure everything is synced
+        setTimeout(() => {
+          fetchUserData();
+        }, 500);
+      } else {
+        const errorMsg = data.error || 'Failed to update TradingView username';
+        console.error('Update failed:', { status: response.status, error: errorMsg, data });
+        setSaveStatus('error');
+        setErrorMessage(errorMsg);
+      }
+    } catch (error) {
+      console.error('Error saving TradingView username:', error);
+      setSaveStatus('error');
+      setErrorMessage(error instanceof Error ? error.message : 'An unexpected error occurred');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   if (!isLoaded) {
     return (
@@ -194,72 +203,207 @@ function DashboardContent() {
     );
   }
 
+  const hasChanges = tradingViewUsername !== originalUsername;
+  const planType = subscription?.plan_type || 'free';
+
   return (
-    <Tabs defaultValue="overview" className="w-full">
-      <TabsList className="mb-6">
-        <TabsTrigger value="overview">Overview</TabsTrigger>
-        <TabsTrigger value="indicators">Indicators</TabsTrigger>
-        <TabsTrigger value="performance">Performance</TabsTrigger>
-      </TabsList>
-      <TabsContent value="overview">
-        <DashboardOverview />
-      </TabsContent>
-      <TabsContent value="indicators">
-        <div className="space-y-6">
-          <h1 className="text-3xl font-bold tracking-tight text-white">Your Indicators</h1>
-          <p className="text-gray-400">Manage your trading indicators and signals.</p>
-          
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="space-y-6">
+        {/* Welcome header */}
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-white">Welcome back, {user?.firstName || 'Trader'}!</h1>
+          <p className="text-gray-400 mt-1">Manage your subscription, indicators, and TradingView account.</p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Subscription Management */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Subscription Management</CardTitle>
+              <CardDescription>Your current plan and billing information</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Current Plan</span>
+                <span className="text-green-400 font-semibold capitalize">{planType}</span>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Status</span>
+                <span className="text-green-400 font-semibold capitalize">{subscription?.status || 'Active'}</span>
+              </div>
+
+              {planType === 'free' && (
+                <div className="mt-2 p-3 bg-[#FF5B41]/10 border border-[#FF5B41]/30 rounded-md">
+                  <h4 className="text-[#FF5B41] font-semibold text-sm mb-2 flex items-center gap-2">
+                    <Award className="h-4 w-4" /> Free Plan Features
+                  </h4>
+                  <ul className="text-gray-300 text-xs space-y-1">
+                    <li className="flex items-center gap-2">• Basic trading signals</li>
+                    <li className="flex items-center gap-2">• Limited keyword access</li>
+                    <li className="flex items-center gap-2">• Community support</li>
+                  </ul>
+                </div>
+              )}
+
+              {planType === 'pro' && (
+                <div className="mt-2 p-3 bg-green-950/20 border border-green-500/30 rounded-md">
+                  <h4 className="text-green-400 font-semibold text-sm mb-2 flex items-center gap-2">
+                    <Award className="h-4 w-4" /> Pro Plan Features
+                  </h4>
+                  <ul className="text-gray-300 text-xs space-y-1">
+                    <li className="flex items-center gap-2">• Advanced trading signals</li>
+                    <li className="flex items-center gap-2">• Unlimited keyword access</li>
+                    <li className="flex items-center gap-2">• Priority support</li>
+                    <li className="flex items-center gap-2">• Custom alerts</li>
+                  </ul>
+                </div>
+              )}
+
+              {planType === 'premium' && (
+                <div className="mt-2 p-3 bg-purple-950/20 border border-purple-500/30 rounded-md">
+                  <h4 className="text-purple-400 font-semibold text-sm mb-2 flex items-center gap-2">
+                    <Award className="h-4 w-4" /> Premium Plan Features
+                  </h4>
+                  <ul className="text-gray-300 text-xs space-y-1">
+                    <li className="flex items-center gap-2">• All Pro features</li>
+                    <li className="flex items-center gap-2">• AI-powered insights</li>
+                    <li className="flex items-center gap-2">• 24/7 premium support</li>
+                    <li className="flex items-center gap-2">• Custom strategies</li>
+                    <li className="flex items-center gap-2">• API access</li>
+                  </ul>
+                </div>
+              )}
+            </CardContent>
+            <CardFooter>
+              <Button className="w-full" variant="outline" asChild>
+                <Link href="/pricing">
+                  Manage Subscription <ExternalLink className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </CardFooter>
+          </Card>
+
+          {/* Active Indicators */}
           <Card>
             <CardHeader>
               <CardTitle>Active Indicators</CardTitle>
               <CardDescription>Indicators currently deployed to your TradingView account</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-center h-[200px] bg-gray-800/50 rounded-md">
-                <p className="text-gray-400">Connect your TradingView account to see your indicators</p>
-              </div>
+              {originalUsername ? (
+                <div className="space-y-3">
+                  <div className="bg-gray-800/50 rounded-md p-4">
+                    <p className="text-sm text-gray-400 mb-3">Your indicators are active and deployed to:</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-white font-medium">{originalUsername}</span>
+                      <span className="text-green-400 text-sm">Active</span>
+                    </div>
+                  </div>
+                  <Link href="/library">
+                    <Button variant="outline" className="w-full">
+                      Browse Indicator Library <ExternalLink className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-[200px] bg-gray-800/50 rounded-md">
+                  <p className="text-gray-400 mb-4">Connect your TradingView account to see your indicators</p>
+                  <p className="text-sm text-gray-500">Enter your TradingView username below to get started</p>
+                </div>
+              )}
             </CardContent>
-            <CardFooter>
-              <Link href="/dashboard/settings">
-                <Button variant="outline">Connect TradingView</Button>
-              </Link>
-            </CardFooter>
           </Card>
         </div>
-      </TabsContent>
-      <TabsContent value="performance">
-        <div className="space-y-6">
-          <h1 className="text-3xl font-bold tracking-tight text-white">Performance Analytics</h1>
-          <p className="text-gray-400">Track your trading performance and metrics.</p>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Performance Metrics</CardTitle>
-              <CardDescription>Your trading statistics and performance data</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-center h-[300px] bg-gray-800/50 rounded-md">
-                <p className="text-gray-400">Connect your TradingView account to see performance metrics</p>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Link href="/dashboard/settings">
-                <Button variant="outline">Connect TradingView</Button>
-              </Link>
-            </CardFooter>
-          </Card>
-        </div>
-      </TabsContent>
-    </Tabs>
-  );
-}
 
-export default function Dashboard() {
-  return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <Suspense fallback={<div className="flex items-center justify-center min-h-[calc(100vh-128px)]"><div className="text-white text-xl">Loading...</div></div>}>
-        <DashboardContent />
-      </Suspense>
+        {/* TradingView Username Management */}
+        <Card>
+          <CardHeader>
+            <CardTitle>TradingView Username</CardTitle>
+            <CardDescription>
+              Enter your TradingView username to connect your account and receive indicators
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="tradingview-username">TradingView Username</Label>
+              <Input
+                id="tradingview-username"
+                placeholder={originalUsername ? `Current: ${originalUsername}` : "Enter your TradingView username (e.g., username123)"}
+                value={tradingViewUsername}
+                onChange={(e) => setTradingViewUsername(e.target.value)}
+                disabled={isLoading || isSaving}
+                className={originalUsername ? "border-green-500/50" : ""}
+              />
+              {originalUsername && (
+                <p className="text-sm text-green-400">
+                  ✓ Currently synced: <span className="font-semibold">{originalUsername}</span>
+                </p>
+              )}
+              <div className="bg-blue-950/20 border border-blue-500/30 rounded-md p-3">
+                <h4 className="text-blue-400 font-semibold text-sm mb-2">How to manage your TradingView username:</h4>
+                <ol className="text-gray-300 text-xs space-y-1.5 list-decimal list-inside">
+                  <li>Your username is automatically synced with the database when you sign in</li>
+                  <li>If you see a username above, it&apos;s already saved in your account</li>
+                  <li>To change it, edit the field above and click &quot;Save Changes&quot;</li>
+                  <li>Your indicators will be deployed to this username within 24 hours</li>
+                </ol>
+                <p className="text-xs text-gray-400 mt-3">
+                  <strong>Note:</strong> Make sure your TradingView username is correct. This will be used to grant you access to premium indicators.
+                </p>
+              </div>
+            </div>
+
+            {saveStatus === 'success' && (
+              <div className="bg-green-950/20 border border-green-500/30 rounded-md p-3 flex items-start gap-3">
+                <Check className="h-5 w-5 text-green-500 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-green-500">TradingView username saved successfully</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Your indicators will be deployed to this account within 24 hours.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {saveStatus === 'error' && (
+              <div className="bg-red-950/20 border border-red-500/30 rounded-md p-3 flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-red-500 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-red-500">Failed to save TradingView username</p>
+                  <p className="text-xs text-gray-400 mt-1">{errorMessage}</p>
+                </div>
+              </div>
+            )}
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <div className="text-sm text-gray-400">
+              {isLoading ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" /> Loading...
+                </span>
+              ) : originalUsername ? (
+                <span>Current username: <span className="font-medium text-white">{originalUsername}</span></span>
+              ) : (
+                <span>No TradingView username set</span>
+              )}
+            </div>
+            <Button 
+              onClick={handleSaveUsername} 
+              disabled={isLoading || isSaving || !hasChanges}
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Save Changes'
+              )}
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 }

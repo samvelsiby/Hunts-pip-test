@@ -50,18 +50,18 @@ export default async function LibraryPage() {
         {/* Breadcrumbs */}
         <PageBreadcrumbs />
         {/* Hero Section */}
-        <div className="relative overflow-hidden rounded-2xl bg-gray-800/50 backdrop-blur-sm border border-gray-700 mb-16 p-8 sm:p-12">
-          <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-[#FF5B41]/10 to-transparent"></div>
-          <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-gradient-to-t from-[#DD0000]/10 to-transparent"></div>
+        <div className="relative overflow-hidden rounded-2xl mb-8 p-6 sm:p-8" style={{ background: 'linear-gradient(135deg, rgba(0, 221, 94, 0.15) 0%, rgba(0, 221, 94, 0.08) 30%, rgba(255, 0, 0, 0.08) 70%, rgba(255, 0, 0, 0.15) 100%)' }}>
+          <div className="absolute top-0 right-0 w-full h-full opacity-20" style={{ background: 'radial-gradient(circle at top right, #00dd5e 0%, transparent 60%)' }}></div>
+          <div className="absolute bottom-0 left-0 w-full h-full opacity-20" style={{ background: 'radial-gradient(circle at bottom left, #ff0000 0%, transparent 60%)' }}></div>
           
-          <div className="relative z-10 text-center max-w-3xl mx-auto">
-            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">
-              Explore Our <span className="text-[#FF5B41]">Trading Indicators</span>
+          <div className="relative z-10 text-center max-w-2xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3">
+              Explore Our <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #00dd5e 0%, #ff0000 100%)' }}>Trading Indicators</span>
             </h2>
-            <p className="text-xl text-gray-300 mb-8">
+            <p className="text-base sm:text-lg text-gray-300 mb-4">
               Access powerful TradingView indicators designed to enhance your trading strategy
             </p>
-            <div className="w-24 h-1 mx-auto rounded-full" style={{ background: 'linear-gradient(90deg, #DD0000 0%, #FF5B41 100%)' }}></div>
+            <div className="w-20 h-0.5 mx-auto rounded-full" style={{ background: 'linear-gradient(90deg, #00dd5e 0%, #ff0000 100%)' }}></div>
           </div>
         </div>
 

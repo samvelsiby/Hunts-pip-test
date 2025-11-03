@@ -21,7 +21,6 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
-import PageBreadcrumbs from '@/components/PageBreadcrumbs'
 
 interface NavItem {
   title: string;
@@ -126,10 +125,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
           </div>
           <main className="overflow-auto">
-            <div className="sticky top-16 z-10 bg-black/40 backdrop-blur-sm border-b border-gray-900">
-              {/* Breadcrumbs */}
-              <PageBreadcrumbs />
-            </div>
             {children}
           </main>
         </SidebarInset>
