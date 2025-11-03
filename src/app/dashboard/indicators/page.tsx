@@ -80,13 +80,14 @@ export default function IndicatorsPage() {
   const inactiveIndicators = filteredIndicators.filter(ind => !ind.isActive);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Indicators</h1>
-        <p className="text-muted-foreground mt-1">
-          Manage your trading indicators and deploy them to TradingView.
-        </p>
-      </div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-white">Indicators</h1>
+          <p className="text-gray-400 mt-1">
+            Manage your trading indicators and deploy them to TradingView.
+          </p>
+        </div>
 
       <div className="flex flex-col sm:flex-row gap-4 items-end">
         <div className="flex-1">
@@ -189,15 +190,16 @@ export default function IndicatorsPage() {
           </Button>
         </CardFooter>
       </Card>
+      </div>
     </div>
   );
 }
 
 function IndicatorCard({ indicator }: { indicator: Indicator }) {
   const planColors = {
-    free: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-    pro: 'bg-green-500/10 text-green-500 border-green-500/20',
-    premium: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+    free: 'bg-green-500/10 text-green-400 border-green-500/20',
+    pro: 'bg-[#FF5B41]/10 text-[#FF5B41] border-[#FF5B41]/20',
+    premium: 'bg-[#DD0000]/10 text-[#DD0000] border-[#DD0000]/20',
   };
 
   const categoryIcons = {

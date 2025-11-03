@@ -20,9 +20,9 @@ export default function HeroSection() {
               <span className="text-white"> as a</span>
               <br />
               <span className="text-white">trader with our </span>
-              <span className="text-red-500">BEST</span>
+              <span className="text-red-500 font-bold">BEST</span>
               <br />
-              <span className="text-red-500">TRADING STRATEGY</span>
+              <span className="text-red-500 font-bold">TRADING STRATEGY</span>
             </h1>
             
             <p className="text-gray-400 text-sm sm:text-base lg:text-lg leading-relaxed max-w-xl">
@@ -32,7 +32,12 @@ export default function HeroSection() {
             
             <div className="pt-2 sm:pt-4">
               <SignUpButton>
-                <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 bg-red-500 text-white text-sm sm:text-base font-semibold rounded-full hover:bg-red-600 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-red-500/30">
+                <button 
+                  className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 text-white text-sm sm:text-base font-semibold rounded-full transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                  style={{
+                    background: 'linear-gradient(135deg, #DD0000 0%, #FF5B41 100%)',
+                  }}
+                >
                   Get Pivien
                   <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />

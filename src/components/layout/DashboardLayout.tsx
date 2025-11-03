@@ -1,15 +1,26 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { UserButton } from '@clerk/nextjs';
-import { Menu, Home, Settings, User, BarChart3, BookOpen } from 'lucide-react';
-
+import { Home, Settings, User, BarChart3, BookOpen } from 'lucide-react';
+import BackgroundParticles from '@/components/BackgroundParticles';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Separator } from '@/components/ui/separator';
 
 interface NavItem {
   title: string;
@@ -46,100 +57,78 @@ const navItems: NavItem[] = [
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
   return (
-    <div className="flex min-h-screen bg-black text-white">
-      {/* Sidebar for desktop */}
-      <div className="hidden md:flex flex-col w-64 bg-gray-900 border-r border-gray-800">
-        <div className="p-6">
-          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className="w-8 h-8 bg-white rounded flex items-center justify-center">
-              <span className="text-black font-bold text-lg">{`{}`}</span>
-            </div>
-            <span className="text-white text-xl font-bold">HUNTS PIP</span>
-          </Link>
+    <SidebarProvider>
+      <div className="min-h-screen bg-black relative overflow-hidden flex w-full">
+        {/* Corner gradient */}
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+          <div 
+            className="absolute top-0 left-0 w-[600px] h-[600px] opacity-20 blur-3xl"
+            style={{
+              background: 'radial-gradient(circle, #DD0000 0%, #FF5B41 50%, transparent 70%)',
+            }}
+          />
         </div>
-        <Separator className="bg-gray-800" />
-        <nav className="flex-1 p-4">
-          <ul className="space-y-2">
-            {navItems.map((item) => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
-                    pathname === item.href
-                      ? "bg-gray-800 text-white"
-                      : "text-gray-400 hover:text-white hover:bg-gray-800/50"
-                  )}
-                >
-                  {item.icon}
-                  <span>{item.title}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </div>
-
-      {/* Mobile navigation */}
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger asChild className="md:hidden">
-          <Button variant="ghost" size="icon" className="md:hidden fixed top-4 left-4 z-50">
-            <Menu className="h-6 w-6" />
-            <span className="sr-only">Toggle menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="w-64 p-0 bg-gray-900 border-r border-gray-800">
-          <div className="p-6">
-            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <div className="w-8 h-8 bg-white rounded flex items-center justify-center">
-                <span className="text-black font-bold text-lg">{`{}`}</span>
-              </div>
-              <span className="text-white text-xl font-bold">MUNTS PIP</span>
+        
+        {/* Background particles effect */}
+        <BackgroundParticles />
+        
+        {/* Sidebar */}
+        <Sidebar>
+          <SidebarHeader>
+            <Link href="/" className="flex items-center gap-2 px-4 py-2 hover:opacity-80 transition-opacity">
+              <Image 
+                src="/hunts-pip-logo.svg" 
+                alt="HUNTS PIP Logo" 
+                width={150} 
+                height={40}
+                className="w-full max-w-[150px] h-auto"
+                priority
+              />
             </Link>
+          </SidebarHeader>
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {navItems.map((item) => (
+                    <SidebarMenuItem key={item.href}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={pathname === item.href}
+                        className={cn(
+                          pathname === item.href && "bg-gradient-to-r from-[#DD0000]/20 to-[#FF5B41]/20 text-white border-l-2 border-[#FF5B41]"
+                        )}
+                      >
+                        <Link href={item.href}>
+                          {item.icon}
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarContent>
+        </Sidebar>
+        
+        {/* Main content */}
+        <SidebarInset className="relative z-10">
+          <div className="flex h-16 items-center gap-4 border-b border-gray-800 px-6 bg-black/50 backdrop-blur-sm sticky top-0 z-20">
+            <SidebarTrigger />
+            <div className="ml-auto flex items-center gap-4">
+              <UserButton afterSignOutUrl="/" />
+            </div>
           </div>
-          <Separator className="bg-gray-800" />
-          <nav className="flex-1 p-4">
-            <ul className="space-y-2">
-              {navItems.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    onClick={() => setOpen(false)}
-                    className={cn(
-                      "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
-                      pathname === item.href
-                        ? "bg-gray-800 text-white"
-                        : "text-gray-400 hover:text-white hover:bg-gray-800/50"
-                    )}
-                  >
-                    {item.icon}
-                    <span>{item.title}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </SheetContent>
-      </Sheet>
-
-      {/* Main content */}
-      <div className="flex-1 flex flex-col">
-        {/* Top navigation */}
-        <header className="h-16 border-b border-gray-800 flex items-center justify-end px-6 md:px-8">
-          <div className="flex items-center gap-4">
-            <UserButton afterSignOutUrl="/" />
-          </div>
-        </header>
-
-        {/* Page content */}
-        <main className="flex-1 p-6 md:p-8">
-          {children}
-        </main>
+          <main className="overflow-auto">
+            {children}
+          </main>
+        </SidebarInset>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

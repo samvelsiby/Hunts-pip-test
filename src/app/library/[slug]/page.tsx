@@ -85,7 +85,7 @@ const portableTextComponents: PortableTextComponents = {
     callout: ({ value }) => {
       const tone = value?.tone || 'info'
       const toneClasses: Record<string, string> = {
-        info: 'border-blue-500/30 bg-blue-500/10',
+        info: 'border-[#FF5B41]/30 bg-[#FF5B41]/10',
         warning: 'border-yellow-500/30 bg-yellow-500/10',
         success: 'border-green-500/30 bg-green-500/10',
       }
@@ -110,7 +110,7 @@ const portableTextComponents: PortableTextComponents = {
       <p className="text-gray-300 leading-relaxed mb-4 text-lg">{children}</p>
     ),
     blockquote: ({ children }) => (
-      <blockquote className="border-l-4 border-blue-500 pl-6 py-2 my-6 italic text-gray-300 bg-gray-800/50 rounded-r-lg">
+      <blockquote className="border-l-4 border-[#FF5B41] pl-6 py-2 my-6 italic text-gray-300 bg-gray-800/50 rounded-r-lg">
         {children}
       </blockquote>
     ),
@@ -134,7 +134,7 @@ const portableTextComponents: PortableTextComponents = {
           href={value?.href}
           target={target}
           rel={target === '_blank' ? 'noopener noreferrer' : undefined}
-          className="text-blue-400 hover:text-blue-300 underline"
+          className="text-[#FF5B41] hover:text-[#DD0000] underline"
         >
           {children}
         </a>
@@ -169,12 +169,12 @@ export default async function IndicatorDetailPage({
 
   if (!indicator) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-white mb-4">Indicator Not Found</h1>
           <Link
             href="/library"
-            className="text-blue-400 hover:text-blue-300 underline"
+            className="text-[#FF5B41] hover:text-[#DD0000] underline"
           >
             Back to Library
           </Link>
@@ -185,8 +185,8 @@ export default async function IndicatorDetailPage({
 
   const planColors = {
     free: 'bg-green-500/10 text-green-400 border-green-500/20',
-    premium: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-    ultimate: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+    premium: 'bg-[#FF5B41]/10 text-[#FF5B41] border-[#FF5B41]/20',
+    ultimate: 'bg-[#DD0000]/10 text-[#DD0000] border-[#DD0000]/20',
   }
 
   const categoryIcons = {
@@ -198,11 +198,23 @@ export default async function IndicatorDetailPage({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
+    <div className="min-h-screen bg-black relative overflow-hidden">
+      {/* Corner gradient */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+        <div 
+          className="absolute top-0 left-0 w-[600px] h-[600px] opacity-20 blur-3xl"
+          style={{
+            background: 'radial-gradient(circle, #DD0000 0%, #FF5B41 50%, transparent 70%)',
+          }}
+        />
+      </div>
+      
       {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
-        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8 mb-8">
+        <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8 mb-8 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-[#FF5B41]/10 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-gradient-to-t from-[#DD0000]/10 to-transparent"></div>
           <div className="flex flex-col md:flex-row gap-8">
             {/* Icon */}
             <div className="shrink-0">
@@ -220,7 +232,7 @@ export default async function IndicatorDetailPage({
                   />
                 </div>
               ) : (
-                <div className="w-32 h-32 rounded-xl bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-6xl">
+                <div className="w-32 h-32 rounded-xl flex items-center justify-center text-6xl" style={{ background: 'linear-gradient(135deg, #DD0000 0%, #FF5B41 100%)' }}>
                   {categoryIcons[indicator.category as keyof typeof categoryIcons] || '📊'}
                 </div>
               )}
@@ -253,7 +265,16 @@ export default async function IndicatorDetailPage({
                     href={indicator.tradingViewLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center"
+                    className="text-white px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center"
+                    style={{
+                      background: 'linear-gradient(135deg, #DD0000 0%, #FF5B41 100%)',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'linear-gradient(135deg, #FF5B41 0%, #DD0000 100%)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'linear-gradient(135deg, #DD0000 0%, #FF5B41 100%)';
+                    }}
                   >
                     <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M10 6v2H5v11h11v-5h2v6a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1h6zm11-3v8h-2V6.413l-7.793 7.794-1.414-1.414L17.585 5H13V3h8z" />
@@ -279,7 +300,7 @@ export default async function IndicatorDetailPage({
                   key={index}
                   className="flex items-start bg-gray-900/50 rounded-lg p-4 border border-gray-700"
                 >
-                  <span className="text-blue-400 mr-3 text-xl">✓</span>
+                  <span className="text-[#FF5B41] mr-3 text-xl">✓</span>
                   <span className="text-gray-300">{feature}</span>
                 </div>
               ))}
@@ -301,11 +322,11 @@ export default async function IndicatorDetailPage({
         )}
 
         {/* How to Use Section */}
-        <div className="bg-linear-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-2xl p-8">
+        <div className="bg-gradient-to-r from-[#DD0000]/10 to-[#FF5B41]/10 border border-[#FF5B41]/20 rounded-2xl p-8">
           <h2 className="text-2xl font-bold text-white mb-6">How to Use This Indicator</h2>
           <ol className="space-y-4 text-gray-300">
             <li className="flex items-start">
-              <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 shrink-0 font-bold">
+              <span className="text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 shrink-0 font-bold" style={{ background: 'linear-gradient(135deg, #DD0000 0%, #FF5B41 100%)' }}>
                 1
               </span>
               <div>
@@ -316,7 +337,7 @@ export default async function IndicatorDetailPage({
               </div>
             </li>
             <li className="flex items-start">
-              <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 shrink-0 font-bold">
+              <span className="text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 shrink-0 font-bold" style={{ background: 'linear-gradient(135deg, #DD0000 0%, #FF5B41 100%)' }}>
                 2
               </span>
               <div>
@@ -327,7 +348,7 @@ export default async function IndicatorDetailPage({
               </div>
             </li>
             <li className="flex items-start">
-              <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 shrink-0 font-bold">
+              <span className="text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 shrink-0 font-bold" style={{ background: 'linear-gradient(135deg, #DD0000 0%, #FF5B41 100%)' }}>
                 3
               </span>
               <div>
@@ -338,7 +359,7 @@ export default async function IndicatorDetailPage({
               </div>
             </li>
             <li className="flex items-start">
-              <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 shrink-0 font-bold">
+              <span className="text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 shrink-0 font-bold" style={{ background: 'linear-gradient(135deg, #DD0000 0%, #FF5B41 100%)' }}>
                 4
               </span>
               <div>

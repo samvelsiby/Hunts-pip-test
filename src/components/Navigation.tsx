@@ -11,7 +11,7 @@ interface NavigationProps {
 
 export default function Navigation({ mobileMenuOpen, setMobileMenuOpen }: NavigationProps) {
   return (
-    <nav className="relative z-50 flex items-center justify-between px-4 sm:px-8 lg:px-12 py-4 border-b border-gray-800/50 bg-gradient-to-br from-gray-900 via-black to-gray-900 backdrop-blur-sm">
+    <nav className="relative z-50 flex items-center justify-between px-4 sm:px-8 lg:px-12 py-4 bg-black/50 backdrop-blur-sm">
       {/* Logo - Always on the left */}
       <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
         <Image 

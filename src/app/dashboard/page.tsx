@@ -18,8 +18,8 @@ function DashboardOverview() {
     <div className="space-y-6">
       {/* Welcome header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user?.firstName || 'Trader'}!</h1>
-        <p className="text-muted-foreground mt-1">Here&apos;s an overview of your trading setup and performance.</p>
+        <h1 className="text-3xl font-bold tracking-tight text-white">Welcome back, {user?.firstName || 'Trader'}!</h1>
+        <p className="text-gray-400 mt-1">Here&apos;s an overview of your trading setup and performance.</p>
       </div>
 
       {/* Plan Selection Success Message */}
@@ -57,7 +57,7 @@ function DashboardOverview() {
             </div>
           </CardContent>
           <CardFooter>
-            <Link href="/dashboard/settings" className="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1">
+            <Link href="/dashboard/settings" className="text-sm text-[#FF5B41] hover:text-[#DD0000] flex items-center gap-1">
               Connect TradingView <ArrowRight className="h-3 w-3" />
             </Link>
           </CardFooter>
@@ -81,8 +81,8 @@ function DashboardOverview() {
             </div>
 
             {(planId === 'free' || !planId) && (
-              <div className="mt-2 p-3 bg-blue-950/20 border border-blue-500/30 rounded-md">
-                <h4 className="text-blue-400 font-semibold text-sm mb-2 flex items-center gap-2">
+              <div className="mt-2 p-3 bg-[#FF5B41]/10 border border-[#FF5B41]/30 rounded-md">
+                <h4 className="text-[#FF5B41] font-semibold text-sm mb-2 flex items-center gap-2">
                   <Award className="h-4 w-4" /> Free Plan Features
                 </h4>
                 <ul className="text-gray-300 text-xs space-y-1">
@@ -141,7 +141,7 @@ function DashboardOverview() {
             <Link href="/library" className="group block">
               <div className="p-4 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors border border-gray-700 group-hover:border-gray-600">
                 <div className="text-white font-medium mb-1 flex items-center gap-2">
-                  <LineChart className="h-4 w-4 text-blue-400" /> Indicator Library
+                  <LineChart className="h-4 w-4 text-[#FF5B41]" /> Indicator Library
                 </div>
                 <div className="text-gray-400 text-sm">Browse all available indicators</div>
               </div>
@@ -206,8 +206,8 @@ function DashboardContent() {
       </TabsContent>
       <TabsContent value="indicators">
         <div className="space-y-6">
-          <h1 className="text-3xl font-bold tracking-tight">Your Indicators</h1>
-          <p className="text-muted-foreground">Manage your trading indicators and signals.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white">Your Indicators</h1>
+          <p className="text-gray-400">Manage your trading indicators and signals.</p>
           
           <Card>
             <CardHeader>
@@ -229,8 +229,8 @@ function DashboardContent() {
       </TabsContent>
       <TabsContent value="performance">
         <div className="space-y-6">
-          <h1 className="text-3xl font-bold tracking-tight">Performance Analytics</h1>
-          <p className="text-muted-foreground">Track your trading performance and metrics.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white">Performance Analytics</h1>
+          <p className="text-gray-400">Track your trading performance and metrics.</p>
           
           <Card>
             <CardHeader>
@@ -256,8 +256,10 @@ function DashboardContent() {
 
 export default function Dashboard() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center h-[calc(100vh-64px)]"><div className="text-white text-xl">Loading...</div></div>}>
-      <DashboardContent />
-    </Suspense>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <Suspense fallback={<div className="flex items-center justify-center min-h-[calc(100vh-128px)]"><div className="text-white text-xl">Loading...</div></div>}>
+        <DashboardContent />
+      </Suspense>
+    </div>
   );
 }

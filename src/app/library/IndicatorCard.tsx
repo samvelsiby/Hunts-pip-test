@@ -28,12 +28,12 @@ export default function IndicatorCard({ indicator }: { indicator: Indicator }) {
 
   const planBadges = {
     free: <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs font-semibold rounded-full border border-green-500/30">FREE</span>,
-    premium: <span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs font-semibold rounded-full border border-blue-500/30">PREMIUM</span>,
-    ultimate: <span className="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs font-semibold rounded-full border border-purple-500/30">ULTIMATE</span>,
+    premium: <span className="px-2 py-1 bg-[#FF5B41]/20 text-[#FF5B41] text-xs font-semibold rounded-full border border-[#FF5B41]/30">PREMIUM</span>,
+    ultimate: <span className="px-2 py-1 bg-[#DD0000]/20 text-[#DD0000] text-xs font-semibold rounded-full border border-[#DD0000]/30">ULTIMATE</span>,
   };
   
   return (
-    <div className="bg-gray-900 rounded-xl overflow-hidden shadow-lg hover:shadow-blue-500/10 transition-all duration-300 h-full flex flex-col">
+    <div className="bg-gray-900 rounded-xl overflow-hidden shadow-lg hover:shadow-[#FF5B41]/10 transition-all duration-300 h-full flex flex-col">
       {/* Card Header with Image */}
       <div className="relative h-48 w-full overflow-hidden">
         {indicator.icon ? (
@@ -47,7 +47,7 @@ export default function IndicatorCard({ indicator }: { indicator: Indicator }) {
             priority
           />
         ) : (
-          <div className="h-full w-full bg-linear-to-br from-blue-900/50 to-purple-900/50"></div>
+          <div className="h-full w-full" style={{ background: 'linear-gradient(135deg, #DD0000/50 0%, #FF5B41/50 100%)' }}></div>
         )}
         
         {/* Gradient Overlay */}
@@ -82,7 +82,7 @@ export default function IndicatorCard({ indicator }: { indicator: Indicator }) {
         {/* Action Button */}
         <div className="flex justify-end mt-auto pt-2">
           <Link href={`/library/${indicator.slug.current}`}>
-            <button className="flex items-center gap-2 text-blue-400 text-sm font-medium hover:text-blue-300 transition-colors">
+            <button className="flex items-center gap-2 text-[#FF5B41] text-sm font-medium hover:text-[#DD0000] transition-colors">
               View Details
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />

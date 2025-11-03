@@ -70,7 +70,7 @@ export default function LibraryClient({ indicators, categories }: LibraryClientP
               placeholder="Search indicators by name, description, or features..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className="w-full pl-12 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF5B41] focus:border-transparent transition-all"
             />
             {searchQuery && (
               <button
@@ -98,9 +98,12 @@ export default function LibraryClient({ indicators, categories }: LibraryClientP
               onClick={() => setSelectedCategory(category)}
               className={`px-6 py-2 rounded-full transition-all duration-200 border ${
                 selectedCategory === category
-                  ? 'bg-blue-600 text-white border-blue-500 shadow-lg shadow-blue-500/20'
-                  : 'bg-gray-800 hover:bg-gray-700 text-white border-gray-700 hover:border-blue-500'
+                  ? 'text-white shadow-lg shadow-[#FF5B41]/20 border-[#FF5B41]'
+                  : 'bg-gray-800 hover:bg-gray-700 text-white border-gray-700 hover:border-[#FF5B41]'
               }`}
+              style={selectedCategory === category ? {
+                background: 'linear-gradient(135deg, #DD0000 0%, #FF5B41 100%)',
+              } : {}}
             >
               {category.charAt(0).toUpperCase() + category.slice(1)}
             </button>

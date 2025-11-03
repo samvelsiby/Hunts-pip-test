@@ -33,22 +33,32 @@ export default async function LibraryPage() {
   const categories = ['all', 'trend', 'momentum', 'volatility', 'volume', 'custom']
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
+    <div className="min-h-screen bg-black relative overflow-hidden">
+      {/* Corner gradient */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+        <div 
+          className="absolute top-0 left-0 w-[600px] h-[600px] opacity-20 blur-3xl"
+          style={{
+            background: 'radial-gradient(circle, #DD0000 0%, #FF5B41 50%, transparent 70%)',
+          }}
+        />
+      </div>
+      
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
         <div className="relative overflow-hidden rounded-2xl bg-gray-800/50 backdrop-blur-sm border border-gray-700 mb-16 p-8 sm:p-12">
-          <div className="absolute top-0 right-0 w-1/3 h-full bg-linear-to-l from-blue-500/10 to-transparent"></div>
-          <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-linear-to-t from-purple-500/10 to-transparent"></div>
+          <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-[#FF5B41]/10 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-gradient-to-t from-[#DD0000]/10 to-transparent"></div>
           
           <div className="relative z-10 text-center max-w-3xl mx-auto">
             <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">
-              Explore Our <span className="text-blue-400">Trading Indicators</span>
+              Explore Our <span className="text-[#FF5B41]">Trading Indicators</span>
             </h2>
             <p className="text-xl text-gray-300 mb-8">
               Access powerful TradingView indicators designed to enhance your trading strategy
             </p>
-            <div className="w-24 h-1 bg-blue-500/30 mx-auto rounded-full"></div>
+            <div className="w-24 h-1 mx-auto rounded-full" style={{ background: 'linear-gradient(90deg, #DD0000 0%, #FF5B41 100%)' }}></div>
           </div>
         </div>
 

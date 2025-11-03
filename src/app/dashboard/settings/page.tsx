@@ -12,13 +12,14 @@ import { Check, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function SettingsPage() {
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground mt-1">
-          Manage your account settings and preferences.
-        </p>
-      </div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-white">Settings</h1>
+          <p className="text-gray-400 mt-1">
+            Manage your account settings and preferences.
+          </p>
+        </div>
 
       <Tabs defaultValue="tradingview" className="w-full">
         <TabsList className="mb-6">
@@ -59,6 +60,7 @@ export default function SettingsPage() {
           </Card>
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   );
 }

@@ -16,18 +16,22 @@ export default function ProfilePage() {
 
   if (!isLoaded) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-64px)]">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="flex items-center justify-center h-[calc(100vh-64px)]">
+          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        </div>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-64px)]">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Please Sign In</h2>
-          <p className="text-muted-foreground mb-6">You need to be signed in to access this page.</p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="flex items-center justify-center h-[calc(100vh-64px)]">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-4 text-white">Please Sign In</h2>
+            <p className="text-gray-400 mb-6">You need to be signed in to access this page.</p>
+          </div>
         </div>
       </div>
     );
@@ -40,9 +44,10 @@ export default function ProfilePage() {
       : 'U';
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Profile</h1>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-white">Profile</h1>
         <p className="text-muted-foreground mt-1">
           Manage your personal information and account settings.
         </p>
@@ -222,6 +227,7 @@ export default function ProfilePage() {
             </Tabs>
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );

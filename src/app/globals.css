@@ -123,3 +123,12 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes particlePulse {
+  0%, 100% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
