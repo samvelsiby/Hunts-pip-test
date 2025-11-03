@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
-import { useUser } from '@clerk/nextjs';
-import { supabase } from '@/lib/supabase-client';
+import { useSupabaseUser } from '@/lib/useSupabaseUser';
+import { supabaseBrowser } from '@/lib/supabase-browser';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 interface UserSubscription {
@@ -22,7 +22,7 @@ const planDetails = {
 };
 
 function PaymentContent() {
-  const { user, isLoaded } = useUser();
+  const { user, loading } = useSupabaseUser();
   const router = useRouter();
   const searchParams = useSearchParams();
   const planId = searchParams.get('plan') || 'free';
@@ -32,13 +32,13 @@ function PaymentContent() {
 
   const fetchUserSubscription = useCallback(async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseBrowser
         .from('user_subscriptions')
         .select('*')
         .eq('user_id', user?.id)
-        .maybeSingle(); // Use maybeSingle() instead of single()
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error && (error as { code?: string }).code !== 'PGRST116') {
         console.error('Error fetching subscription:', error);
         return;
       }
@@ -52,13 +52,13 @@ function PaymentContent() {
   }, [user?.id]);
 
   useEffect(() => {
-    if (isLoaded && user) {
+    if (!loading && user) {
       fetchUserSubscription();
     }
-  }, [isLoaded, user, fetchUserSubscription]);
+  }, [loading, user, fetchUserSubscription]);
 
   const handlePayment = async () => {
-    if (!isLoaded || !user) {
+    if (loading || !user) {
       alert('Please sign in to continue');
       return;
     }
@@ -67,50 +67,28 @@ function PaymentContent() {
 
     try {
       if (planId === 'free') {
-        // Handle free plan
         if (subscription) {
-          // Update existing subscription
-          const { error } = await supabase
+          const { error } = await supabaseBrowser
             .from('user_subscriptions')
             .update({ plan_id: 'free', status: 'active' })
             .eq('id', subscription.id);
-
           if (error) throw error;
         } else {
-          // Create new subscription
-          const { error } = await supabase
+          const { error } = await supabaseBrowser
             .from('user_subscriptions')
-            .insert({
-              user_id: user.id,
-              plan_id: 'free',
-              status: 'active'
-            });
-
+            .insert({ user_id: user.id, plan_id: 'free', status: 'active' });
           if (error) throw error;
         }
-
         alert('Free plan activated successfully!');
         router.push('/dashboard');
       } else {
-        // Handle paid plans - redirect to Stripe checkout
         const response = await fetch('/api/create-checkout-session', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            planId,
-            userId: user.id,
-            userEmail: user.emailAddresses[0]?.emailAddress,
-          }),
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ planId, userId: user.id, userEmail: user.email }),
         });
-
         const { url } = await response.json();
-        if (url) {
-          window.location.href = url;
-        } else {
-          alert('Payment processing failed. Please try again.');
-        }
+        if (url) window.location.href = url; else alert('Payment processing failed. Please try again.');
       }
     } catch (error) {
       console.error('Error processing payment:', error);
@@ -120,7 +98,7 @@ function PaymentContent() {
     }
   };
 
-  if (!isLoaded) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-white text-xl">Loading...</div>

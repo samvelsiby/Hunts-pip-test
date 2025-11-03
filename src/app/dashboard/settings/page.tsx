@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/nextjs';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -66,7 +65,6 @@ export default function SettingsPage() {
 }
 
 function TradingViewSettings() {
-  const { user, isLoaded } = useUser();
   const [tradingViewUsername, setTradingViewUsername] = useState('');
   const [originalUsername, setOriginalUsername] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -75,10 +73,8 @@ function TradingViewSettings() {
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    if (isLoaded && user) {
-      fetchTradingViewUsername();
-    }
-  }, [isLoaded, user]);
+    fetchTradingViewUsername();
+  }, []);
 
   const fetchTradingViewUsername = async () => {
     try {

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
 import SiteLayout from "@/components/layout/SiteLayout";
 import "./globals.css";
 
@@ -22,24 +21,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider
-      appearance={{
-        elements: {
-          formButtonPrimary: 'bg-purple-600 hover:bg-purple-700 text-sm normal-case',
-        }
-      }}
-      signInUrl="/sign-in"
-      signUpUrl="/sign-up"
-      afterSignInUrl="/dashboard"
-      afterSignUpUrl="/dashboard"
-    >
-      <html lang="en">
-        <body
-          className={`${manrope.variable} font-sans antialiased`}
-        >
-          <SiteLayout>{children}</SiteLayout>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <body className={`${manrope.variable} font-sans antialiased`}>
+        <SiteLayout>{children}</SiteLayout>
+      </body>
+    </html>
   );
 }

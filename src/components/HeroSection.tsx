@@ -1,6 +1,6 @@
 'use client';
 
-import { SignUpButton } from "@clerk/nextjs";
+import Link from 'next/link';
 import StatisticsSection from './StatisticsSection';
 
 export default function HeroSection() {
@@ -31,7 +31,7 @@ export default function HeroSection() {
             </p>
             
             <div className="pt-2 sm:pt-4">
-              <SignUpButton>
+              <Link href="/signup">
                 <button 
                   className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 text-white text-sm sm:text-base font-semibold rounded-full transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
                   style={{
@@ -43,7 +43,7 @@ export default function HeroSection() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
                 </button>
-              </SignUpButton>
+              </Link>
             </div>
           </div>
 

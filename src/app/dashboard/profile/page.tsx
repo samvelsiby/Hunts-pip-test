@@ -1,20 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useSupabaseUser } from '@/lib/useSupabaseUser';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Mail, Calendar, User, Shield, ExternalLink } from 'lucide-react';
+import { Loader2, Mail, Calendar, User, Shield } from 'lucide-react';
 
 export default function ProfilePage() {
-  const { user, isLoaded } = useUser();
+  const { user, loading } = useSupabaseUser();
   const [activeTab, setActiveTab] = useState('overview');
 
-  if (!isLoaded) {
+  if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex items-center justify-center h-[calc(100vh-64px)]">
@@ -37,11 +37,11 @@ export default function ProfilePage() {
     );
   }
 
-  const userInitials = user.firstName && user.lastName 
-    ? `${user.firstName[0]}${user.lastName[0]}`
-    : user.firstName 
-      ? user.firstName[0]
-      : 'U';
+  const email = user.email ?? user.user_metadata?.email
+  const display = email?.split('@')[0] ?? 'User'
+  const avatarUrl = user.user_metadata?.avatar_url as string | undefined
+  const createdAt = user.created_at ? new Date(user.created_at as string).toLocaleDateString() : 'Recently'
+  const initials = display[0]?.toUpperCase() ?? 'U'
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -59,12 +59,12 @@ export default function ProfilePage() {
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
               <Avatar className="h-24 w-24">
-                <AvatarImage src={user.imageUrl} alt={user.fullName || 'User'} />
-                <AvatarFallback className="text-xl">{userInitials}</AvatarFallback>
+                <AvatarImage src={avatarUrl} alt={display} />
+                <AvatarFallback className="text-xl">{initials}</AvatarFallback>
               </Avatar>
             </div>
-            <CardTitle>{user.fullName || 'User'}</CardTitle>
-            <CardDescription>{user.primaryEmailAddress?.emailAddress}</CardDescription>
+            <CardTitle>{display}</CardTitle>
+            <CardDescription>{email}</CardDescription>
           </CardHeader>
           <CardContent className="text-center">
             <Badge variant="outline" className="mb-4">
@@ -73,19 +73,18 @@ export default function ProfilePage() {
             <div className="space-y-2 text-sm text-left">
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                <span>{user.primaryEmailAddress?.emailAddress}</span>
+                <span>{email}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>Joined {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Recently'}</span>
+                <span>Joined {createdAt}</span>
               </div>
             </div>
           </CardContent>
           <CardFooter>
             <Button variant="outline" className="w-full" asChild>
-              <a href="https://accounts.clerk.dev/user" target="_blank" rel="noopener noreferrer">
+              <a href="/settings">
                 Manage Account
-                <ExternalLink className="ml-2 h-4 w-4" />
               </a>
             </Button>
           </CardFooter>
@@ -113,16 +112,8 @@ export default function ProfilePage() {
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-muted-foreground">First Name</p>
-                    <p className="text-sm font-medium">{user.firstName || 'Not provided'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Last Name</p>
-                    <p className="text-sm font-medium">{user.lastName || 'Not provided'}</p>
-                  </div>
-                  <div>
                     <p className="text-sm text-muted-foreground">Email</p>
-                    <p className="text-sm font-medium">{user.primaryEmailAddress?.emailAddress}</p>
+                    <p className="text-sm font-medium">{email}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">User ID</p>
@@ -160,7 +151,7 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     <Button variant="outline" size="sm" asChild>
-                      <a href="https://accounts.clerk.dev/user/security" target="_blank" rel="noopener noreferrer">
+                      <a href="/settings">
                         Change
                       </a>
                     </Button>
@@ -177,7 +168,7 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     <Button variant="outline" size="sm" asChild>
-                      <a href="https://accounts.clerk.dev/user/security" target="_blank" rel="noopener noreferrer">
+                      <a href="/settings">
                         Setup
                       </a>
                     </Button>

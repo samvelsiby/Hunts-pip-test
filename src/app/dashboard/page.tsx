@@ -1,6 +1,6 @@
 'use client';
 
-import { useUser } from "@clerk/nextjs";
+import { useSupabaseUser } from "@/lib/useSupabaseUser";
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import Link from 'next/link';
@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { BarChart3, LineChart, Zap, Award, ArrowRight } from "lucide-react";
 
 function DashboardOverview() {
-  const { user } = useUser();
+  const { user } = useSupabaseUser();
   const searchParams = useSearchParams();
   const planId = searchParams.get('plan');
 
@@ -18,7 +18,7 @@ function DashboardOverview() {
     <div className="space-y-6">
       {/* Welcome header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-white">Welcome back, {user?.firstName || 'Trader'}!</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-white">Welcome back, {user?.email?.split('@')[0] || 'Trader'}!</h1>
         <p className="text-gray-400 mt-1">Here&apos;s an overview of your trading setup and performance.</p>
       </div>
 
@@ -170,9 +170,9 @@ function DashboardOverview() {
 }
 
 function DashboardContent() {
-  const { isLoaded, isSignedIn } = useUser();
+  const { loading, user } = useSupabaseUser();
 
-  if (!isLoaded) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-64px)]">
         <div className="text-white text-xl">Loading...</div>
@@ -180,13 +180,13 @@ function DashboardContent() {
     );
   }
 
-  if (!isSignedIn) {
+  if (!user) {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-64px)]">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-white mb-4">Please Sign In</h2>
           <p className="text-gray-400 mb-6">You need to be signed in to access this feature.</p>
-          <Link href="/sign-in">
+          <Link href="/login">
             <Button>Sign In</Button>
           </Link>
         </div>

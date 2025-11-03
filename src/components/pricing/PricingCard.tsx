@@ -2,7 +2,7 @@
 
 import { PricingTier } from "@/config/pricing";
 import { cn } from "@/lib/utils";
-import { useUser } from "@clerk/nextjs";
+import { useSupabaseUser } from "@/lib/useSupabaseUser";
 import { useState } from "react";
 
 export const PricingCard = ({
@@ -12,7 +12,7 @@ export const PricingCard = ({
   tier: PricingTier;
   paymentFrequency: string;
 }) => {
-  const { user, isLoaded } = useUser();
+  const { user, loading } = useSupabaseUser();
   const [isLoading, setIsLoading] = useState(false);
   
   const price = tier.price[paymentFrequency];
@@ -20,8 +20,8 @@ export const PricingCard = ({
   const isPopular = tier.popular;
 
   const handleSelectPlan = async () => {
-    if (!isLoaded || !user) {
-      window.location.href = `/sign-in?redirect_url=${encodeURIComponent(`/payment?plan=${tier.id}&frequency=${paymentFrequency}`)}`;
+    if (loading || !user) {
+      window.location.href = `/login?redirect_url=${encodeURIComponent(`/payment?plan=${tier.id}&frequency=${paymentFrequency}`)}`;
       return;
     }
 
@@ -42,7 +42,7 @@ export const PricingCard = ({
           ? "border-blue-500/50 bg-gray-900 shadow-blue-500/10"
           : "border-gray-800 bg-gray-900/50",
         isPopular && "border-green-500/50 shadow-green-500/10",
-        isPopular && "pt-10", // Add padding-top when popular to make room for badge
+        isPopular && "pt-10",
       )}
     >
       {/* Background Decoration - Needs overflow-hidden for rounded corners */}

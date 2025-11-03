@@ -1,35 +1,9 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 
-const isProtectedRoute = createRouteMatcher([
-  '/dashboard(.*)',
-  '/admin(.*)',
-  '/api/user(.*)',
-  '/api/billing(.*)',
-  '/api/checkout(.*)',
-  '/library/protected(.*)',
-])
-
-const isAdminRoute = createRouteMatcher([
-  '/admin(.*)',
-  '/api/admin(.*)',
-])
-
-export default clerkMiddleware(async (auth, req) => {
-  if (isProtectedRoute(req)) {
-    await auth.protect({
-      unauthenticatedUrl: new URL('/sign-in', req.url).toString(),
-      unauthorizedUrl: new URL('/sign-in', req.url).toString(),
-    })
-  }
-  
-  if (isAdminRoute(req)) {
-    await auth.protect({
-      unauthenticatedUrl: new URL('/sign-in', req.url).toString(),
-      unauthorizedUrl: new URL('/sign-in', req.url).toString(),
-    })
-    // TODO: Add admin role check when we implement user roles
-  }
-})
+export function middleware(_req: NextRequest) {
+  return NextResponse.next()
+}
 
 export const config = {
   matcher: ['/((?!.*\\..*|_next).*)', '/', '/(api|trpc)(.*)'],

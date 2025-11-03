@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { UserButton } from '@clerk/nextjs';
 import { Home, Settings, User, BarChart3, BookOpen } from 'lucide-react';
 import BackgroundParticles from '@/components/BackgroundParticles';
 import {
@@ -22,6 +21,7 @@ import {
 } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 import PageBreadcrumbs from '@/components/PageBreadcrumbs'
+import { supabaseBrowser } from '@/lib/supabase-browser'
 
 interface NavItem {
   title: string;
@@ -122,7 +122,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex h-16 items-center gap-4 border-b border-gray-800 px-6 bg-black/50 backdrop-blur-sm sticky top-0 z-20">
             <SidebarTrigger />
             <div className="ml-auto flex items-center gap-4">
-              <UserButton afterSignOutUrl="/" />
+              <button onClick={() => supabaseBrowser.auth.signOut()} className="text-sm text-gray-300 hover:text-white">Logout</button>
             </div>
           </div>
           <main className="overflow-auto">
