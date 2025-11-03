@@ -32,6 +32,8 @@ export default function RootLayout({
       signUpUrl="/sign-up"
       afterSignInUrl="/dashboard"
       afterSignUpUrl="/dashboard"
+      // Allow CAPTCHA to work properly
+      captchaPublicKey={process.env.NEXT_PUBLIC_CLERK_CAPTCHA_KEY}
     >
       <html lang="en">
         <body
