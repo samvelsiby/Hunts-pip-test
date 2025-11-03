@@ -2,6 +2,7 @@
   "name": "huntspip-test",
   "version": "0.1.0",
   "private": true,
+  "mcp": ".mcp-config.json",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

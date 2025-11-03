@@ -97,3 +97,6 @@ dist
 # Temporary folders
 tmp/
 temp/
+
+# MCP config files (contain secrets)
+.mcp-config.json

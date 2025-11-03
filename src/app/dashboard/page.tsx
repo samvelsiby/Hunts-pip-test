@@ -1,6 +1,7 @@
 'use client';
 
 import { useSupabaseUser } from "@/lib/useSupabaseUser";
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import Link from 'next/link';
@@ -8,6 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BarChart3, LineChart, Zap, Award, ArrowRight } from "lucide-react";
+import { supabaseBrowser } from '@/lib/supabase-browser';
+import DebugAuthStatus from '@/components/DebugAuthStatus';
 
 function DashboardOverview() {
   const { user } = useSupabaseUser();
@@ -171,8 +174,32 @@ function DashboardOverview() {
 
 function DashboardContent() {
   const { loading, user } = useSupabaseUser();
+  const [ready, setReady] = useState(false);
+  const graceTimer = useRef<NodeJS.Timeout | null>(null);
 
-  if (loading) {
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        await supabaseBrowser.auth.getSession();
+        await supabaseBrowser.auth.refreshSession();
+        await supabaseBrowser.auth.getUser();
+      } finally {
+        if (!mounted) return;
+        // Start a short grace period to allow hydration
+        if (graceTimer.current) clearTimeout(graceTimer.current);
+        graceTimer.current = setTimeout(() => setReady(true), 1200);
+      }
+    })();
+    const { data: sub } = supabaseBrowser.auth.onAuthStateChange(() => {
+      // Session changed; mark as ready sooner
+      if (graceTimer.current) clearTimeout(graceTimer.current);
+      setReady(true);
+    });
+    return () => { mounted = false; sub.subscription.unsubscribe(); if (graceTimer.current) clearTimeout(graceTimer.current); };
+  }, []);
+
+  if (!ready && loading) {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-64px)]">
         <div className="text-white text-xl">Loading...</div>
@@ -180,7 +207,7 @@ function DashboardContent() {
     );
   }
 
-  if (!user) {
+  if (ready && !user) {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-64px)]">
         <div className="text-center">
@@ -195,62 +222,67 @@ function DashboardContent() {
   }
 
   return (
-    <Tabs defaultValue="overview" className="w-full">
-      <TabsList className="mb-6">
-        <TabsTrigger value="overview">Overview</TabsTrigger>
-        <TabsTrigger value="indicators">Indicators</TabsTrigger>
-        <TabsTrigger value="performance">Performance</TabsTrigger>
-      </TabsList>
-      <TabsContent value="overview">
-        <DashboardOverview />
-      </TabsContent>
-      <TabsContent value="indicators">
-        <div className="space-y-6">
-          <h1 className="text-3xl font-bold tracking-tight text-white">Your Indicators</h1>
-          <p className="text-gray-400">Manage your trading indicators and signals.</p>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Active Indicators</CardTitle>
-              <CardDescription>Indicators currently deployed to your TradingView account</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-center h-[200px] bg-gray-800/50 rounded-md">
-                <p className="text-gray-400">Connect your TradingView account to see your indicators</p>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Link href="/dashboard/settings">
-                <Button variant="outline">Connect TradingView</Button>
-              </Link>
-            </CardFooter>
-          </Card>
-        </div>
-      </TabsContent>
-      <TabsContent value="performance">
-        <div className="space-y-6">
-          <h1 className="text-3xl font-bold tracking-tight text-white">Performance Analytics</h1>
-          <p className="text-gray-400">Track your trading performance and metrics.</p>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Performance Metrics</CardTitle>
-              <CardDescription>Your trading statistics and performance data</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-center h-[300px] bg-gray-800/50 rounded-md">
-                <p className="text-gray-400">Connect your TradingView account to see performance metrics</p>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Link href="/dashboard/settings">
-                <Button variant="outline">Connect TradingView</Button>
-              </Link>
-            </CardFooter>
-          </Card>
-        </div>
-      </TabsContent>
-    </Tabs>
+    <>
+      <DebugAuthStatus />
+      {/* subtle debug text for user detection; can be removed later */}
+      <div className="text-xs text-gray-500 mb-2">{user ? `Signed in as ${user.email ?? user.id}` : 'Resolving session...'}</div>
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="mb-6">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="indicators">Indicators</TabsTrigger>
+          <TabsTrigger value="performance">Performance</TabsTrigger>
+        </TabsList>
+        <TabsContent value="overview">
+          <DashboardOverview />
+        </TabsContent>
+        <TabsContent value="indicators">
+          <div className="space-y-6">
+            <h1 className="text-3xl font-bold tracking-tight text-white">Your Indicators</h1>
+            <p className="text-gray-400">Manage your trading indicators and signals.</p>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Active Indicators</CardTitle>
+                <CardDescription>Indicators currently deployed to your TradingView account</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-center h-[200px] bg-gray-800/50 rounded-md">
+                  <p className="text-gray-400">Connect your TradingView account to see your indicators</p>
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Link href="/dashboard/settings">
+                  <Button variant="outline">Connect TradingView</Button>
+                </Link>
+              </CardFooter>
+            </Card>
+          </div>
+        </TabsContent>
+        <TabsContent value="performance">
+          <div className="space-y-6">
+            <h1 className="text-3xl font-bold tracking-tight text-white">Performance Analytics</h1>
+            <p className="text-gray-400">Track your trading performance and metrics.</p>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Performance Metrics</CardTitle>
+                <CardDescription>Your trading statistics and performance data</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-center h-[300px] bg-gray-800/50 rounded-md">
+                  <p className="text-gray-400">Connect your TradingView account to see performance metrics</p>
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Link href="/dashboard/settings">
+                  <Button variant="outline">Connect TradingView</Button>
+                </Link>
+              </CardFooter>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
+    </>
   );
 }
 

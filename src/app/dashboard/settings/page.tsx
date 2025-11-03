@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Check, AlertCircle, Loader2 } from 'lucide-react';
+import { useSupabaseUser } from '@/lib/useSupabaseUser';
+import { supabaseBrowser } from '@/lib/supabase-browser';
 
 export default function SettingsPage() {
   return (
@@ -65,26 +67,40 @@ export default function SettingsPage() {
 }
 
 function TradingViewSettings() {
+  const { user, loading } = useSupabaseUser();
   const [tradingViewUsername, setTradingViewUsername] = useState('');
   const [originalUsername, setOriginalUsername] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchTradingViewUsername();
-  }, []);
+    if (!loading && user) {
+      fetchTradingViewUsername(user.id);
+    }
+  }, [loading, user]);
 
-  const fetchTradingViewUsername = async () => {
+  const fetchTradingViewUsername = async (userId: string) => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/user/tradingview');
-      const data = await response.json();
-      
-      if (data.username) {
-        setTradingViewUsername(data.username);
-        setOriginalUsername(data.username);
+      const { data, error } = await supabaseBrowser
+        .from('user_subscriptions')
+        .select('id, tradingview_username')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (error && (error as { code?: string }).code !== 'PGRST116') {
+        throw error;
+      }
+
+      if (data) {
+        setSubscriptionId(data.id);
+        if (data.tradingview_username) {
+          setTradingViewUsername(data.tradingview_username);
+          setOriginalUsername(data.tradingview_username);
+        }
       }
     } catch (error) {
       console.error('Error fetching TradingView username:', error);
@@ -94,6 +110,8 @@ function TradingViewSettings() {
   };
 
   const handleSave = async () => {
+    if (!user) return;
+
     if (!tradingViewUsername.trim()) {
       setErrorMessage('Please enter a TradingView username');
       setSaveStatus('error');
@@ -105,27 +123,29 @@ function TradingViewSettings() {
       setSaveStatus('idle');
       setErrorMessage('');
 
-      const response = await fetch('/api/user/tradingview', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: tradingViewUsername.trim() }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setSaveStatus('success');
-        setOriginalUsername(tradingViewUsername);
+      if (subscriptionId) {
+        const { error } = await supabaseBrowser
+          .from('user_subscriptions')
+          .update({ tradingview_username: tradingViewUsername.trim() })
+          .eq('id', subscriptionId);
+        if (error) throw error;
       } else {
-        setSaveStatus('error');
-        setErrorMessage(data.error || 'Failed to update TradingView username');
+        // Insert minimal subscription row if missing
+        const { data, error } = await supabaseBrowser
+          .from('user_subscriptions')
+          .insert({ user_id: user.id, plan_id: 'free', status: 'active', tradingview_username: tradingViewUsername.trim() })
+          .select('id')
+          .single();
+        if (error) throw error;
+        setSubscriptionId(data.id);
       }
+
+      setSaveStatus('success');
+      setOriginalUsername(tradingViewUsername.trim());
     } catch (error) {
       console.error('Error saving TradingView username:', error);
       setSaveStatus('error');
-      setErrorMessage('An unexpected error occurred');
+      setErrorMessage('Failed to update TradingView username');
     } finally {
       setIsSaving(false);
     }
@@ -150,7 +170,7 @@ function TradingViewSettings() {
               placeholder="Enter your TradingView username"
               value={tradingViewUsername}
               onChange={(e) => setTradingViewUsername(e.target.value)}
-              disabled={isLoading || isSaving}
+              disabled={isLoading || isSaving || loading}
             />
             <p className="text-sm text-muted-foreground">
               This username will be used to grant you access to premium TradingView indicators.
@@ -193,7 +213,7 @@ function TradingViewSettings() {
           </div>
           <Button 
             onClick={handleSave} 
-            disabled={isLoading || isSaving || !hasChanges}
+            disabled={isLoading || isSaving || !hasChanges || loading}
           >
             {isSaving ? (
               <>
