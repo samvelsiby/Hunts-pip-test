@@ -1,5 +1,6 @@
 import { client, indicatorsQuery } from '@/lib/sanity'
 import LibraryClient from './LibraryClient'
+import PageBreadcrumbs from '@/components/PageBreadcrumbs'
 
 // Cache this page for 1 hour in production, but revalidate every 60 seconds in development
 export const revalidate = 3600
@@ -46,6 +47,8 @@ export default async function LibraryPage() {
       
       {/* Main Content */}
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Breadcrumbs */}
+        <PageBreadcrumbs />
         {/* Hero Section */}
         <div className="relative overflow-hidden rounded-2xl bg-gray-800/50 backdrop-blur-sm border border-gray-700 mb-16 p-8 sm:p-12">
           <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-[#FF5B41]/10 to-transparent"></div>

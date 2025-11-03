@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { PortableText, PortableTextComponents } from '@portabletext/react'
 import type { PortableTextBlock } from '@portabletext/types'
+import PageBreadcrumbs from '@/components/PageBreadcrumbs'
 
 // Cache this page for 1 hour in production, but revalidate every 60 seconds in development
 export const revalidate = 3600
@@ -211,6 +212,8 @@ export default async function IndicatorDetailPage({
       
       {/* Main Content */}
       <main className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Breadcrumbs */}
+        <PageBreadcrumbs />
         {/* Hero Section */}
         <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8 mb-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-[#FF5B41]/10 to-transparent"></div>
