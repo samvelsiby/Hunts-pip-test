@@ -19,7 +19,7 @@ function DashboardOverview() {
       {/* Welcome header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user?.firstName || 'Trader'}!</h1>
-        <p className="text-muted-foreground mt-1">Here's an overview of your trading setup and performance.</p>
+        <p className="text-muted-foreground mt-1">Here&apos;s an overview of your trading setup and performance.</p>
       </div>
 
       {/* Plan Selection Success Message */}
@@ -33,7 +33,7 @@ function DashboardOverview() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-300">
-              You've selected the <span className="text-green-400 font-semibold capitalize">{planId}</span> plan. 
+              You&apos;ve selected the <span className="text-green-400 font-semibold capitalize">{planId}</span> plan. 
               Complete your setup below to start using your trading indicators.
             </p>
           </CardContent>

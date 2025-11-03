@@ -1,9 +1,8 @@
 import { client, indicatorsQuery } from '@/lib/sanity'
-import Link from 'next/link'
 import LibraryClient from './LibraryClient'
 
 // Cache this page for 1 hour in production, but revalidate every 60 seconds in development
-export const revalidate = process.env.NODE_ENV === 'production' ? 3600 : 60
+export const revalidate = 3600
 
 interface Indicator {
   _id: string

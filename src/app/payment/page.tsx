@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase-client';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 interface UserSubscription {
@@ -17,8 +17,8 @@ interface UserSubscription {
 
 const planDetails = {
   free: { name: 'Free', price: 0, features: ['Basic signals', 'Limited access'] },
-  pro: { name: 'Pro', price: 30, features: ['Advanced signals', 'Unlimited access', 'Priority support'] },
-  premium: { name: 'Premium', price: 50, features: ['All Pro features', 'AI insights', '24/7 support', 'Custom strategies'] }
+  premium: { name: 'Premium', price: 50, features: ['Advanced signals', 'Unlimited access', 'Priority support', 'AI insights'] },
+  ultimate: { name: 'Ultimate', price: 100, features: ['All Premium features', '24/7 support', 'Custom strategies', 'API access', 'Personal account manager'] }
 };
 
 function PaymentContent() {

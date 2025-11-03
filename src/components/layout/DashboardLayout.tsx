@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { UserButton } from '@clerk/nextjs';
-import { Menu, X, Home, Settings, User, BarChart3, BookOpen } from 'lucide-react';
+import { Menu, Home, Settings, User, BarChart3, BookOpen } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';

@@ -5,7 +5,7 @@ import { PortableText, PortableTextComponents } from '@portabletext/react'
 import type { PortableTextBlock } from '@portabletext/types'
 
 // Cache this page for 1 hour in production, but revalidate every 60 seconds in development
-export const revalidate = process.env.NODE_ENV === 'production' ? 3600 : 60
+export const revalidate = 3600
 
 interface Indicator {
   _id: string
@@ -162,9 +162,9 @@ const portableTextComponents: PortableTextComponents = {
 export default async function IndicatorDetailPage({
   params,
 }: {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }) {
-  const { slug } = params
+  const { slug } = await params
   const indicator = await getIndicator(slug)
 
   if (!indicator) {
