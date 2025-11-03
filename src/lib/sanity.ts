@@ -6,12 +6,31 @@ export const client = createClient({
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   apiVersion: '2024-01-01',
   useCdn: true,
+  stega: {
+    enabled: false,
+  },
+  // Use Next.js built-in caching
+  perspective: 'published',
+  // Ensure we fetch fresh data when developing
+  token: process.env.SANITY_API_TOKEN,
 })
 
 const builder = imageUrlBuilder(client)
 
 export function urlFor(source: unknown) {
   return builder.image(source as never)
+}
+
+// Generate a blur placeholder URL for images
+export function getBlurDataURL(source: unknown) {
+  return builder
+    .image(source as never)
+    .width(24)
+    .height(24)
+    .format('webp')
+    .quality(10)
+    .blur(10)
+    .url()
 }
 
 // Queries

@@ -1,7 +1,9 @@
 import { client, indicatorsQuery } from '@/lib/sanity'
-export const revalidate = 60
 import Link from 'next/link'
 import LibraryClient from './LibraryClient'
+
+// Cache this page for 1 hour in production, but revalidate every 60 seconds in development
+export const revalidate = process.env.NODE_ENV === 'production' ? 3600 : 60
 
 interface Indicator {
   _id: string
@@ -33,30 +35,22 @@ export default async function LibraryPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
-      {/* Header */}
-      <header className="border-b border-gray-800 bg-black/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link href="/" className="text-gray-400 hover:text-white transition">
-                ← Back to Home
-              </Link>
-              <h1 className="text-2xl font-bold text-white">Indicator Library</h1>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-white mb-4">
-            Explore Our Trading Indicators
-          </h2>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-            Access powerful TradingView indicators designed to enhance your trading strategy
-          </p>
+        <div className="relative overflow-hidden rounded-2xl bg-gray-800/50 backdrop-blur-sm border border-gray-700 mb-16 p-8 sm:p-12">
+          <div className="absolute top-0 right-0 w-1/3 h-full bg-linear-to-l from-blue-500/10 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-linear-to-t from-purple-500/10 to-transparent"></div>
+          
+          <div className="relative z-10 text-center max-w-3xl mx-auto">
+            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">
+              Explore Our <span className="text-blue-400">Trading Indicators</span>
+            </h2>
+            <p className="text-xl text-gray-300 mb-8">
+              Access powerful TradingView indicators designed to enhance your trading strategy
+            </p>
+            <div className="w-24 h-1 bg-blue-500/30 mx-auto rounded-full"></div>
+          </div>
         </div>
 
         {/* Client Component with Search and Filters */}

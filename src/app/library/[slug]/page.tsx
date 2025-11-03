@@ -1,9 +1,11 @@
-import { client, indicatorBySlugQuery, urlFor } from '@/lib/sanity'
-export const revalidate = 60
+import { client, indicatorBySlugQuery, urlFor, getBlurDataURL } from '@/lib/sanity'
 import Image from 'next/image'
 import Link from 'next/link'
 import { PortableText, PortableTextComponents } from '@portabletext/react'
 import type { PortableTextBlock } from '@portabletext/types'
+
+// Cache this page for 1 hour in production, but revalidate every 60 seconds in development
+export const revalidate = process.env.NODE_ENV === 'production' ? 3600 : 60
 
 interface Indicator {
   _id: string
@@ -160,14 +162,14 @@ const portableTextComponents: PortableTextComponents = {
 export default async function IndicatorDetailPage({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: { slug: string }
 }) {
-  const { slug } = await params
+  const { slug } = params
   const indicator = await getIndicator(slug)
 
   if (!indicator) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-white mb-4">Indicator Not Found</h1>
           <Link
@@ -197,28 +199,13 @@ export default async function IndicatorDetailPage({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
-      {/* Header */}
-      <header className="border-b border-gray-800 bg-black/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <Link
-            href="/library"
-            className="text-gray-400 hover:text-white transition inline-flex items-center"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back to Library
-          </Link>
-        </div>
-      </header>
-
       {/* Main Content */}
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
         <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8 mb-8">
           <div className="flex flex-col md:flex-row gap-8">
             {/* Icon */}
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               {indicator.icon ? (
                 <div className="w-32 h-32 rounded-xl overflow-hidden bg-gray-700">
                   <Image
@@ -227,10 +214,13 @@ export default async function IndicatorDetailPage({
                     width={128}
                     height={128}
                     className="object-cover"
+                    placeholder="blur"
+                    blurDataURL={getBlurDataURL(indicator.icon)}
+                    priority
                   />
                 </div>
               ) : (
-                <div className="w-32 h-32 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-6xl">
+                <div className="w-32 h-32 rounded-xl bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-6xl">
                   {categoryIcons[indicator.category as keyof typeof categoryIcons] || '📊'}
                 </div>
               )}
@@ -311,11 +301,11 @@ export default async function IndicatorDetailPage({
         )}
 
         {/* How to Use Section */}
-        <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-2xl p-8">
+        <div className="bg-linear-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-2xl p-8">
           <h2 className="text-2xl font-bold text-white mb-6">How to Use This Indicator</h2>
           <ol className="space-y-4 text-gray-300">
             <li className="flex items-start">
-              <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 flex-shrink-0 font-bold">
+              <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 shrink-0 font-bold">
                 1
               </span>
               <div>
@@ -326,7 +316,7 @@ export default async function IndicatorDetailPage({
               </div>
             </li>
             <li className="flex items-start">
-              <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 flex-shrink-0 font-bold">
+              <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 shrink-0 font-bold">
                 2
               </span>
               <div>
@@ -337,7 +327,7 @@ export default async function IndicatorDetailPage({
               </div>
             </li>
             <li className="flex items-start">
-              <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 flex-shrink-0 font-bold">
+              <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 shrink-0 font-bold">
                 3
               </span>
               <div>
@@ -348,7 +338,7 @@ export default async function IndicatorDetailPage({
               </div>
             </li>
             <li className="flex items-start">
-              <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 flex-shrink-0 font-bold">
+              <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center mr-4 shrink-0 font-bold">
                 4
               </span>
               <div>
