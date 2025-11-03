@@ -25,10 +25,8 @@ export default function AuthButtons() {
   }
 
   return (
-    <SignInButton>
-      <button className="w-full lg:w-auto px-6 py-2 text-white text-sm bg-black border border-white rounded-full hover:bg-gray-900 transition-colors">
-        Login
-      </button>
-    </SignInButton>
+    <Link href="/auth" className="w-full lg:w-auto px-6 py-2 text-white text-sm bg-black border border-white rounded-full hover:bg-gray-900 transition-colors">
+      Login
+    </Link>
   );
 }
