@@ -12,8 +12,8 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "HUNTS PIP - Best Trading Strategy",
-  description: "Stay PROFITABLE as a trader with our BEST TRADING STRATEGY. Automate your trading life.",
+  title: "HUNTS PIP - Professional Trading Tools",
+  description: "Enhance your trading with professional TradingView indicators and tools designed to support your trading analysis.",
 };
 
 export default function RootLayout({

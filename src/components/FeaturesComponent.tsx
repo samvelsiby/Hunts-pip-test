@@ -2,7 +2,7 @@ export default function FeaturesComponent() {
   const features = [
     {
       title: "Better trading Accuracy",
-      description: "Multi-indicator confluence filters out false signals before they reach you. When Time and Price all align, you get a clear signal—not noise. Higher accuracy means fewer losses and more winning trades.",
+      description: "Multi-indicator confluence filters out false signals before they reach you. When Time and Price all align, you get a clear signal—not noise. These tools are designed to enhance your analysis and help you make more informed trading decisions.",
       icon: (
         <svg width="100%" height="100%" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Vertical bars */}
@@ -23,7 +23,7 @@ export default function FeaturesComponent() {
     },
     {
       title: "Mechanical Trading Edge",
-      description: "100% rule-based signals eliminate emotional trading. No interpretation, no second-guessing—just clear mechanical rules that execute the same way every time. Remove the human error from your trading.",
+      description: "100% rule-based signals eliminate emotional trading. No interpretation, no second-guessing—just clear mechanical rules that execute the same way every time. These tools are designed to enhance your trading workflow and support consistent decision-making.",
       icon: (
         <svg width="100%" height="100%" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Chevron lines */}
@@ -42,7 +42,7 @@ export default function FeaturesComponent() {
     },
     {
       title: "Institutional Grade Tools",
-      description: "Professional traders use advanced systems with built-in risk management, multi-indicator confluence, and automated stops. Now you can too. Get bank-level analysis at a fraction of the cost.",
+      description: "Professional traders use advanced systems with built-in risk management, multi-indicator confluence, and automated stops. These tools are designed to enhance your trading analysis with institutional-grade features to support your trading decisions.",
       icon: (
         <svg width="100%" height="100%" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Arc lines */}

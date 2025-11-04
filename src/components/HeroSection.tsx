@@ -15,19 +15,16 @@ export default function HeroSection() {
             </div>
             
             <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold leading-tight">
-              <span className="text-white">Stay </span>
-              <span className="text-green-400">PROFITABLE</span>
-              <span className="text-white"> as a</span>
+              <span className="text-white">Enhance Your </span>
+              <span className="text-green-400">Trading</span>
+              <span className="text-white"> with</span>
               <br />
-              <span className="text-white">trader with our </span>
-              <span className="text-red-500 font-bold">BEST</span>
-              <br />
-              <span className="text-red-500 font-bold">TRADING STRATEGY</span>
+              <span className="text-white">Professional </span>
+              <span className="text-red-500 font-bold">Trading Tools</span>
             </h1>
             
             <p className="text-gray-400 text-sm sm:text-base lg:text-lg leading-relaxed max-w-xl">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Aenean cursus elit nec dictum pharetra
+              Access powerful TradingView indicators designed to enhance your trading analysis and decision-making process.
             </p>
             
             <div className="pt-2 sm:pt-4">

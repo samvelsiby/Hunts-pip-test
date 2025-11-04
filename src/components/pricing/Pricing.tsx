@@ -16,7 +16,7 @@ export const Pricing = () => {
         {/* Section Header */}
         <PricingHeader
           title="Choose Your Trading Plan"
-          subtitle="Select the perfect plan to boost your trading success. Save 15% when you pay yearly."
+          subtitle="Select the perfect plan to enhance your trading analysis. Save 15% when you pay yearly."
           frequencies={PAYMENT_FREQUENCIES}
           selectedFrequency={selectedPaymentFreq}
           onFrequencyChange={setSelectedPaymentFreq}

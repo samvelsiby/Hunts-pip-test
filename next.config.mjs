@@ -21,14 +21,14 @@ const nextConfig = {
       "base-uri 'self'",
       "object-src 'none'",
       // Allow Clerk JS and supporting CDNs
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://cdn.clerk.com https://cdn.clerk.dev https://*.clerk.com https://*.clerk.dev https://*.clerk.accounts.dev",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://cdn.clerk.com https://cdn.clerk.dev https://*.clerk.com https://*.clerk.dev https://*.clerk.accounts.dev https://clerk.huntspip.com https://www.huntspip.com https://huntspip.com https://*.huntspip.com",
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' https://cdn.sanity.io https://*.clerk.com https://*.clerk.dev https://*.clerk.accounts.dev data: blob: https:",
+      "img-src 'self' https://cdn.sanity.io https://*.clerk.com https://*.clerk.dev https://*.clerk.accounts.dev https://clerk.huntspip.com https://www.huntspip.com https://huntspip.com https://*.huntspip.com data: blob: https:",
       "font-src 'self' data:",
       // Allow Clerk APIs and realtime connections
-      "connect-src 'self' https://*.sanity.io https://cdn.sanity.io https://vitals.vercel-insights.com https://vercel.live https://api.clerk.com https://*.clerk.com https://*.clerk.dev https://*.clerk.accounts.dev",
+      "connect-src 'self' https://*.sanity.io https://cdn.sanity.io https://vitals.vercel-insights.com https://vercel.live https://api.clerk.com https://*.clerk.com https://*.clerk.dev https://*.clerk.accounts.dev https://clerk.huntspip.com https://www.huntspip.com https://huntspip.com https://*.huntspip.com",
       // Allow Clerk hosted widgets and YouTube embeds
-      "frame-src https://www.youtube.com https://*.clerk.com https://*.clerk.dev https://*.clerk.accounts.dev",
+      "frame-src https://www.youtube.com https://*.clerk.com https://*.clerk.dev https://*.clerk.accounts.dev https://clerk.huntspip.com https://www.huntspip.com https://huntspip.com https://*.huntspip.com",
       "media-src 'self' blob:",
       "worker-src 'self' blob:",
       'upgrade-insecure-requests',
