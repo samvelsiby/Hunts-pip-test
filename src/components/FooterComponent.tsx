@@ -45,7 +45,7 @@ export default function FooterComponent() {
             <ul className="space-y-3">
               <li><Link href="/about" className="text-gray-400 hover:text-white transition-colors text-sm">About</Link></li>
               <li><Link href="/pricing" className="text-gray-400 hover:text-white transition-colors text-sm">Pricing</Link></li>
-              <li><Link href="/prison-status" className="text-gray-400 hover:text-white transition-colors text-sm">Prison Status</Link></li>
+              <li><Link href="/docs" className="text-gray-400 hover:text-white transition-colors text-sm">Knowledge Base</Link></li>
               <li><Link href="/support" className="text-gray-400 hover:text-white transition-colors text-sm">Support</Link></li>
               <li><Link href="/careers" className="text-gray-400 hover:text-white transition-colors text-sm">Careers</Link></li>
               <li><Link href="/open-source" className="text-gray-400 hover:text-white transition-colors text-sm">Open Source</Link></li>

@@ -2,8 +2,8 @@
 
 import BackgroundParticles from '@/components/BackgroundParticles';
 import HeroSection from '@/components/HeroSection';
-import TrustedPartnersComponent from '@/components/TrustedPartnersComponent';
 import FeaturesComponent from '@/components/FeaturesComponent';
+import ServicesComponent from '@/components/ServicesComponent';
 import MoneyBackGuaranteeComponent from '@/components/MoneyBackGuaranteeComponent';
 import PricingComponent from '@/components/PricingComponent';
 import FAQComponent from '@/components/FAQComponent';
@@ -27,11 +27,11 @@ export default function Home() {
       {/* Hero Section */}
       <HeroSection />
 
-      {/* Trusted Partners Section */}
-      <TrustedPartnersComponent />
-
       {/* Features Section */}
       <FeaturesComponent />
+
+      {/* Services Section */}
+      <ServicesComponent />
 
       {/* Money-Back Guarantee Section */}
       <MoneyBackGuaranteeComponent />

@@ -25,7 +25,7 @@ export default function RootLayout({
     <ClerkProvider
       appearance={{
         elements: {
-          formButtonPrimary: 'bg-purple-600 hover:bg-purple-700 text-sm normal-case',
+          formButtonPrimary: 'bg-[#ff0000] hover:bg-[#DD0000] text-white text-sm normal-case border-2 border-[#00dd5e] transition-all hover:scale-105 shadow-lg',
         }
       }}
       signInUrl="/sign-in"

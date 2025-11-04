@@ -23,7 +23,7 @@ export const Pricing = () => {
         />
 
         {/* Pricing Cards */}
-        <div className="grid w-full gap-8 mt-12 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 overflow-visible">
+        <div className="grid w-full gap-4 sm:gap-8 mt-12 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 overflow-visible">
           {TIERS.map((tier, i) => (
             <PricingCard
               key={i}

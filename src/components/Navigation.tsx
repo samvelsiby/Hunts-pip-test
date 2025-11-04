@@ -33,7 +33,7 @@ export default function Navigation({ mobileMenuOpen, setMobileMenuOpen }: Naviga
           </svg>
         </Link>
         <Link href="/pricing" className="text-white hover:text-gray-300 text-sm">Pricing</Link>
-        <Link href="/testimonials" className="text-white hover:text-gray-300 text-sm">Testimonials</Link>
+        <Link href="/docs" className="text-white hover:text-gray-300 text-sm">Knowledge Base</Link>
         <AuthButtons />
       </div>
 

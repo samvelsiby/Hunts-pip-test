@@ -37,12 +37,12 @@ export const PricingCard = ({
   return (
     <div
       className={cn(
-        "relative flex flex-col gap-6 overflow-visible rounded-2xl border p-6 shadow transition-all duration-300 hover:shadow-lg",
+        "relative flex flex-col gap-4 sm:gap-6 overflow-visible rounded-xl sm:rounded-2xl border p-4 sm:p-6 shadow transition-all duration-300 hover:shadow-lg",
         isHighlighted
           ? "border-blue-500/50 bg-gray-900 shadow-blue-500/10"
           : "border-gray-800 bg-gray-900/50",
         isPopular && "border-green-500/50 shadow-green-500/10",
-        isPopular && "pt-10", // Add padding-top when popular to make room for badge
+        isPopular && "pt-8 sm:pt-10", // Add padding-top when popular to make room for badge
       )}
     >
       {/* Background Decoration - Needs overflow-hidden for rounded corners */}
@@ -57,8 +57,8 @@ export const PricingCard = ({
 
       {/* Popular Badge */}
       {isPopular && (
-        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
-          <span className="bg-green-500 text-black px-4 py-1.5 rounded-full text-sm font-semibold shadow-lg">
+        <div className="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2 z-10">
+          <span className="bg-green-500 text-black px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-semibold shadow-lg">
             Most Popular
           </span>
         </div>
@@ -66,28 +66,28 @@ export const PricingCard = ({
 
       {/* Card Header */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-white mb-2">{tier.name}</h2>
-        <div className="mb-4">
-          <span className="text-4xl font-bold text-white">
+        <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">{tier.name}</h2>
+        <div className="mb-3 sm:mb-4">
+          <span className="text-3xl sm:text-4xl font-bold text-white">
             ${typeof price === 'number' ? price : 0}
           </span>
-          {price !== 0 && <span className="text-gray-400">/month</span>}
+          {price !== 0 && <span className="text-gray-400 text-sm sm:text-base">/month</span>}
         </div>
-        <p className="text-gray-400">{tier.description}</p>
+        <p className="text-gray-400 text-sm sm:text-base">{tier.description}</p>
       </div>
 
       {/* Features */}
-      <div className="flex-1 space-y-4">
-        <ul className="space-y-3">
+      <div className="flex-1 space-y-3 sm:space-y-4 max-h-[400px] sm:max-h-none overflow-y-auto sm:overflow-visible">
+        <ul className="space-y-2 sm:space-y-3">
           {tier.features.map((feature, index) => (
             <li
               key={index}
-              className="flex items-center text-gray-300"
+              className="flex items-start text-gray-300 text-sm sm:text-base"
             >
-              <svg className="w-5 h-5 text-green-400 mr-3 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 mr-2 sm:mr-3 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
-              {feature}
+              <span className="flex-1">{feature}</span>
             </li>
           ))}
         </ul>
@@ -98,7 +98,7 @@ export const PricingCard = ({
         onClick={handleSelectPlan}
         disabled={isLoading}
         className={cn(
-          "w-full py-3 px-6 rounded-lg font-semibold transition-colors",
+          "w-full py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg font-semibold text-sm sm:text-base transition-colors",
           isHighlighted
             ? "bg-blue-500 text-white hover:bg-blue-600"
             : isPopular

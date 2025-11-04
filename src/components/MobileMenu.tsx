@@ -32,11 +32,11 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           Pricing
         </Link>
         <Link 
-          href="/testimonials" 
+          href="/docs" 
           className="text-white hover:text-gray-300 text-lg"
           onClick={onClose}
         >
-          Testimonials
+          Knowledge Base
         </Link>
         <div onClick={onClose}>
           <AuthButtons />
