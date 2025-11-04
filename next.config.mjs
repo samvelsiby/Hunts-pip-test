@@ -21,7 +21,7 @@ const nextConfig = {
       "base-uri 'self'",
       "object-src 'none'",
       // Allow Clerk JS and supporting CDNs
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://cdn.clerk.com https://cdn.clerk.dev https://*.clerk.com https://*.clerk.dev https://*.clerk.accounts.dev https://clerk.huntspip.com https://www.huntspip.com https://huntspip.com https://*.huntspip.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://challenges.cloudflare.com https://cdn.clerk.com https://cdn.clerk.dev https://*.clerk.com https://*.clerk.dev https://*.clerk.accounts.dev https://clerk.huntspip.com https://www.huntspip.com https://huntspip.com https://*.huntspip.com https://*.cloudflare.com",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' https://cdn.sanity.io https://*.clerk.com https://*.clerk.dev https://*.clerk.accounts.dev https://clerk.huntspip.com https://www.huntspip.com https://huntspip.com https://*.huntspip.com data: blob: https:",
       "font-src 'self' data:",
