@@ -26,9 +26,9 @@ const nextConfig = {
       "img-src 'self' https://cdn.sanity.io https://*.clerk.com https://*.clerk.dev https://*.clerk.accounts.dev https://clerk.huntspip.com https://www.huntspip.com https://huntspip.com https://*.huntspip.com data: blob: https:",
       "font-src 'self' data:",
       // Allow Clerk APIs and realtime connections
-      "connect-src 'self' https://*.sanity.io https://cdn.sanity.io https://vitals.vercel-insights.com https://vercel.live https://api.clerk.com https://*.clerk.com https://*.clerk.dev https://*.clerk.accounts.dev https://clerk.huntspip.com https://www.huntspip.com https://huntspip.com https://*.huntspip.com",
+      "connect-src 'self' https://*.sanity.io https://cdn.sanity.io https://vitals.vercel-insights.com https://vercel.live https://api.clerk.com https://*.clerk.com https://*.clerk.dev https://*.clerk.accounts.dev https://challenges.cloudflare.com https://*.cloudflare.com https://clerk.huntspip.com https://www.huntspip.com https://huntspip.com https://*.huntspip.com",
       // Allow Clerk hosted widgets and YouTube embeds
-      "frame-src https://www.youtube.com https://*.clerk.com https://*.clerk.dev https://*.clerk.accounts.dev https://clerk.huntspip.com https://www.huntspip.com https://huntspip.com https://*.huntspip.com",
+      "frame-src https://www.youtube.com https://*.clerk.com https://*.clerk.dev https://*.clerk.accounts.dev https://challenges.cloudflare.com https://*.cloudflare.com https://clerk.huntspip.com https://www.huntspip.com https://huntspip.com https://*.huntspip.com",
       "media-src 'self' blob:",
       "worker-src 'self' blob:",
       'upgrade-insecure-requests',
