@@ -69,21 +69,34 @@ export async function getUserData(clerkUserId: string) {
  */
 export async function getTradingViewUsername(clerkUserId: string) {
   try {
+    console.log('getTradingViewUsername: Fetching username for clerk_id:', clerkUserId);
+    
     const { data, error } = await supabaseAdmin
       .from('users')
       .select('tradingview_username, clerk_id')
       .eq('clerk_id', clerkUserId)
-      .single();
+      .maybeSingle();
+
+    console.log('getTradingViewUsername: Query result:', { 
+      hasData: !!data, 
+      hasError: !!error, 
+      errorCode: error?.code,
+      errorMessage: error?.message,
+      username: data?.tradingview_username,
+      clerkId: data?.clerk_id
+    });
 
     if (error) {
       // PGRST116 is "no rows returned" - user doesn't exist yet
       if (error.code === 'PGRST116') {
+        console.log('getTradingViewUsername: User does not exist yet (PGRST116)');
         return {
           data: null,
           error: null,
           authorized: true, // User doesn't exist, but request is authorized
         };
       }
+      console.error('getTradingViewUsername: Database error:', error);
       return {
         data: null,
         error: new Error(error.message),
@@ -91,8 +104,22 @@ export async function getTradingViewUsername(clerkUserId: string) {
       };
     }
 
+    // If no data returned, user doesn't exist
+    if (!data) {
+      console.log('getTradingViewUsername: No data returned (user does not exist)');
+      return {
+        data: null,
+        error: null,
+        authorized: true, // User doesn't exist, but request is authorized
+      };
+    }
+
     // Verify the user ID matches
-    if (data && data.clerk_id !== clerkUserId) {
+    if (data.clerk_id !== clerkUserId) {
+      console.error('getTradingViewUsername: User ID mismatch!', {
+        expected: clerkUserId,
+        found: data.clerk_id
+      });
       return {
         data: null,
         error: new Error('Unauthorized: User ID mismatch'),
@@ -100,12 +127,14 @@ export async function getTradingViewUsername(clerkUserId: string) {
       };
     }
 
+    console.log('getTradingViewUsername: Successfully retrieved username:', data.tradingview_username);
     return {
-      data: data?.tradingview_username || null,
+      data: data.tradingview_username || null,
       error: null,
       authorized: true,
     };
   } catch (error) {
+    console.error('getTradingViewUsername: Unexpected error:', error);
     return {
       data: null,
       error: error instanceof Error ? error : new Error('Unknown error'),

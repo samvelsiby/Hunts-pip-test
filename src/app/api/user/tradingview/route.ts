@@ -7,7 +7,10 @@ export async function GET() {
   try {
     const { userId } = await auth();
     
+    console.log('GET /api/user/tradingview: userId from auth():', userId);
+    
     if (!userId) {
+      console.error('GET /api/user/tradingview: No userId from auth()');
       return NextResponse.json(
         { error: 'Unauthorized. Please sign in to access your TradingView username.' },
         { status: 401 }
@@ -15,9 +18,22 @@ export async function GET() {
     }
 
     // Use data access layer to get username (enforces access control)
+    console.log('GET /api/user/tradingview: Calling getTradingViewUsername with userId:', userId);
     const result = await getTradingViewUsername(userId);
     
+    console.log('GET /api/user/tradingview: Result from data access layer:', {
+      authorized: result.authorized,
+      hasData: !!result.data,
+      hasError: !!result.error,
+      errorMessage: result.error?.message,
+      username: result.data
+    });
+    
     if (!result.authorized) {
+      console.error('GET /api/user/tradingview: Not authorized', {
+        error: result.error?.message,
+        userId: userId
+      });
       return NextResponse.json(
         { error: result.error?.message || 'Unauthorized access' },
         { status: 403 }
@@ -25,6 +41,7 @@ export async function GET() {
     }
 
     if (result.error) {
+      console.error('GET /api/user/tradingview: Error from data access layer', result.error);
       return NextResponse.json(
         { error: 'Failed to get TradingView username' },
         { status: 500 }
@@ -32,11 +49,15 @@ export async function GET() {
     }
 
     // Return the username (can be null if not set)
+    console.log('GET /api/user/tradingview: Returning username:', result.data);
     return NextResponse.json({ 
       username: result.data 
     });
   } catch (error) {
-    console.error('Error getting TradingView username:', error);
+    console.error('GET /api/user/tradingview: Unexpected error:', error);
+    if (error instanceof Error) {
+      console.error('Error details:', error.message, error.stack);
+    }
     return NextResponse.json(
       { error: 'Failed to get TradingView username' },
       { status: 500 }
