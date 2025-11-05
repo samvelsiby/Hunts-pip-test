@@ -99,6 +99,26 @@ export async function getTradingViewUsername(clerkUserId: string) {
       dataMatch: data?.clerk_id === clerkUserId
     });
 
+    // If no data found, check if user exists with different clerk_id or needs to be created
+    if (!data && !error) {
+      console.log('getTradingViewUsername: No user found with clerk_id:', clerkUserId);
+      console.log('getTradingViewUsername: Checking all users in database...');
+      
+      // Debug: Check what users exist
+      const { data: allUsers, error: allUsersError } = await supabaseAdmin
+        .from('users')
+        .select('clerk_id, email, tradingview_username')
+        .limit(10);
+      
+      console.log('getTradingViewUsername: All users in database:', {
+        hasAllUsers: !!allUsers,
+        allUsersError: allUsersError?.message,
+        usersCount: allUsers?.length || 0,
+        clerkIds: allUsers?.map(u => u.clerk_id) || [],
+        searchingFor: clerkUserId
+      });
+    }
+
     if (error) {
       // PGRST116 is "no rows returned" - user doesn't exist yet
       if (error.code === 'PGRST116') {
