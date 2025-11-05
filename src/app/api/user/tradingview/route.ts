@@ -27,7 +27,7 @@ export async function GET() {
 
     // Use data access layer to get username (enforces access control)
     console.log('GET /api/user/tradingview: Calling getTradingViewUsername with userId:', userId);
-    const result = await getTradingViewUsername(userId);
+    let result = await getTradingViewUsername(userId);
     
     // Always log result
     console.log('GET /api/user/tradingview: Result from data access layer:', {
@@ -40,6 +40,74 @@ export async function GET() {
       usernameIsNull: result.data === null,
       usernameIsUndefined: result.data === undefined
     });
+
+    // If user not found and authorized, try to create/update from Clerk data
+    if (!result.data && !result.error && result.authorized) {
+      console.log('GET /api/user/tradingview: User not found in Supabase, attempting to create/update from Clerk data...');
+      
+      try {
+        const user = await currentUser();
+        if (user) {
+          const primaryEmail = user.emailAddresses?.[0]?.emailAddress;
+          if (primaryEmail) {
+            // Check if user exists by email
+            const { data: existingUser } = await supabaseAdmin
+              .from('users')
+              .select('id, clerk_id, email, tradingview_username')
+              .eq('email', primaryEmail)
+              .maybeSingle();
+            
+            if (existingUser) {
+              // User exists but with different or missing clerk_id - update it
+              console.log('GET /api/user/tradingview: Found user by email, updating clerk_id...', {
+                existingClerkId: existingUser.clerk_id,
+                newClerkId: userId,
+                email: primaryEmail
+              });
+              
+              const { data: updatedUser, error: updateError } = await supabaseAdmin
+                .from('users')
+                .update({ clerk_id: userId, updated_at: new Date().toISOString() })
+                .eq('id', existingUser.id)
+                .select('tradingview_username')
+                .single();
+              
+              if (!updateError && updatedUser) {
+                console.log('GET /api/user/tradingview: Successfully updated clerk_id, retrying query...');
+                result = await getTradingViewUsername(userId);
+              } else if (updateError) {
+                console.error('GET /api/user/tradingview: Error updating clerk_id:', updateError);
+              }
+            } else {
+              // User doesn't exist - create them
+              console.log('GET /api/user/tradingview: User does not exist, creating new user...');
+              
+              const { data: newUser, error: createError } = await supabaseAdmin
+                .from('users')
+                .insert({
+                  clerk_id: userId,
+                  email: primaryEmail,
+                  first_name: user.firstName || null,
+                  last_name: user.lastName || null,
+                  tradingview_username: null,
+                  tradingview_verified: false,
+                })
+                .select('tradingview_username')
+                .single();
+              
+              if (!createError && newUser) {
+                console.log('GET /api/user/tradingview: Successfully created user, retrying query...');
+                result = await getTradingViewUsername(userId);
+              } else if (createError) {
+                console.error('GET /api/user/tradingview: Error creating user:', createError);
+              }
+            }
+          }
+        }
+      } catch (createError) {
+        console.error('GET /api/user/tradingview: Error in user creation fallback:', createError);
+      }
+    }
     
     if (!result.authorized) {
       if (isProduction) {
