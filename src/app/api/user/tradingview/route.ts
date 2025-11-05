@@ -6,11 +6,22 @@ import { supabaseAdmin } from '@/lib/supabase-server';
 export async function GET() {
   try {
     const { userId } = await auth();
+    const isProduction = process.env.NODE_ENV === 'production';
     
-    console.log('GET /api/user/tradingview: userId from auth():', userId);
+    if (isProduction) {
+      console.log('GET /api/user/tradingview: userId from auth():', userId);
+      console.log('GET /api/user/tradingview: Environment check:', {
+        hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+        hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+        hasClerkSecret: !!process.env.CLERK_SECRET_KEY,
+        nodeEnv: process.env.NODE_ENV
+      });
+    }
     
     if (!userId) {
-      console.error('GET /api/user/tradingview: No userId from auth()');
+      if (isProduction) {
+        console.error('GET /api/user/tradingview: No userId from auth()');
+      }
       return NextResponse.json(
         { error: 'Unauthorized. Please sign in to access your TradingView username.' },
         { status: 401 }
@@ -18,22 +29,28 @@ export async function GET() {
     }
 
     // Use data access layer to get username (enforces access control)
-    console.log('GET /api/user/tradingview: Calling getTradingViewUsername with userId:', userId);
+    if (isProduction) {
+      console.log('GET /api/user/tradingview: Calling getTradingViewUsername with userId:', userId);
+    }
     const result = await getTradingViewUsername(userId);
     
-    console.log('GET /api/user/tradingview: Result from data access layer:', {
-      authorized: result.authorized,
-      hasData: !!result.data,
-      hasError: !!result.error,
-      errorMessage: result.error?.message,
-      username: result.data
-    });
+    if (isProduction) {
+      console.log('GET /api/user/tradingview: Result from data access layer:', {
+        authorized: result.authorized,
+        hasData: !!result.data,
+        hasError: !!result.error,
+        errorMessage: result.error?.message,
+        username: result.data
+      });
+    }
     
     if (!result.authorized) {
-      console.error('GET /api/user/tradingview: Not authorized', {
-        error: result.error?.message,
-        userId: userId
-      });
+      if (isProduction) {
+        console.error('GET /api/user/tradingview: Not authorized', {
+          error: result.error?.message,
+          userId: userId
+        });
+      }
       return NextResponse.json(
         { error: result.error?.message || 'Unauthorized access' },
         { status: 403 }
@@ -41,7 +58,12 @@ export async function GET() {
     }
 
     if (result.error) {
-      console.error('GET /api/user/tradingview: Error from data access layer', result.error);
+      if (isProduction) {
+        console.error('GET /api/user/tradingview: Error from data access layer', {
+          message: result.error.message,
+          stack: result.error.stack
+        });
+      }
       return NextResponse.json(
         { error: 'Failed to get TradingView username' },
         { status: 500 }
@@ -49,14 +71,20 @@ export async function GET() {
     }
 
     // Return the username (can be null if not set)
-    console.log('GET /api/user/tradingview: Returning username:', result.data);
+    if (isProduction) {
+      console.log('GET /api/user/tradingview: Returning username:', result.data);
+    }
     return NextResponse.json({ 
       username: result.data 
     });
   } catch (error) {
-    console.error('GET /api/user/tradingview: Unexpected error:', error);
-    if (error instanceof Error) {
-      console.error('Error details:', error.message, error.stack);
+    const isProduction = process.env.NODE_ENV === 'production';
+    if (isProduction) {
+      console.error('GET /api/user/tradingview: Unexpected error:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        errorType: error instanceof Error ? error.constructor.name : typeof error
+      });
     }
     return NextResponse.json(
       { error: 'Failed to get TradingView username' },

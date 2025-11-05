@@ -69,7 +69,12 @@ export async function getUserData(clerkUserId: string) {
  */
 export async function getTradingViewUsername(clerkUserId: string) {
   try {
-    console.log('getTradingViewUsername: Fetching username for clerk_id:', clerkUserId);
+    // Always log in production for debugging
+    const isProduction = process.env.NODE_ENV === 'production';
+    
+    if (isProduction) {
+      console.log('getTradingViewUsername: Fetching username for clerk_id:', clerkUserId);
+    }
     
     const { data, error } = await supabaseAdmin
       .from('users')
@@ -77,26 +82,39 @@ export async function getTradingViewUsername(clerkUserId: string) {
       .eq('clerk_id', clerkUserId)
       .maybeSingle();
 
-    console.log('getTradingViewUsername: Query result:', { 
-      hasData: !!data, 
-      hasError: !!error, 
-      errorCode: error?.code,
-      errorMessage: error?.message,
-      username: data?.tradingview_username,
-      clerkId: data?.clerk_id
-    });
+    if (isProduction) {
+      console.log('getTradingViewUsername: Query result:', { 
+        hasData: !!data, 
+        hasError: !!error, 
+        errorCode: error?.code,
+        errorMessage: error?.message,
+        username: data?.tradingview_username,
+        clerkId: data?.clerk_id,
+        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Set' : 'Missing',
+        serviceKey: process.env.SUPABASE_SERVICE_ROLE_KEY ? 'Set' : 'Missing'
+      });
+    }
 
     if (error) {
       // PGRST116 is "no rows returned" - user doesn't exist yet
       if (error.code === 'PGRST116') {
-        console.log('getTradingViewUsername: User does not exist yet (PGRST116)');
+        if (isProduction) {
+          console.log('getTradingViewUsername: User does not exist yet (PGRST116)');
+        }
         return {
           data: null,
           error: null,
           authorized: true, // User doesn't exist, but request is authorized
         };
       }
-      console.error('getTradingViewUsername: Database error:', error);
+      if (isProduction) {
+        console.error('getTradingViewUsername: Database error:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        });
+      }
       return {
         data: null,
         error: new Error(error.message),
@@ -106,7 +124,9 @@ export async function getTradingViewUsername(clerkUserId: string) {
 
     // If no data returned, user doesn't exist
     if (!data) {
-      console.log('getTradingViewUsername: No data returned (user does not exist)');
+      if (isProduction) {
+        console.log('getTradingViewUsername: No data returned (user does not exist)');
+      }
       return {
         data: null,
         error: null,
@@ -116,10 +136,12 @@ export async function getTradingViewUsername(clerkUserId: string) {
 
     // Verify the user ID matches
     if (data.clerk_id !== clerkUserId) {
-      console.error('getTradingViewUsername: User ID mismatch!', {
-        expected: clerkUserId,
-        found: data.clerk_id
-      });
+      if (isProduction) {
+        console.error('getTradingViewUsername: User ID mismatch!', {
+          expected: clerkUserId,
+          found: data.clerk_id
+        });
+      }
       return {
         data: null,
         error: new Error('Unauthorized: User ID mismatch'),
@@ -127,14 +149,23 @@ export async function getTradingViewUsername(clerkUserId: string) {
       };
     }
 
-    console.log('getTradingViewUsername: Successfully retrieved username:', data.tradingview_username);
+    if (isProduction) {
+      console.log('getTradingViewUsername: Successfully retrieved username:', data.tradingview_username);
+    }
     return {
       data: data.tradingview_username || null,
       error: null,
       authorized: true,
     };
   } catch (error) {
-    console.error('getTradingViewUsername: Unexpected error:', error);
+    const isProduction = process.env.NODE_ENV === 'production';
+    if (isProduction) {
+      console.error('getTradingViewUsername: Unexpected error:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        errorType: error instanceof Error ? error.constructor.name : typeof error
+      });
+    }
     return {
       data: null,
       error: error instanceof Error ? error : new Error('Unknown error'),
