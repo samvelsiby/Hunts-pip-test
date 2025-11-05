@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, currentUser } from '@clerk/nextjs/server';
+import { getAuthenticatedSupabaseClient } from '@/lib/supabase-authenticated';
 import { supabaseAdmin } from '@/lib/supabase-server';
 
 export async function GET() {
@@ -20,25 +21,9 @@ export async function GET() {
       .eq('clerk_id', userId)
       .single();
 
-    // If user doesn't exist in Supabase yet, return null (user hasn't set username)
-    if (userError) {
-      // PGRST116 is "no rows returned" - user doesn't exist yet
-      if (userError.code === 'PGRST116') {
-        return NextResponse.json({ 
-          username: null 
-        });
-      }
-      
-      console.error('Error fetching user from Supabase:', userError);
-      return NextResponse.json(
-        { error: 'Failed to get TradingView username' },
-        { status: 500 }
-      );
-    }
-
     // Return the username (can be null if not set)
     return NextResponse.json({ 
-      username: user?.tradingview_username || null 
+      username: result.data 
     });
   } catch (error) {
     console.error('Error getting TradingView username:', error);
@@ -81,7 +66,7 @@ export async function PATCH(request: NextRequest) {
     // First, check if user exists in Supabase
     const { data: existingUser, error: checkError } = await supabaseAdmin
       .from('users')
-      .select('id, tradingview_username')
+      .select('id, tradingview_username, clerk_id')
       .eq('clerk_id', userId)
       .maybeSingle();
 
@@ -138,6 +123,14 @@ export async function PATCH(request: NextRequest) {
         success: true, 
         username: newUser.tradingview_username 
       });
+    }
+
+    // Verify user has access (defense in depth)
+    if (existingUser.clerk_id !== userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized: User ID mismatch', success: false },
+        { status: 403 }
+      );
     }
 
     // User exists - update their TradingView username
