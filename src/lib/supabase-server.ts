@@ -14,5 +14,11 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
     autoRefreshToken: false,
     persistSession: false,
   },
+  global: {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+  },
 })
 
