@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, currentUser } from '@clerk/nextjs/server';
-import { getAuthenticatedSupabaseClient } from '@/lib/supabase-authenticated';
+import { getTradingViewUsername } from '@/lib/data-access-layer';
 import { supabaseAdmin } from '@/lib/supabase-server';
 
 export async function GET() {
@@ -14,12 +14,22 @@ export async function GET() {
       );
     }
 
-    // Get user from Supabase using clerk_id
-    const { data: user, error: userError } = await supabaseAdmin
-      .from('users')
-      .select('tradingview_username')
-      .eq('clerk_id', userId)
-      .single();
+    // Use data access layer to get username (enforces access control)
+    const result = await getTradingViewUsername(userId);
+    
+    if (!result.authorized) {
+      return NextResponse.json(
+        { error: result.error?.message || 'Unauthorized access' },
+        { status: 403 }
+      );
+    }
+
+    if (result.error) {
+      return NextResponse.json(
+        { error: 'Failed to get TradingView username' },
+        { status: 500 }
+      );
+    }
 
     // Return the username (can be null if not set)
     return NextResponse.json({ 
