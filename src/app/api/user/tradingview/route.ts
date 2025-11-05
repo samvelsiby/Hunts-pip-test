@@ -8,20 +8,17 @@ export async function GET() {
     const { userId } = await auth();
     const isProduction = process.env.NODE_ENV === 'production';
     
-    if (isProduction) {
-      console.log('GET /api/user/tradingview: userId from auth():', userId);
-      console.log('GET /api/user/tradingview: Environment check:', {
-        hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-        hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-        hasClerkSecret: !!process.env.CLERK_SECRET_KEY,
-        nodeEnv: process.env.NODE_ENV
-      });
-    }
+    // Always log for debugging (both dev and prod)
+    console.log('GET /api/user/tradingview: userId from auth():', userId);
+    console.log('GET /api/user/tradingview: Environment check:', {
+      hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+      hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      hasClerkSecret: !!process.env.CLERK_SECRET_KEY,
+      nodeEnv: process.env.NODE_ENV
+    });
     
     if (!userId) {
-      if (isProduction) {
-        console.error('GET /api/user/tradingview: No userId from auth()');
-      }
+      console.error('GET /api/user/tradingview: No userId from auth()');
       return NextResponse.json(
         { error: 'Unauthorized. Please sign in to access your TradingView username.' },
         { status: 401 }
@@ -29,20 +26,20 @@ export async function GET() {
     }
 
     // Use data access layer to get username (enforces access control)
-    if (isProduction) {
-      console.log('GET /api/user/tradingview: Calling getTradingViewUsername with userId:', userId);
-    }
+    console.log('GET /api/user/tradingview: Calling getTradingViewUsername with userId:', userId);
     const result = await getTradingViewUsername(userId);
     
-    if (isProduction) {
-      console.log('GET /api/user/tradingview: Result from data access layer:', {
-        authorized: result.authorized,
-        hasData: !!result.data,
-        hasError: !!result.error,
-        errorMessage: result.error?.message,
-        username: result.data
-      });
-    }
+    // Always log result
+    console.log('GET /api/user/tradingview: Result from data access layer:', {
+      authorized: result.authorized,
+      hasData: !!result.data,
+      hasError: !!result.error,
+      errorMessage: result.error?.message,
+      username: result.data,
+      usernameType: typeof result.data,
+      usernameIsNull: result.data === null,
+      usernameIsUndefined: result.data === undefined
+    });
     
     if (!result.authorized) {
       if (isProduction) {

@@ -72,9 +72,14 @@ export async function getTradingViewUsername(clerkUserId: string) {
     // Always log in production for debugging
     const isProduction = process.env.NODE_ENV === 'production';
     
-    if (isProduction) {
-      console.log('getTradingViewUsername: Fetching username for clerk_id:', clerkUserId);
-    }
+    // Always log for debugging (both dev and prod)
+    console.log('getTradingViewUsername: Fetching username for clerk_id:', clerkUserId);
+    console.log('getTradingViewUsername: Environment:', {
+      nodeEnv: process.env.NODE_ENV,
+      hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+      hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 30) + '...' || 'Missing'
+    });
     
     const { data, error } = await supabaseAdmin
       .from('users')
@@ -82,18 +87,17 @@ export async function getTradingViewUsername(clerkUserId: string) {
       .eq('clerk_id', clerkUserId)
       .maybeSingle();
 
-    if (isProduction) {
-      console.log('getTradingViewUsername: Query result:', { 
-        hasData: !!data, 
-        hasError: !!error, 
-        errorCode: error?.code,
-        errorMessage: error?.message,
-        username: data?.tradingview_username,
-        clerkId: data?.clerk_id,
-        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Set' : 'Missing',
-        serviceKey: process.env.SUPABASE_SERVICE_ROLE_KEY ? 'Set' : 'Missing'
-      });
-    }
+    // Always log query result
+    console.log('getTradingViewUsername: Query result:', { 
+      hasData: !!data, 
+      hasError: !!error, 
+      errorCode: error?.code,
+      errorMessage: error?.message,
+      username: data?.tradingview_username,
+      clerkId: data?.clerk_id,
+      queryClerkId: clerkUserId,
+      dataMatch: data?.clerk_id === clerkUserId
+    });
 
     if (error) {
       // PGRST116 is "no rows returned" - user doesn't exist yet
