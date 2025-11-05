@@ -16,6 +16,18 @@
 - **"Users can insert their own subscriptions"** - ✅ **DROPPED**
 - **"Users can delete their own subscriptions"** - ✅ **DROPPED**
 
+### 4. Removed RLS Policies on `tradingview_credentials` table:
+- **"Users can view their own tradingview credentials"** - ✅ **DROPPED**
+- **"Users can update their own tradingview credentials"** - ✅ **DROPPED**
+- **"Users can delete their own tradingview credentials"** - ✅ **DROPPED**
+- **"Users can insert their own tradingview credentials"** - ✅ **DROPPED**
+
+### 5. Removed RLS Policies on `user_subscriptions` table:
+- **"Users can view own subscriptions"** - ✅ **DROPPED**
+- **"Users can insert own subscriptions"** - ✅ **DROPPED**
+- **"Users can update own subscriptions"** - ✅ **DROPPED**
+- **"Users can delete own subscriptions"** - ✅ **DROPPED**
+
 ## What Was Kept
 
 ### `tradingview_username` Column
