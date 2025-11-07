@@ -29,7 +29,12 @@ async function getIndicators(): Promise<Indicator[]> {
       })
     }
     
-    const indicators = await client.fetch(indicatorsQuery)
+    const indicators = await client.fetch(indicatorsQuery, {}, {
+      next: { 
+        revalidate: 3600, // 1 hour fallback
+        tags: ['indicators', 'sanity-content'] 
+      }
+    })
     
     if (process.env.NODE_ENV === 'production') {
       console.log(`✅ Fetched ${indicators.length} indicators from Sanity`)

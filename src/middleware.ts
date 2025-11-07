@@ -12,6 +12,7 @@ const isProtectedRoute = createRouteMatcher([
 const isWebhookRoute = createRouteMatcher([
   '/api/webhooks(.*)',
   '/api/custom-webhook',
+  '/api/revalidate(.*)',
 ])
 
 const isAdminRoute = createRouteMatcher([
