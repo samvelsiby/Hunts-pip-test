@@ -20,10 +20,35 @@ interface Indicator {
 
 async function getIndicators(): Promise<Indicator[]> {
   try {
+    // Log configuration in production for debugging
+    if (process.env.NODE_ENV === 'production') {
+      console.log('Sanity Config:', {
+        projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ? '✅ Set' : '❌ Missing',
+        dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
+        hasToken: !!process.env.SANITY_API_TOKEN,
+      })
+    }
+    
     const indicators = await client.fetch(indicatorsQuery)
+    
+    if (process.env.NODE_ENV === 'production') {
+      console.log(`✅ Fetched ${indicators.length} indicators from Sanity`)
+    }
+    
     return indicators
   } catch (error) {
-    console.error('Error fetching indicators:', error)
+    console.error('❌ Error fetching indicators from Sanity:', error)
+    
+    // More detailed error logging in production
+    if (process.env.NODE_ENV === 'production') {
+      if (error instanceof Error) {
+        console.error('Error message:', error.message)
+        console.error('Error stack:', error.stack)
+      }
+      console.error('Sanity Project ID:', process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'NOT SET')
+      console.error('Sanity Dataset:', process.env.NEXT_PUBLIC_SANITY_DATASET || 'NOT SET')
+    }
+    
     return []
   }
 }

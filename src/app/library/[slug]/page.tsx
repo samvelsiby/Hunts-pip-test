@@ -6,8 +6,8 @@ import type { PortableTextBlock } from '@portabletext/types'
 import PageBreadcrumbs from '@/components/PageBreadcrumbs'
 import TradingViewButton from '@/components/TradingViewButton'
 
-// Cache this page for 1 hour in production, but revalidate every 60 seconds in development
-export const revalidate = 3600
+// Revalidate every 5 minutes in production, or on-demand via webhook
+export const revalidate = 300
 
 interface Indicator {
   _id: string
@@ -25,10 +25,34 @@ interface Indicator {
 
 async function getIndicator(slug: string): Promise<Indicator | null> {
   try {
-    const indicator = await client.fetch(indicatorBySlugQuery, { slug })
+    const indicator = await client.fetch(
+      indicatorBySlugQuery, 
+      { slug },
+      {
+        next: { 
+          revalidate: 300, // 5 minutes
+          tags: [`indicator-${slug}`, 'indicators', 'sanity-content'] 
+        }
+      }
+    )
+    
+    if (process.env.NODE_ENV === 'production' && !indicator) {
+      console.warn(`⚠️  Indicator not found for slug: ${slug}`)
+    }
+    
     return indicator
   } catch (error) {
-    console.error('Error fetching indicator:', error)
+    console.error(`❌ Error fetching indicator (slug: ${slug}):`, error)
+    
+    // More detailed error logging in production
+    if (process.env.NODE_ENV === 'production') {
+      if (error instanceof Error) {
+        console.error('Error message:', error.message)
+      }
+      console.error('Sanity Project ID:', process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'NOT SET')
+      console.error('Sanity Dataset:', process.env.NEXT_PUBLIC_SANITY_DATASET || 'NOT SET')
+    }
+    
     return null
   }
 }

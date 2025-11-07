@@ -1,9 +1,20 @@
 import { createClient } from 'next-sanity'
 import imageUrlBuilder from '@sanity/image-url'
 
+// Validate environment variables
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || ''
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
+
+if (!projectId) {
+  console.error('⚠️  Sanity: NEXT_PUBLIC_SANITY_PROJECT_ID is not set!')
+  if (process.env.NODE_ENV === 'production') {
+    console.error('⚠️  This will cause Sanity queries to fail in production!')
+  }
+}
+
 export const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '',
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
+  projectId,
+  dataset,
   apiVersion: '2024-01-01',
   useCdn: true,
   stega: {
