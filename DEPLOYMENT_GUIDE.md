@@ -61,6 +61,7 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_xxxxxxxxxxxxx
 NEXT_PUBLIC_SANITY_PROJECT_ID=your_project_id
 NEXT_PUBLIC_SANITY_DATASET=production
 SANITY_API_TOKEN=skxxxxxxxxxxxxx
+SANITY_WEBHOOK_SECRET=your_webhook_secret_here
 ```
 
 #### Application Configuration
@@ -115,6 +116,69 @@ NODE_ENV=production
 3. Check Supabase:
    - Verify user was created in `users` table
    - Verify subscription was created in `subscriptions` table
+
+---
+
+## Sanity CMS Webhook Configuration
+
+### Production Webhook Endpoint
+
+**Production URL:** `https://hunts-pip-test.vercel.app/api/revalidate/sanity`
+
+### Setup Steps
+
+1. Go to [Sanity Dashboard](https://www.sanity.io/manage)
+2. Select your project
+3. Navigate to **API** → **Webhooks** (or **Settings** → **Webhooks**)
+4. Click **Create Webhook** (or **+ Add Webhook**)
+5. Configure the webhook:
+   - **Name**: `Next.js Revalidation`
+   - **URL**: `https://hunts-pip-test.vercel.app/api/revalidate/sanity`
+   - **Dataset**: `production` (or your production dataset)
+   - **Trigger on**: Select `Create`, `Update`, and `Delete` events
+   - **Filter**: `_type == "indicator"` (to only trigger on indicator changes)
+   - **HTTP method**: `POST`
+   - **API version**: `v2021-06-07` or later
+6. **Optional**: Add a secret token for security:
+   - Generate a secure random string (e.g., using `openssl rand -hex 32`)
+   - Add it to the webhook configuration
+   - Set the same value as `SANITY_WEBHOOK_SECRET` in Vercel environment variables
+7. Click **Save**
+
+### Testing the Webhook
+
+1. Make a change to an indicator in Sanity Studio
+2. Check Vercel logs:
+   - Go to **Deployments** → Latest deployment → **Functions** tab
+   - Look for `/api/revalidate/sanity` requests
+   - Verify status is `200 OK`
+3. Verify the change appears on your production site:
+   - Visit `/library` page
+   - Changes should appear within seconds (not waiting for the 5-minute revalidation)
+
+### Troubleshooting Sanity Sync Issues
+
+If Sanity content is not syncing properly in production:
+
+1. **Check Environment Variables**:
+   - Verify `NEXT_PUBLIC_SANITY_PROJECT_ID` is set correctly
+   - Verify `NEXT_PUBLIC_SANITY_DATASET` matches your Sanity dataset
+   - Verify `SANITY_API_TOKEN` has read permissions
+
+2. **Check CDN Settings**:
+   - The client is configured to disable CDN in production (`useCdn: false`)
+   - This ensures fresh data is fetched directly from Sanity
+
+3. **Check Revalidation**:
+   - Pages revalidate every 5 minutes automatically
+   - Webhook triggers immediate revalidation on content changes
+   - Check webhook logs in Sanity dashboard
+
+4. **Manual Revalidation**:
+   - You can manually trigger revalidation by calling:
+     ```bash
+     curl -X POST https://hunts-pip-test.vercel.app/api/revalidate/sanity
+     ```
 
 ---
 

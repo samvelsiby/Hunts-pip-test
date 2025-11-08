@@ -3,6 +3,7 @@
 import BackgroundParticles from '@/components/BackgroundParticles';
 import HeroSection from '@/components/HeroSection';
 import FeaturesComponent from '@/components/FeaturesComponent';
+import BentoGridComponent from '@/components/BentoGridComponent';
 import ServicesComponent from '@/components/ServicesComponent';
 import MoneyBackGuaranteeComponent from '@/components/MoneyBackGuaranteeComponent';
 import PricingComponent from '@/components/PricingComponent';
@@ -29,6 +30,9 @@ export default function Home() {
 
       {/* Features Section */}
       <FeaturesComponent />
+
+      {/* Bento Grid Section */}
+      <BentoGridComponent />
 
       {/* Services Section */}
       <ServicesComponent />
