@@ -273,6 +273,24 @@ export async function getUserSubscription(clerkUserId: string) {
   try {
     console.log('🔍 getUserSubscription: Fetching subscription for clerkUserId:', clerkUserId);
     
+    // Debug: Check all subscriptions in the table to see what exists
+    const { data: allSubscriptions, error: allSubsError } = await supabaseAdmin
+      .from('user_subscriptions')
+      .select('user_id, plan_id, status, created_at')
+      .order('created_at', { ascending: false })
+      .limit(10);
+    
+    console.log('🔍 getUserSubscription: All subscriptions in table (first 10):', {
+      count: allSubscriptions?.length || 0,
+      subscriptions: allSubscriptions?.map(sub => ({
+        user_id: sub.user_id,
+        plan_id: sub.plan_id,
+        status: sub.status,
+        created_at: sub.created_at,
+      })),
+      lookingFor: clerkUserId,
+    });
+    
     // Get subscription directly from user_subscriptions table using Clerk user ID
     // This table is updated by Stripe webhooks when payments are completed
     const { data: subscription, error: subError } = await supabaseAdmin
