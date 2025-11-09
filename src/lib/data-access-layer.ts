@@ -271,58 +271,61 @@ export async function updateTradingViewUsername(
  */
 export async function getUserSubscription(clerkUserId: string) {
   try {
-    // First, get the user's Supabase ID
-    const { data: user, error: userError } = await supabaseAdmin
-      .from('users')
-      .select('id, clerk_id')
-      .eq('clerk_id', clerkUserId)
-      .single();
-
-    if (userError || !user) {
-      return {
-        data: { plan_type: 'free', status: 'active' },
-        error: null,
-        authorized: true, // Return default subscription
-      };
-    }
-
-    // Verify the user ID matches
-    if (user.clerk_id !== clerkUserId) {
-      return {
-        data: null,
-        error: new Error('Unauthorized: User ID mismatch'),
-        authorized: false,
-      };
-    }
-
-    // Get subscription for this user
+    // Get subscription directly from user_subscriptions table using Clerk user ID
+    // This table is updated by Stripe webhooks when payments are completed
     const { data: subscription, error: subError } = await supabaseAdmin
-      .from('subscriptions')
-      .select('plan_type, status')
-      .eq('user_id', user.id)
+      .from('user_subscriptions')
+      .select('plan_id, status, stripe_customer_id, stripe_subscription_id, created_at, updated_at')
+      .eq('user_id', clerkUserId)
+      .order('created_at', { ascending: false })
+      .limit(1)
       .maybeSingle();
 
     if (subError) {
+      console.error('Error fetching subscription:', subError);
+      // Return default subscription if error
       return {
         data: { plan_type: 'free', status: 'active' },
         error: null,
-        authorized: true, // Return default subscription
+        authorized: true,
       };
     }
 
+    // If no subscription found, return default free plan
+    if (!subscription) {
+      return {
+        data: { plan_type: 'free', status: 'active' },
+        error: null,
+        authorized: true,
+      };
+    }
+
+    // Map plan_id to plan_type for dashboard compatibility
+    // Handle legacy 'pro' -> 'premium' migration
+    let planType = subscription.plan_id || 'free';
+    if (planType === 'pro') {
+      planType = 'premium'; // Migrate old 'pro' to 'premium'
+    }
+    
+    // plan_id: 'free', 'premium', 'ultimate' -> plan_type: 'free', 'premium', 'ultimate'
     return {
       data: {
-        plan_type: subscription?.plan_type || 'free',
-        status: subscription?.status || 'active',
+        plan_type: planType, // Map plan_id to plan_type
+        status: subscription.status || 'active',
+        stripe_customer_id: subscription.stripe_customer_id,
+        stripe_subscription_id: subscription.stripe_subscription_id,
+        created_at: subscription.created_at,
+        updated_at: subscription.updated_at,
       },
       error: null,
       authorized: true,
     };
   } catch (error) {
+    console.error('Error in getUserSubscription:', error);
     return {
-      data: null,
+      data: { plan_type: 'free', status: 'active' },
       error: error instanceof Error ? error : new Error('Unknown error'),
-      authorized: false,
+      authorized: true, // Return default subscription on error
     };
   }
 }

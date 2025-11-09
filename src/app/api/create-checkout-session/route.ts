@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { auth } from '@clerk/nextjs/server';
+import { getStripePriceId } from '@/config/stripe-prices';
 
 // Lazy initialization to avoid build-time errors
 function getStripe() {
@@ -7,32 +9,52 @@ function getStripe() {
   if (!secretKey) {
     throw new Error('STRIPE_SECRET_KEY is not configured');
   }
-  return new Stripe(secretKey);
+  return new Stripe(secretKey, {
+    apiVersion: '2025-10-29.clover',
+  });
 }
-
-const planPrices = {
-  pro: 'price_pro_30', // You'll need to create these in Stripe
-  premium: 'price_premium_50',
-};
 
 export async function POST(request: NextRequest) {
   try {
-    const { planId, userId, userEmail } = await request.json();
+    // Authenticate user
+    const { userId } = await auth();
+    
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-    if (!planId || !userId || !userEmail) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    const { planId, frequency } = await request.json();
+
+    if (!planId || !frequency) {
+      return NextResponse.json({ error: 'Missing required fields: planId and frequency' }, { status: 400 });
     }
 
     if (planId === 'free') {
       return NextResponse.json({ error: 'Free plan does not require payment' }, { status: 400 });
     }
 
-    const priceId = planPrices[planId as keyof typeof planPrices];
+    // Validate frequency
+    if (frequency !== 'monthly' && frequency !== 'yearly') {
+      return NextResponse.json({ error: 'Invalid frequency. Must be "monthly" or "yearly"' }, { status: 400 });
+    }
+
+    // Get Stripe Price ID
+    const priceId = getStripePriceId(planId, frequency);
     if (!priceId) {
-      return NextResponse.json({ error: 'Invalid plan' }, { status: 400 });
+      return NextResponse.json({ 
+        error: `Price ID not found for plan: ${planId}, frequency: ${frequency}. Please configure Stripe Price IDs.` 
+      }, { status: 400 });
     }
 
     const stripe = getStripe();
+    
+    // Get base URL from environment or request
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
+                    process.env.APP_BASE_URL || 
+                    request.headers.get('origin') || 
+                    'http://localhost:3000';
+
+    // Create checkout session with subscription mode
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -41,19 +63,42 @@ export async function POST(request: NextRequest) {
           quantity: 1,
         },
       ],
-      mode: 'subscription',
-      success_url: `${process.env.APP_BASE_URL}/dashboard?success=true&plan=${planId}`,
-      cancel_url: `${process.env.APP_BASE_URL}/pricing?canceled=true`,
-      customer_email: userEmail,
+      mode: 'subscription', // Recurring subscription
+      success_url: `${baseUrl}/dashboard?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/pricing?canceled=true`,
+      client_reference_id: userId, // Track the Clerk user ID
       metadata: {
-        userId,
-        planId,
+        userId, // Clerk user ID
+        planId, // 'premium' or 'ultimate'
+        frequency, // 'monthly' or 'yearly'
+      },
+      subscription_data: {
+        metadata: {
+          userId, // Store in subscription metadata too
+          planId,
+          frequency,
+        },
       },
     });
 
-    return NextResponse.json({ url: session.url });
+    console.log('✅ Checkout session created:', {
+      sessionId: session.id,
+      userId,
+      planId,
+      frequency,
+      priceId,
+    });
+
+    return NextResponse.json({ 
+      url: session.url,
+      sessionId: session.id,
+    });
   } catch (error) {
-    console.error('Error creating checkout session:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('❌ Error creating checkout session:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ 
+      error: 'Internal server error',
+      message: errorMessage 
+    }, { status: 500 });
   }
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import { PricingTier } from "@/config/pricing";
-import { getPaymentLink } from "@/config/payment-links";
 import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
@@ -65,35 +64,45 @@ export const PricingCard = ({
         return;
       }
 
-      // Handle paid tiers - redirect to Stripe Payment Link
-      console.log('Getting payment link for:', tier.id, paymentFrequency);
-      const paymentLink = getPaymentLink(tier.id, paymentFrequency);
+      // Handle paid tiers - create Stripe Checkout Session
+      console.log('Creating checkout session for:', tier.id, paymentFrequency);
       
-      if (!paymentLink) {
-        console.error('Payment link not found for:', tier.id, paymentFrequency);
-        alert('Payment link not found for this plan. Please contact support.');
+      try {
+        const response = await fetch('/api/create-checkout-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            planId: tier.id,
+            frequency: paymentFrequency,
+          }),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          console.error('Failed to create checkout session:', error);
+          alert(error.error || 'Failed to create checkout session. Please try again.');
+          setIsLoading(false);
+          return;
+        }
+
+        const data = await response.json();
+        console.log('Checkout session created:', data);
+
+        if (data.url) {
+          // Redirect to Stripe Checkout
+          window.location.href = data.url;
+        } else {
+          console.error('No checkout URL returned');
+          alert('Failed to create checkout session. Please try again.');
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error('Error creating checkout session:', error);
+        alert('Something went wrong. Please try again.');
         setIsLoading(false);
-        return;
       }
-
-      console.log('Payment link found:', paymentLink);
-
-      // Add user email as prefilled_email parameter if available
-      const userEmail = user.emailAddresses?.[0]?.emailAddress;
-      const url = new URL(paymentLink);
-      
-      if (userEmail) {
-        url.searchParams.set('prefilled_email', userEmail);
-        console.log('Prefilled email:', userEmail);
-      }
-      
-      // Add client_reference_id to track the user
-      url.searchParams.set('client_reference_id', user.id);
-      console.log('Client reference ID:', user.id);
-
-      console.log('Redirecting to:', url.toString());
-      // Redirect to Stripe Payment Link
-      window.location.href = url.toString();
     } catch (error) {
       console.error('Error selecting plan:', error);
       alert('Something went wrong. Please try again.');

@@ -34,7 +34,7 @@ export const TIERS: PricingTier[] = [
     cta: "Get Started Free",
   },
   {
-    id: "pro",
+    id: "premium",
     name: "Premium",
     price: {
       monthly: 30,
@@ -55,7 +55,7 @@ export const TIERS: PricingTier[] = [
     popular: true,
   },
   {
-    id: "premium",
+    id: "ultimate",
     name: "Ultimate",
     price: {
       monthly: 50,

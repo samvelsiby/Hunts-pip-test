@@ -3,8 +3,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { UserButton } from '@clerk/nextjs';
+import dynamic from 'next/dynamic';
 import { Home, Settings, User, BarChart3, BookOpen } from 'lucide-react';
+
+// Dynamically import UserButton to avoid hydration issues
+const UserButton = dynamic(
+  () => import('@clerk/nextjs').then((mod) => mod.UserButton),
+  { ssr: false }
+);
 import BackgroundParticles from '@/components/BackgroundParticles';
 import {
   Sidebar,

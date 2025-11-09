@@ -20,7 +20,7 @@ const COMPARISON_FEATURES = [
 
 // Map features to tiers
 type FeatureName = typeof COMPARISON_FEATURES[number]['name'];
-type TierId = 'free' | 'pro' | 'premium';
+type TierId = 'free' | 'premium' | 'ultimate';
 
 type FeatureAvailability = {
   [key in FeatureName]: {
@@ -29,17 +29,17 @@ type FeatureAvailability = {
 };
 
 const FEATURE_AVAILABILITY: FeatureAvailability = {
-  "Trading Signals": { free: "Basic", pro: "Advanced", premium: "Advanced+" },
-  "Keyword Access": { free: "Limited", pro: "Unlimited", premium: "Unlimited" },
-  "Support": { free: "Community", pro: "Priority", premium: "24/7 Premium" },
-  "Analytics": { free: "Basic", pro: "Advanced", premium: "Advanced+" },
-  "Custom Alerts": { free: "❌", pro: "✓", premium: "✓" },
-  "Mobile Access": { free: "❌", pro: "✓", premium: "✓" },
-  "AI Insights": { free: "❌", pro: "❌", premium: "✓" },
-  "Custom Strategies": { free: "❌", pro: "❌", premium: "✓" },
-  "API Access": { free: "❌", pro: "❌", premium: "✓" },
-  "White Label": { free: "❌", pro: "❌", premium: "✓" },
-  "Account Manager": { free: "❌", pro: "❌", premium: "✓" },
+  "Trading Signals": { free: "Basic", premium: "Advanced", ultimate: "Advanced+" },
+  "Keyword Access": { free: "Limited", premium: "Unlimited", ultimate: "Unlimited" },
+  "Support": { free: "Community", premium: "Priority", ultimate: "24/7 Premium" },
+  "Analytics": { free: "Basic", premium: "Advanced", ultimate: "Advanced+" },
+  "Custom Alerts": { free: "❌", premium: "✓", ultimate: "✓" },
+  "Mobile Access": { free: "❌", premium: "✓", ultimate: "✓" },
+  "AI Insights": { free: "❌", premium: "❌", ultimate: "✓" },
+  "Custom Strategies": { free: "❌", premium: "❌", ultimate: "✓" },
+  "API Access": { free: "❌", premium: "❌", ultimate: "✓" },
+  "White Label": { free: "❌", premium: "❌", ultimate: "✓" },
+  "Account Manager": { free: "❌", premium: "❌", ultimate: "✓" },
 } as FeatureAvailability;
 
 export const PlanComparison = () => {

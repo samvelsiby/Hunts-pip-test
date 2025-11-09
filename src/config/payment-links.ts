@@ -4,11 +4,11 @@
  */
 
 export const PAYMENT_LINKS: Record<string, Record<string, string>> = {
-  pro: {
+  premium: {
     monthly: 'https://buy.stripe.com/eVq4gBcjv4cJaqfdhQ9EI03',
     yearly: 'https://buy.stripe.com/dRm4gB2IV24B2XNb9I9EI02',
   },
-  premium: {
+  ultimate: {
     monthly: 'https://buy.stripe.com/9B6cN7abn8sZfKz5Po9EI00',
     yearly: 'https://buy.stripe.com/bJe00labnbFbgODdhQ9EI01',
   },

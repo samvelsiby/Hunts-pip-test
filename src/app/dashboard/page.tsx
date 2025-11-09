@@ -81,6 +81,26 @@ export default function Dashboard() {
     }
   }, [isLoaded, isSignedIn, user, fetchUserData]);
 
+  // Refresh subscription data when returning from payment success
+  useEffect(() => {
+    if (isLoaded && isSignedIn && user) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const success = urlParams.get('success');
+      const sessionId = urlParams.get('session_id');
+      
+      // If payment was successful, refresh subscription data
+      if (success === 'true' && sessionId) {
+        console.log('✅ Payment successful, refreshing subscription data...');
+        // Wait a moment for webhook to process, then refresh
+        setTimeout(() => {
+          fetchUserData();
+          // Clean up URL params
+          window.history.replaceState({}, '', '/dashboard');
+        }, 2000); // Wait 2 seconds for webhook to process
+      }
+    }
+  }, [isLoaded, isSignedIn, user, fetchUserData]);
+
   const handleSaveUsername = async () => {
     const trimmedUsername = tradingViewUsername.trim();
     
@@ -246,10 +266,10 @@ export default function Dashboard() {
                 </div>
               )}
 
-              {planType === 'pro' && (
+              {planType === 'premium' && (
                 <div className="mt-2 p-3 bg-green-950/20 border border-green-500/30 rounded-md">
                   <h4 className="text-green-400 font-semibold text-sm mb-2 flex items-center gap-2">
-                    <Award className="h-4 w-4" /> Pro Plan Features
+                    <Award className="h-4 w-4" /> Premium Plan Features
                   </h4>
                   <ul className="text-gray-300 text-xs space-y-1">
                     <li className="flex items-center gap-2">• Advanced trading signals</li>
@@ -260,13 +280,13 @@ export default function Dashboard() {
                 </div>
               )}
 
-              {planType === 'premium' && (
+              {planType === 'ultimate' && (
                 <div className="mt-2 p-3 bg-purple-950/20 border border-purple-500/30 rounded-md">
                   <h4 className="text-purple-400 font-semibold text-sm mb-2 flex items-center gap-2">
-                    <Award className="h-4 w-4" /> Premium Plan Features
+                    <Award className="h-4 w-4" /> Ultimate Plan Features
                   </h4>
                   <ul className="text-gray-300 text-xs space-y-1">
-                    <li className="flex items-center gap-2">• All Pro features</li>
+                    <li className="flex items-center gap-2">• All Premium features</li>
                     <li className="flex items-center gap-2">• AI-powered insights</li>
                     <li className="flex items-center gap-2">• 24/7 premium support</li>
                     <li className="flex items-center gap-2">• Custom strategies</li>

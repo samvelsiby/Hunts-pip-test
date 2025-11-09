@@ -16,7 +16,7 @@ interface Indicator {
   name: string;
   description: string;
   category: 'Trend' | 'Momentum' | 'Volatility' | 'Volume' | 'Custom';
-  planAccess: 'free' | 'pro' | 'premium';
+  planAccess: 'free' | 'premium' | 'ultimate';
   isActive: boolean;
 }
 
@@ -35,7 +35,7 @@ const indicators: Indicator[] = [
     name: 'RSI Divergence',
     description: 'Relative Strength Index with bullish and bearish divergence detection',
     category: 'Momentum',
-    planAccess: 'pro',
+    planAccess: 'premium',
     isActive: true,
   },
   {
@@ -198,8 +198,8 @@ export default function IndicatorsPage() {
 function IndicatorCard({ indicator }: { indicator: Indicator }) {
   const planColors = {
     free: 'bg-green-500/10 text-green-400 border-green-500/20',
-    pro: 'bg-[#FF5B41]/10 text-[#FF5B41] border-[#FF5B41]/20',
-    premium: 'bg-[#DD0000]/10 text-[#DD0000] border-[#DD0000]/20',
+    premium: 'bg-[#FF5B41]/10 text-[#FF5B41] border-[#FF5B41]/20',
+    ultimate: 'bg-[#DD0000]/10 text-[#DD0000] border-[#DD0000]/20',
   };
 
   const categoryIcons = {

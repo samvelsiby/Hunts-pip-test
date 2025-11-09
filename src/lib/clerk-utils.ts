@@ -2,8 +2,8 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 
 export interface UserSubscriptionData {
   tradingViewUsername?: string;
-  subscriptionTier: 'free' | 'pro' | 'premium';
-  accessLevel: number; // 0: free, 1: pro, 2: premium
+  subscriptionTier: 'free' | 'premium' | 'ultimate';
+  accessLevel: number; // 0: free, 1: premium, 2: ultimate
   subscriptionStartDate?: string;
   subscriptionEndDate?: string;
   isActive: boolean;
@@ -94,9 +94,9 @@ export async function updateKeyword(keyword: string): Promise<boolean> {
 
 export function getAccessLevelFromTier(tier: string): number {
   switch (tier.toLowerCase()) {
-    case 'premium':
+    case 'ultimate':
       return 2;
-    case 'pro':
+    case 'premium':
       return 1;
     case 'free':
     default:
@@ -104,12 +104,12 @@ export function getAccessLevelFromTier(tier: string): number {
   }
 }
 
-export function getTierFromAccessLevel(level: number): 'free' | 'pro' | 'premium' {
+export function getTierFromAccessLevel(level: number): 'free' | 'premium' | 'ultimate' {
   switch (level) {
     case 2:
-      return 'premium';
+      return 'ultimate';
     case 1:
-      return 'pro';
+      return 'premium';
     case 0:
     default:
       return 'free';

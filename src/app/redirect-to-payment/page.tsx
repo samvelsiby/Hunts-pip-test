@@ -3,7 +3,6 @@
 import { useUser } from '@clerk/nextjs';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
-import { getPaymentLink } from '@/config/payment-links';
 
 function RedirectToPaymentContent() {
   const { user, isLoaded } = useUser();
@@ -64,28 +63,47 @@ function RedirectToPaymentContent() {
         return;
       }
 
-      // Handle paid tiers - get payment link
-      const paymentLink = getPaymentLink(tier, frequency);
-      
-      if (!paymentLink) {
-        console.error('Payment link not found for:', tier, frequency);
-        alert('Payment link not found for this plan. Please contact support.');
-        router.push('/pricing');
-        return;
-      }
+      // Handle paid tiers - create Stripe Checkout Session
+      fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          planId: tier,
+          frequency: frequency,
+        }),
+      })
+        .then(async (response) => {
+          if (!response.ok) {
+            const error = await response.json();
+            console.error('Failed to create checkout session:', error);
+            alert(error.error || 'Failed to create checkout session. Please try again.');
+            router.push('/pricing');
+            return;
+          }
 
-      // Construct payment URL with user info
-      const userEmail = user.emailAddresses?.[0]?.emailAddress;
-      const url = new URL(paymentLink);
-      
-      if (userEmail) {
-        url.searchParams.set('prefilled_email', userEmail);
-      }
-      
-      url.searchParams.set('client_reference_id', user.id);
+          return response.json();
+        })
+        .then((data) => {
+          if (!data) return;
+          
+          console.log('Checkout session created:', data);
 
-      // Redirect to Stripe Payment Link
-      window.location.href = url.toString();
+          if (data.url) {
+            // Redirect to Stripe Checkout
+            window.location.href = data.url;
+          } else {
+            console.error('No checkout URL returned');
+            alert('Failed to create checkout session. Please try again.');
+            router.push('/pricing');
+          }
+        })
+        .catch((error) => {
+          console.error('Error creating checkout session:', error);
+          alert('Something went wrong. Please try again.');
+          router.push('/pricing');
+        });
     }
   }, [user, isLoaded, searchParams, router, isRedirecting]);
 
