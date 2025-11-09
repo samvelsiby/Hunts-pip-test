@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Award, Check, AlertCircle, Loader2, ExternalLink, Crown, Sparkles } from "lucide-react";
 import { TradingViewUsernameModal } from "@/components/TradingViewUsernameModal";
+import { DashboardLoadingSkeleton } from "@/components/DashboardLoadingSkeleton";
 
 interface Subscription {
   plan_type: string;
@@ -306,11 +307,7 @@ export default function Dashboard() {
   };
 
   if (!isLoaded) {
-    return (
-      <div className="flex items-center justify-center h-[calc(100vh-64px)]">
-        <div className="text-white text-xl">Loading...</div>
-      </div>
-    );
+    return <DashboardLoadingSkeleton />;
   }
 
   if (!isSignedIn) {
@@ -325,6 +322,11 @@ export default function Dashboard() {
         </div>
       </div>
     );
+  }
+
+  // Show loading skeleton while data is being fetched
+  if (isLoading) {
+    return <DashboardLoadingSkeleton />;
   }
 
   const hasChanges = tradingViewUsername !== originalUsername;
