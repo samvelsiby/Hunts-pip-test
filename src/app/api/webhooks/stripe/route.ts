@@ -233,12 +233,24 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
   if (existingSubscriptions && existingSubscriptions.length > 0) {
     // If there are multiple subscriptions, keep only the most recent one
     const mostRecent = existingSubscriptions[0];
+    const oldPlanId = mostRecent.plan_id;
     
-    // Update the most recent subscription
+    // CRITICAL: Always update plan_id with the new subscription level from checkout session
+    // This ensures upgrades (premium → ultimate) are properly reflected in the database
+    console.log('🔄 Updating subscription with new plan level:', {
+      userId: clerkUserId,
+      oldPlanId,
+      newPlanId: planId,
+      isUpgrade: oldPlanId !== planId,
+      subscriptionId,
+    });
+    
+    // Update the most recent subscription with the NEW plan_id from checkout session
+    // This is critical for upgrades - always use planId from session metadata
     const { error: updateError } = await supabaseAdmin
       .from('user_subscriptions')
       .update({
-        plan_id: planId,
+        plan_id: planId, // ALWAYS update with new plan from checkout session
         status: 'active',
         stripe_customer_id: customerId,
         stripe_subscription_id: subscriptionId,
@@ -249,6 +261,31 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     if (updateError) {
       console.error('❌ Error updating subscription:', updateError);
       throw updateError;
+    }
+    
+    // Verify the update was successful
+    const { data: updatedSubscription } = await supabaseAdmin
+      .from('user_subscriptions')
+      .select('plan_id, status')
+      .eq('id', mostRecent.id)
+      .maybeSingle();
+    
+    if (updatedSubscription) {
+      console.log('✅ Subscription updated successfully in database:', {
+        userId: clerkUserId,
+        planId: updatedSubscription.plan_id,
+        status: updatedSubscription.status,
+        verified: updatedSubscription.plan_id === planId,
+      });
+      
+      if (updatedSubscription.plan_id !== planId) {
+        console.error('❌ CRITICAL: Plan ID mismatch after update!', {
+          expected: planId,
+          actual: updatedSubscription.plan_id,
+          userId: clerkUserId,
+        });
+        // This should never happen, but log it as critical
+      }
     }
     
     // Delete duplicate subscriptions (keep only the most recent one)
@@ -267,7 +304,12 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       }
     }
     
-    console.log('✅ Updated subscription for user:', clerkUserId);
+    console.log('✅ Updated subscription for user:', {
+      userId: clerkUserId,
+      oldPlan: oldPlanId,
+      newPlan: planId,
+      subscriptionId,
+    });
     
     // Send Telegram notification for subscription update (if it's a new subscription)
     // Check if this is a new subscription by comparing subscription IDs
@@ -537,6 +579,17 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
   if (existingSubscriptions && existingSubscriptions.length > 0) {
     // If there are multiple subscriptions, keep only the most recent one
     const mostRecent = existingSubscriptions[0];
+    const oldPlanId = mostRecent.plan_id;
+    
+    // CRITICAL: Always update plan_id if provided in subscription metadata
+    // This ensures upgrades are properly reflected in the database
+    console.log('🔄 Updating subscription from subscription update event:', {
+      userId: clerkId,
+      oldPlanId,
+      newPlanId: planId,
+      isUpgrade: planId && oldPlanId !== planId,
+      subscriptionId,
+    });
     
     // Update the most recent subscription
     const updateData: {
@@ -550,8 +603,12 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
       updated_at: new Date().toISOString(),
     };
 
+    // ALWAYS update plan_id if provided in subscription metadata (for upgrades)
     if (planId) {
       updateData.plan_id = planId;
+      console.log('✅ Updating plan_id to:', planId);
+    } else {
+      console.log('⚠️ No planId in subscription metadata, keeping existing plan:', oldPlanId);
     }
 
     const { error } = await supabaseAdmin
@@ -562,6 +619,32 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
     if (error) {
       console.error('❌ Error updating subscription:', error);
       throw error;
+    }
+    
+    // Verify the update was successful (especially plan_id for upgrades)
+    if (planId) {
+      const { data: updatedSubscription } = await supabaseAdmin
+        .from('user_subscriptions')
+        .select('plan_id, status')
+        .eq('id', mostRecent.id)
+        .maybeSingle();
+      
+      if (updatedSubscription) {
+        console.log('✅ Subscription updated successfully in database:', {
+          userId: clerkId,
+          planId: updatedSubscription.plan_id,
+          status: updatedSubscription.status,
+          verified: updatedSubscription.plan_id === planId,
+        });
+        
+        if (updatedSubscription.plan_id !== planId) {
+          console.error('❌ CRITICAL: Plan ID mismatch after update!', {
+            expected: planId,
+            actual: updatedSubscription.plan_id,
+            userId: clerkId,
+          });
+        }
+      }
     }
 
     // Delete duplicate subscriptions (keep only the most recent one)
