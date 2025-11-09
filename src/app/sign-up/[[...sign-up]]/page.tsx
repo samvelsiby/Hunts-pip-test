@@ -4,8 +4,19 @@ import { SignUp } from '@clerk/nextjs'
 import BackgroundParticles from '@/components/BackgroundParticles'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 
-export default function SignUpPage() {
+function SignUpContent() {
+  const searchParams = useSearchParams();
+  const tier = searchParams.get('tier');
+  const frequency = searchParams.get('frequency');
+  
+  // If plan info is present, redirect to payment handler after sign-up
+  const redirectUrl = tier && frequency 
+    ? `/redirect-to-payment?tier=${encodeURIComponent(tier)}&frequency=${encodeURIComponent(frequency)}`
+    : '/dashboard';
+
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
       {/* Corner gradient */}
@@ -46,6 +57,7 @@ export default function SignUpPage() {
             }}
           />
           <SignUp
+            fallbackRedirectUrl={redirectUrl}
             appearance={{
               elements: {
                 formButtonPrimary: 'bg-[#ff0000] hover:bg-[#DD0000] text-white text-sm normal-case border-2 border-[#00dd5e] transition-all hover:scale-105 shadow-lg',
@@ -71,5 +83,17 @@ export default function SignUpPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function SignUpPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#00dd5e] border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }>
+      <SignUpContent />
+    </Suspense>
   )
 }

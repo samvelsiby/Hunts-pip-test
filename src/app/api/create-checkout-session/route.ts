@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+// Lazy initialization to avoid build-time errors
+function getStripe() {
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+  if (!secretKey) {
+    throw new Error('STRIPE_SECRET_KEY is not configured');
+  }
+  return new Stripe(secretKey);
+}
 
 const planPrices = {
   pro: 'price_pro_30', // You'll need to create these in Stripe
@@ -25,6 +32,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid plan' }, { status: 400 });
     }
 
+    const stripe = getStripe();
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
