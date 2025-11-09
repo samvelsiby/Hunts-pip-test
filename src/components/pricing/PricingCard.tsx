@@ -63,7 +63,16 @@ export const PricingCard = ({
         } else {
           const error = await response.json();
           console.error('Failed to activate free plan:', error);
-          alert(error.error || 'Failed to activate free plan');
+          
+          // If user has a paid subscription, show modal instead of alert
+          if (error.requiresContact && error.currentPlan) {
+            setCurrentPlan(error.currentPlan);
+            setShowDowngradeModal(true);
+            setIsLoading(false);
+            return;
+          }
+          
+          alert(error.error || error.message || 'Failed to activate free plan');
           setIsLoading(false);
         }
         return;
