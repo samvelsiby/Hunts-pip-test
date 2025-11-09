@@ -31,7 +31,7 @@ export async function GET() {
       .limit(5);
 
     // Test Supabase write capability
-    let writeTest = { success: false, error: null };
+    let writeTest: { success: boolean; error: string | null } = { success: false, error: null };
     try {
       // Don't actually insert, just check if we can access the table
       const { error: testError } = await supabaseAdmin

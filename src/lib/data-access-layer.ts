@@ -274,7 +274,7 @@ export async function getUserSubscription(clerkUserId: string) {
     console.log('🔍 getUserSubscription: Fetching subscription for clerkUserId:', clerkUserId);
     
     // Debug: Check all subscriptions in the table to see what exists
-    const { data: allSubscriptions, error: allSubsError } = await supabaseAdmin
+    const { data: allSubscriptions } = await supabaseAdmin
       .from('user_subscriptions')
       .select('user_id, plan_id, status, created_at')
       .order('created_at', { ascending: false })
