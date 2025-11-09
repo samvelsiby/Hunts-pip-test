@@ -151,6 +151,36 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     return { error: 'No user ID found', sessionId: session.id };
   }
 
+  // Validate that payment was actually completed
+  if (session.payment_status !== 'paid') {
+    console.log('⚠️ Payment not completed yet:', {
+      sessionId: session.id,
+      paymentStatus: session.payment_status,
+      status: session.status,
+    });
+    return { 
+      error: 'Payment not completed', 
+      sessionId: session.id,
+      paymentStatus: session.payment_status,
+      status: session.status,
+    };
+  }
+
+  // Validate that customer and subscription exist
+  if (!session.customer || !session.subscription) {
+    console.error('❌ Missing customer or subscription in checkout session:', {
+      sessionId: session.id,
+      hasCustomer: !!session.customer,
+      hasSubscription: !!session.subscription,
+      paymentStatus: session.payment_status,
+      status: session.status,
+    });
+    return { 
+      error: 'Customer or subscription not found in session', 
+      sessionId: session.id,
+    };
+  }
+
   const customerId = session.customer as string;
   const subscriptionId = session.subscription as string;
   const planId = session.metadata?.planId || 'premium'; // Default to 'premium' if not specified
@@ -163,6 +193,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     customerId,
     subscriptionId,
     sessionId: session.id,
+    paymentStatus: session.payment_status,
   });
 
   // Check for existing subscriptions (handle duplicates)
