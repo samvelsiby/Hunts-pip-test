@@ -15,16 +15,25 @@ function getStripe() {
 }
 
 export async function POST(req: NextRequest) {
+  const startTime = Date.now();
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+  
   try {
     const body = await req.text();
     const signature = req.headers.get('stripe-signature');
 
-    console.log('📥 Webhook received:', {
+    console.log(`📥 [${requestId}] Webhook received:`, {
       hasSignature: !!signature,
       bodyLength: body.length,
       timestamp: new Date().toISOString(),
       hasWebhookSecret: !!process.env.STRIPE_WEBHOOK_SECRET,
       webhookSecretLength: process.env.STRIPE_WEBHOOK_SECRET?.length || 0,
+      url: req.url,
+      method: req.method,
+      headers: {
+        'user-agent': req.headers.get('user-agent'),
+        'content-type': req.headers.get('content-type'),
+      },
     });
 
     if (!signature) {
@@ -48,10 +57,11 @@ export async function POST(req: NextRequest) {
         process.env.STRIPE_WEBHOOK_SECRET
       );
       
-      console.log('✅ Webhook signature verified:', {
+      console.log(`✅ [${requestId}] Webhook signature verified:`, {
         eventType: event.type,
         eventId: event.id,
         created: new Date(event.created * 1000).toISOString(),
+        requestId,
       });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
@@ -100,8 +110,13 @@ export async function POST(req: NextRequest) {
           result.unhandled = true;
       }
 
-      console.log('✅ Webhook processed successfully:', result);
-      return NextResponse.json(result, { status: 200 });
+      const processingTime = Date.now() - startTime;
+      console.log(`✅ [${requestId}] Webhook processed successfully:`, {
+        ...result,
+        processingTimeMs: processingTime,
+        requestId,
+      });
+      return NextResponse.json({ ...result, requestId, processingTimeMs: processingTime }, { status: 200 });
     } catch (error) {
       console.error('❌ Error processing webhook:', {
         error: error,
