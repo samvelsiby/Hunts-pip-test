@@ -382,13 +382,14 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
     customerId,
     clerkUserId,
     status: subscription.status,
+    metadata: subscription.metadata,
   });
 
   // Find user by Stripe customer ID or subscription metadata
   let clerkId = clerkUserId;
   
   if (!clerkId) {
-    // Try to find by customer ID
+    // Try to find by customer ID in existing subscriptions
     const { data: subscriptionData } = await supabaseAdmin
       .from('user_subscriptions')
       .select('user_id')
@@ -397,11 +398,31 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
     
     if (subscriptionData) {
       clerkId = subscriptionData.user_id;
+      console.log('✅ Found user_id from existing subscription:', clerkId);
+    }
+  }
+
+  // If still no clerkId, try to get it from Stripe customer metadata
+  if (!clerkId && customerId) {
+    try {
+      const stripe = getStripe();
+      const customer = await stripe.customers.retrieve(customerId);
+      if (typeof customer === 'object' && !customer.deleted && customer.metadata?.userId) {
+        clerkId = customer.metadata.userId;
+        console.log('✅ Found user_id from customer metadata:', clerkId);
+      }
+    } catch (error) {
+      console.error('❌ Error fetching customer from Stripe:', error);
     }
   }
 
   if (!clerkId) {
-    console.error('❌ Could not find user for subscription:', subscriptionId);
+    console.error('❌ Could not find user for subscription:', {
+      subscriptionId,
+      customerId,
+      hasMetadata: !!subscription.metadata,
+      metadata: subscription.metadata,
+    });
     return { error: 'User not found', subscriptionId };
   }
 
@@ -470,7 +491,15 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
     console.log('✅ Updated subscription status:', { clerkId, status });
   } else {
     // Create new subscription if it doesn't exist
-    const { error } = await supabaseAdmin
+    console.log('📝 Creating new subscription from subscription update event:', {
+      user_id: clerkId,
+      plan_id: planId || 'premium',
+      status,
+      stripe_customer_id: customerId,
+      stripe_subscription_id: subscriptionId,
+    });
+    
+    const { data: insertedData, error } = await supabaseAdmin
       .from('user_subscriptions')
       .insert({
         user_id: clerkId,
@@ -478,14 +507,28 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
         status,
         stripe_customer_id: customerId,
         stripe_subscription_id: subscriptionId,
-      });
+      })
+      .select();
 
     if (error) {
-      console.error('❌ Error creating subscription:', error);
+      console.error('❌ Error creating subscription:', {
+        error: error,
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+        user_id: clerkId,
+        plan_id: planId || 'premium',
+      });
       throw error;
     }
 
-    console.log('✅ Created subscription from update event:', { clerkId, status });
+    console.log('✅ Created subscription from update event:', {
+      clerkId,
+      status,
+      insertedData,
+      subscriptionId: insertedData?.[0]?.id,
+    });
   }
 
   return {
