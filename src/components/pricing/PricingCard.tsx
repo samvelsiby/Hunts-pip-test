@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
 import { SubscriptionExistsModal } from "@/components/SubscriptionExistsModal";
+import { DowngradeToFreeModal } from "@/components/DowngradeToFreeModal";
 
 export const PricingCard = ({
   tier,
@@ -16,6 +17,7 @@ export const PricingCard = ({
   const { user, isLoaded } = useUser();
   const [isLoading, setIsLoading] = useState(false);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [showDowngradeModal, setShowDowngradeModal] = useState(false);
   const [currentPlan, setCurrentPlan] = useState<string>('');
   
   const price = tier.price[paymentFrequency];
@@ -136,6 +138,13 @@ export const PricingCard = ({
       <SubscriptionExistsModal
         open={showSubscriptionModal}
         onOpenChange={setShowSubscriptionModal}
+        currentPlan={currentPlan}
+      />
+
+      {/* Downgrade to Free Modal */}
+      <DowngradeToFreeModal
+        open={showDowngradeModal}
+        onOpenChange={setShowDowngradeModal}
         currentPlan={currentPlan}
       />
 

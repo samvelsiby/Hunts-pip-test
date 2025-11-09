@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { supabaseAdmin } from '@/lib/supabase-server';
+import { getUserSubscription } from '@/lib/data-access-layer';
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,14 +18,32 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already has a subscription
-    const { data: existingSubscription } = await supabaseAdmin
+    const subscriptionResult = await getUserSubscription(userId);
+    const existingSubscription = subscriptionResult.data;
+    const currentPlan = existingSubscription?.plan_type || 'free';
+    const currentStatus = existingSubscription?.status || 'inactive';
+
+    // If user has an active paid subscription, block them from switching to free
+    // They need to contact support to downgrade
+    if (currentStatus === 'active' && (currentPlan === 'premium' || currentPlan === 'ultimate')) {
+      return NextResponse.json({ 
+        error: 'You have an active paid subscription',
+        currentPlan,
+        status: currentStatus,
+        message: `You are currently subscribed to the ${currentPlan} plan. Please contact support to change your subscription plan.`,
+        requiresContact: true,
+      }, { status: 400 });
+    }
+
+    // Check if subscription exists in database
+    const { data: dbSubscription } = await supabaseAdmin
       .from('user_subscriptions')
       .select('*')
       .eq('user_id', userId)
       .maybeSingle();
 
-    if (existingSubscription) {
-      // Update existing subscription to free plan
+    if (dbSubscription) {
+      // Update existing subscription to free plan (only if they're already on free or inactive)
       const { error: updateError } = await supabaseAdmin
         .from('user_subscriptions')
         .update({
@@ -32,7 +51,7 @@ export async function POST(request: NextRequest) {
           status: 'active',
           updated_at: new Date().toISOString(),
         })
-        .eq('id', existingSubscription.id);
+        .eq('id', dbSubscription.id);
 
       if (updateError) {
         console.error('Error updating subscription:', updateError);
