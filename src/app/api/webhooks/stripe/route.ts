@@ -14,6 +14,18 @@ function getStripe() {
   });
 }
 
+// Handle GET requests (for testing/health checks) - return 405 Method Not Allowed
+export async function GET() {
+  return NextResponse.json(
+    { 
+      error: 'Method Not Allowed',
+      message: 'This endpoint only accepts POST requests from Stripe webhooks',
+      endpoint: '/api/webhooks/stripe',
+    },
+    { status: 405 }
+  );
+}
+
 export async function POST(req: NextRequest) {
   const startTime = Date.now();
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(7)}`;
