@@ -308,15 +308,26 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       stripe_subscription_id: subscriptionId,
     });
     
+    // Check Supabase connection before insert
+    console.log('🔍 Supabase connection check:', {
+      hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+      hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 30) + '...' || 'Missing',
+    });
+    
+    const insertData = {
+      user_id: clerkUserId,
+      plan_id: planId,
+      status: 'active',
+      stripe_customer_id: customerId,
+      stripe_subscription_id: subscriptionId,
+    };
+    
+    console.log('📤 Inserting subscription data:', insertData);
+    
     const { data: insertedData, error } = await supabaseAdmin
       .from('user_subscriptions')
-      .insert({
-        user_id: clerkUserId,
-        plan_id: planId,
-        status: 'active',
-        stripe_customer_id: customerId,
-        stripe_subscription_id: subscriptionId,
-      })
+      .insert(insertData)
       .select();
 
     if (error) {
@@ -328,6 +339,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         hint: error.hint,
         user_id: clerkUserId,
         plan_id: planId,
+        insertData,
       });
       throw error;
     }
@@ -336,7 +348,29 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       clerkUserId,
       insertedData,
       subscriptionId: insertedData?.[0]?.id,
+      insertedRecord: insertedData?.[0],
     });
+    
+    // Verify the insert by querying back
+    const { data: verifyData, error: verifyError } = await supabaseAdmin
+      .from('user_subscriptions')
+      .select('*')
+      .eq('user_id', clerkUserId)
+      .eq('stripe_subscription_id', subscriptionId)
+      .maybeSingle();
+    
+    if (verifyError) {
+      console.error('⚠️ Error verifying subscription insert:', verifyError);
+    } else if (verifyData) {
+      console.log('✅ Verified subscription exists in database:', {
+        id: verifyData.id,
+        user_id: verifyData.user_id,
+        plan_id: verifyData.plan_id,
+        status: verifyData.status,
+      });
+    } else {
+      console.error('❌ Subscription not found after insert! This is a critical error.');
+    }
     
     // Get user name and email from Supabase
     let userName: string | undefined;
