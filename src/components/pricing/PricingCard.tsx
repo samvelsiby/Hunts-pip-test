@@ -4,6 +4,7 @@ import { PricingTier } from "@/config/pricing";
 import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
+import { SubscriptionExistsModal } from "@/components/SubscriptionExistsModal";
 
 export const PricingCard = ({
   tier,
@@ -14,6 +15,8 @@ export const PricingCard = ({
 }) => {
   const { user, isLoaded } = useUser();
   const [isLoading, setIsLoading] = useState(false);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [currentPlan, setCurrentPlan] = useState<string>('');
   
   const price = tier.price[paymentFrequency];
   const isHighlighted = tier.highlighted;
@@ -83,7 +86,15 @@ export const PricingCard = ({
           const error = await response.json();
           console.error('Failed to create checkout session:', error);
           
-          // Show user-friendly error messages
+          // If user already has a subscription, show modal instead of alert
+          if (error.requiresContact && error.currentPlan) {
+            setCurrentPlan(error.currentPlan);
+            setShowSubscriptionModal(true);
+            setIsLoading(false);
+            return;
+          }
+          
+          // Show user-friendly error messages for other errors
           if (error.message) {
             alert(error.message);
           } else if (error.error) {
@@ -120,16 +131,24 @@ export const PricingCard = ({
   };
 
   return (
-    <div
-      className={cn(
-        "relative flex flex-col gap-4 overflow-visible rounded-xl border p-5 shadow transition-all duration-300 hover:shadow-lg",
-        isHighlighted
-          ? "border-blue-500/50 bg-gray-900 shadow-blue-500/10"
-          : "border-gray-800 bg-gray-900/50",
-        isPopular && "border-green-500/50 shadow-green-500/10",
-        isPopular && "pt-8", // Add padding-top when popular to make room for badge
-      )}
-    >
+    <>
+      {/* Subscription Exists Modal */}
+      <SubscriptionExistsModal
+        open={showSubscriptionModal}
+        onOpenChange={setShowSubscriptionModal}
+        currentPlan={currentPlan}
+      />
+
+      <div
+        className={cn(
+          "relative flex flex-col gap-4 overflow-visible rounded-xl border p-5 shadow transition-all duration-300 hover:shadow-lg",
+          isHighlighted
+            ? "border-blue-500/50 bg-gray-900 shadow-blue-500/10"
+            : "border-gray-800 bg-gray-900/50",
+          isPopular && "border-green-500/50 shadow-green-500/10",
+          isPopular && "pt-8", // Add padding-top when popular to make room for badge
+        )}
+      >
       {/* Background Decoration - Needs overflow-hidden for rounded corners */}
       <div className="absolute inset-0 overflow-hidden rounded-xl">
         {isHighlighted && (
@@ -203,5 +222,6 @@ export const PricingCard = ({
         )}
       </button>
     </div>
+    </>
   );
 };
