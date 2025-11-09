@@ -15,90 +15,117 @@ function getStripe() {
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.text();
-  const signature = req.headers.get('stripe-signature');
-
-  console.log('📥 Webhook received:', {
-    hasSignature: !!signature,
-    bodyLength: body.length,
-    timestamp: new Date().toISOString(),
-  });
-
-  if (!signature) {
-    console.error('❌ No signature in webhook request');
-    return NextResponse.json({ error: 'No signature' }, { status: 400 });
-  }
-
-  let event: Stripe.Event;
-
   try {
-    // Verify webhook signature (prevents fake requests)
-    const stripe = getStripe();
-    event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
-    
-    console.log('✅ Webhook signature verified:', {
-      eventType: event.type,
-      eventId: event.id,
-      created: new Date(event.created * 1000).toISOString(),
+    const body = await req.text();
+    const signature = req.headers.get('stripe-signature');
+
+    console.log('📥 Webhook received:', {
+      hasSignature: !!signature,
+      bodyLength: body.length,
+      timestamp: new Date().toISOString(),
+      hasWebhookSecret: !!process.env.STRIPE_WEBHOOK_SECRET,
+      webhookSecretLength: process.env.STRIPE_WEBHOOK_SECRET?.length || 0,
     });
-  } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-    console.error('❌ Webhook signature verification failed:', errorMessage);
-    return NextResponse.json({ error: `Webhook Error: ${errorMessage}` }, { status: 400 });
-  }
 
-  // Handle different payment events
-  try {
-    let result: Record<string, unknown> = { received: true, eventType: event.type, eventId: event.id };
-    
-    switch (event.type) {
-      case 'checkout.session.completed':
-      case 'checkout.session.async_payment_succeeded':
-        // Handle both regular and async payment completions
-        result = await handleCheckoutSessionCompleted(event.data.object as Stripe.Checkout.Session);
-        break;
-      
-      case 'customer.subscription.created':
-      case 'customer.subscription.updated':
-        result = await handleSubscriptionUpdate(event.data.object as Stripe.Subscription);
-        break;
-      
-      case 'customer.subscription.deleted':
-        result = await handleSubscriptionDeleted(event.data.object as Stripe.Subscription);
-        break;
-      
-      case 'invoice.payment_succeeded':
-        result = await handlePaymentSucceeded(event.data.object as Stripe.Invoice);
-        break;
-      
-      case 'invoice.payment_failed':
-        result = await handlePaymentFailed(event.data.object as Stripe.Invoice);
-        break;
-      
-      default:
-        console.log(`⚠️ Unhandled event type: ${event.type}`);
-        result.unhandled = true;
+    if (!signature) {
+      console.error('❌ No signature in webhook request');
+      return NextResponse.json({ error: 'No signature' }, { status: 400 });
     }
 
-    console.log('✅ Webhook processed successfully:', result);
-    return NextResponse.json(result);
-  } catch (error) {
-    console.error('❌ Error processing webhook:', {
-      error: error,
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-      eventType: event.type,
-      eventId: event.id,
+    if (!process.env.STRIPE_WEBHOOK_SECRET) {
+      console.error('❌ STRIPE_WEBHOOK_SECRET is not configured');
+      return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 });
+    }
+
+    let event: Stripe.Event;
+
+    try {
+      // Verify webhook signature (prevents fake requests)
+      const stripe = getStripe();
+      event = stripe.webhooks.constructEvent(
+        body,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET
+      );
+      
+      console.log('✅ Webhook signature verified:', {
+        eventType: event.type,
+        eventId: event.id,
+        created: new Date(event.created * 1000).toISOString(),
+      });
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      console.error('❌ Webhook signature verification failed:', {
+        error: errorMessage,
+        hasWebhookSecret: !!process.env.STRIPE_WEBHOOK_SECRET,
+        webhookSecretPrefix: process.env.STRIPE_WEBHOOK_SECRET?.substring(0, 10) || 'missing',
+        signatureLength: signature?.length || 0,
+      });
+      return NextResponse.json({ 
+        error: `Webhook Error: ${errorMessage}`,
+        hint: 'Check if STRIPE_WEBHOOK_SECRET in Vercel matches the signing secret in Stripe Dashboard'
+      }, { status: 400 });
+    }
+
+    // Handle different payment events
+    try {
+      let result: Record<string, unknown> = { received: true, eventType: event.type, eventId: event.id };
+      
+      switch (event.type) {
+        case 'checkout.session.completed':
+        case 'checkout.session.async_payment_succeeded':
+          // Handle both regular and async payment completions
+          result = await handleCheckoutSessionCompleted(event.data.object as Stripe.Checkout.Session);
+          break;
+        
+        case 'customer.subscription.created':
+        case 'customer.subscription.updated':
+          result = await handleSubscriptionUpdate(event.data.object as Stripe.Subscription);
+          break;
+        
+        case 'customer.subscription.deleted':
+          result = await handleSubscriptionDeleted(event.data.object as Stripe.Subscription);
+          break;
+        
+        case 'invoice.payment_succeeded':
+          result = await handlePaymentSucceeded(event.data.object as Stripe.Invoice);
+          break;
+        
+        case 'invoice.payment_failed':
+          result = await handlePaymentFailed(event.data.object as Stripe.Invoice);
+          break;
+        
+        default:
+          console.log(`⚠️ Unhandled event type: ${event.type}`);
+          result.unhandled = true;
+      }
+
+      console.log('✅ Webhook processed successfully:', result);
+      return NextResponse.json(result, { status: 200 });
+    } catch (error) {
+      console.error('❌ Error processing webhook:', {
+        error: error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        eventType: event?.type || 'unknown',
+        eventId: event?.id || 'unknown',
+      });
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      return NextResponse.json({ 
+        error: errorMessage,
+        eventType: event?.type || 'unknown',
+        eventId: event?.id || 'unknown',
+      }, { status: 500 });
+    }
+  } catch (outerError) {
+    // Catch any errors outside the try-catch (like if event is undefined)
+    console.error('❌ Fatal error in webhook handler:', {
+      error: outerError,
+      message: outerError instanceof Error ? outerError.message : 'Unknown error',
     });
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json({ 
-      error: errorMessage,
-      eventType: event.type,
-      eventId: event.id,
+      error: 'Internal server error',
+      message: outerError instanceof Error ? outerError.message : 'Unknown error'
     }, { status: 500 });
   }
 }
