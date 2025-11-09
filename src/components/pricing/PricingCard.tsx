@@ -82,7 +82,16 @@ export const PricingCard = ({
         if (!response.ok) {
           const error = await response.json();
           console.error('Failed to create checkout session:', error);
-          alert(error.error || 'Failed to create checkout session. Please try again.');
+          
+          // Show user-friendly error messages
+          if (error.message) {
+            alert(error.message);
+          } else if (error.error) {
+            alert(error.error);
+          } else {
+            alert('Failed to create checkout session. Please try again.');
+          }
+          
           setIsLoading(false);
           return;
         }
