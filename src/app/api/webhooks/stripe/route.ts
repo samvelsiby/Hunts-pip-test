@@ -57,6 +57,8 @@ export async function POST(req: NextRequest) {
     
     switch (event.type) {
       case 'checkout.session.completed':
+      case 'checkout.session.async_payment_succeeded':
+        // Handle both regular and async payment completions
         result = await handleCheckoutSessionCompleted(event.data.object as Stripe.Checkout.Session);
         break;
       
