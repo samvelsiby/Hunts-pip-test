@@ -7,7 +7,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Award, Check, AlertCircle, Loader2, ExternalLink } from "lucide-react";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Award, Check, AlertCircle, Loader2, ExternalLink, Crown, Sparkles } from "lucide-react";
+import { TradingViewUsernameModal } from "@/components/TradingViewUsernameModal";
 
 interface Subscription {
   plan_type: string;
@@ -23,6 +25,8 @@ export default function Dashboard() {
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [showTradingViewModal, setShowTradingViewModal] = useState(false);
+  const [showModalAfterPayment, setShowModalAfterPayment] = useState(false);
 
   const fetchUserData = useCallback(async () => {
     try {
@@ -99,11 +103,14 @@ export default function Dashboard() {
       const success = urlParams.get('success');
       const sessionId = urlParams.get('session_id');
       
-      // If payment was successful, refresh subscription data
+      // If payment was successful, refresh subscription data and show modal
       if (success === 'true' && sessionId) {
         console.log('✅ Payment successful, refreshing subscription data...');
         // Clean up URL params first
         window.history.replaceState({}, '', '/dashboard');
+        
+        // Set flag to show modal after data is fetched
+        setShowModalAfterPayment(true);
         
         // Retry fetching subscription data multiple times with increasing delays
         // Webhook might take a few seconds to process
@@ -117,6 +124,86 @@ export default function Dashboard() {
       }
     }
   }, [isLoaded, isSignedIn, user, fetchUserData]);
+
+  // Show TradingView modal after payment when data is loaded
+  useEffect(() => {
+    if (showModalAfterPayment && !isLoading && isLoaded && isSignedIn) {
+      // Wait a bit for subscription data to be fetched, then show modal
+      // Only show if user has a paid subscription (not free)
+      const timer = setTimeout(() => {
+        const currentPlan = subscription?.plan_type || 'free';
+        // Only show modal if user has a paid subscription (premium or ultimate)
+        if (currentPlan !== 'free') {
+          setShowTradingViewModal(true);
+        }
+        setShowModalAfterPayment(false);
+      }, 2000); // Wait 2 seconds for subscription data to load
+      
+      return () => clearTimeout(timer);
+    }
+  }, [showModalAfterPayment, isLoading, isLoaded, isSignedIn, subscription]);
+
+  const handleSaveUsernameInModal = async (username: string) => {
+    const trimmedUsername = username.trim();
+    
+    if (!trimmedUsername) {
+      throw new Error('Please enter a TradingView username');
+    }
+
+    try {
+      setIsSaving(true);
+      setSaveStatus('idle');
+      setErrorMessage('');
+
+      console.log('Saving TradingView username:', trimmedUsername);
+
+      const response = await fetch('/api/user/tradingview', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ username: trimmedUsername }),
+      });
+
+      const contentType = response.headers.get('content-type');
+      let data: { success?: boolean; error?: string; username?: string } = {};
+      
+      if (contentType && contentType.includes('application/json')) {
+        const responseText = await response.text();
+        if (!responseText || responseText.trim() === '') {
+          throw new Error('Empty response from server. Please try again.');
+        }
+        data = JSON.parse(responseText);
+      } else {
+        await response.text();
+        throw new Error('Unexpected response from server. Please try again.');
+      }
+
+      if (response.ok && data.success) {
+        const savedUsername = data.username || trimmedUsername;
+        console.log('Successfully saved username:', savedUsername);
+        
+        setTradingViewUsername(savedUsername);
+        setOriginalUsername(savedUsername);
+        setSaveStatus('success');
+        setErrorMessage('');
+        
+        // Refetch data to ensure everything is synced
+        setTimeout(() => {
+          fetchUserData();
+        }, 500);
+      } else {
+        const errorMsg = data.error || 'Failed to update TradingView username';
+        throw new Error(errorMsg);
+      }
+    } catch (error) {
+      console.error('Error saving TradingView username:', error);
+      throw error;
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleSaveUsername = async () => {
     const trimmedUsername = tradingViewUsername.trim();
@@ -243,9 +330,43 @@ export default function Dashboard() {
   const hasChanges = tradingViewUsername !== originalUsername;
   const planType = subscription?.plan_type || 'free';
 
+  // Get plan display info
+  const planInfo = {
+    free: { name: 'Free', color: 'text-gray-400', bgColor: 'bg-gray-800/50', borderColor: 'border-gray-700', icon: Award },
+    premium: { name: 'Premium', color: 'text-green-400', bgColor: 'bg-green-950/20', borderColor: 'border-green-500/30', icon: Sparkles },
+    ultimate: { name: 'Ultimate', color: 'text-purple-400', bgColor: 'bg-purple-950/20', borderColor: 'border-purple-500/30', icon: Crown },
+  };
+
+  const currentPlanInfo = planInfo[planType as keyof typeof planInfo] || planInfo.free;
+  const PlanIcon = currentPlanInfo.icon;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* TradingView Username Modal - Required after payment */}
+      <TradingViewUsernameModal
+        open={showTradingViewModal}
+        onOpenChange={setShowTradingViewModal}
+        currentUsername={originalUsername}
+        onSave={handleSaveUsernameInModal}
+        required={planType !== 'free'} // Required for paid subscriptions
+      />
+
       <div className="space-y-6">
+        {/* Membership Banner */}
+        {planType !== 'free' && (
+          <Alert className={`${currentPlanInfo.bgColor} ${currentPlanInfo.borderColor} border-2`}>
+            <PlanIcon className={`h-5 w-5 ${currentPlanInfo.color}`} />
+            <AlertTitle className={`${currentPlanInfo.color} text-lg font-bold`}>
+              {currentPlanInfo.name} Member
+            </AlertTitle>
+            <AlertDescription className="text-gray-300 mt-1">
+              You are currently subscribed to the <span className={`font-semibold ${currentPlanInfo.color}`}>{currentPlanInfo.name}</span> plan. 
+              {planType === 'premium' && ' Enjoy advanced trading signals and unlimited keyword access.'}
+              {planType === 'ultimate' && ' Enjoy all premium features plus AI-powered insights and 24/7 premium support.'}
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Welcome header */}
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white">Welcome back, {user?.firstName || 'Trader'}!</h1>
