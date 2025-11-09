@@ -85,7 +85,13 @@ export async function POST(req: NextRequest) {
     console.log('✅ Webhook processed successfully:', result);
     return NextResponse.json(result);
   } catch (error) {
-    console.error('❌ Error processing webhook:', error);
+    console.error('❌ Error processing webhook:', {
+      error: error,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      eventType: event.type,
+      eventId: event.id,
+    });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json({ 
       error: errorMessage,
@@ -234,7 +240,15 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     }
   } else {
     // Create new subscription
-    const { error } = await supabaseAdmin
+    console.log('📝 Creating new subscription in Supabase:', {
+      user_id: clerkUserId,
+      plan_id: planId,
+      status: 'active',
+      stripe_customer_id: customerId,
+      stripe_subscription_id: subscriptionId,
+    });
+    
+    const { data: insertedData, error } = await supabaseAdmin
       .from('user_subscriptions')
       .insert({
         user_id: clerkUserId,
@@ -242,14 +256,27 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         status: 'active',
         stripe_customer_id: customerId,
         stripe_subscription_id: subscriptionId,
-      });
+      })
+      .select();
 
     if (error) {
-      console.error('❌ Error creating subscription:', error);
+      console.error('❌ Error creating subscription:', {
+        error: error,
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+        user_id: clerkUserId,
+        plan_id: planId,
+      });
       throw error;
     }
     
-    console.log('✅ Created new subscription for user:', clerkUserId);
+    console.log('✅ Created new subscription for user:', {
+      clerkUserId,
+      insertedData,
+      subscriptionId: insertedData?.[0]?.id,
+    });
     
     // Get user name and email from Supabase
     let userName: string | undefined;
