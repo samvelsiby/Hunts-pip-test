@@ -48,11 +48,13 @@ export async function POST(request: NextRequest) {
 
     const stripe = getStripe();
     
-    // Get base URL from environment or request
+    // Get base URL - prioritize production URL, then environment variable, then request origin
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
                     process.env.APP_BASE_URL || 
-                    request.headers.get('origin') || 
-                    'http://localhost:3000';
+                    (request.headers.get('origin') && !request.headers.get('origin')?.includes('localhost') 
+                      ? request.headers.get('origin') 
+                      : null) ||
+                    'https://huntspip.com';
 
     // Create checkout session with subscription mode
     const session = await stripe.checkout.sessions.create({

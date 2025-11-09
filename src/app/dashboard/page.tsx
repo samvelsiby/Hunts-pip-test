@@ -52,16 +52,27 @@ export default function Dashboard() {
       }
 
       // Fetch subscription
+      console.log('📥 Dashboard: Fetching subscription...');
       const subscriptionResponse = await fetch('/api/user/subscription', {
         credentials: 'include', // Include cookies for authentication
+        cache: 'no-store', // Disable caching to always get fresh data
       });
+      
+      console.log('📥 Dashboard: Subscription response status:', subscriptionResponse.status);
+      
       if (subscriptionResponse.ok) {
         const subscriptionData = await subscriptionResponse.json();
+        console.log('📥 Dashboard: Subscription data received:', subscriptionData);
         setSubscription({
           plan_type: subscriptionData.plan_type || 'free',
           status: subscriptionData.status || 'active'
         });
+        console.log('✅ Dashboard: Subscription state updated:', {
+          plan_type: subscriptionData.plan_type || 'free',
+          status: subscriptionData.status || 'active'
+        });
       } else {
+        console.error('❌ Dashboard: Failed to fetch subscription, status:', subscriptionResponse.status);
         // Default to free plan if fetch fails
         setSubscription({ plan_type: 'free', status: 'active' });
       }
@@ -91,12 +102,18 @@ export default function Dashboard() {
       // If payment was successful, refresh subscription data
       if (success === 'true' && sessionId) {
         console.log('✅ Payment successful, refreshing subscription data...');
-        // Wait a moment for webhook to process, then refresh
-        setTimeout(() => {
-          fetchUserData();
-          // Clean up URL params
-          window.history.replaceState({}, '', '/dashboard');
-        }, 2000); // Wait 2 seconds for webhook to process
+        // Clean up URL params first
+        window.history.replaceState({}, '', '/dashboard');
+        
+        // Retry fetching subscription data multiple times with increasing delays
+        // Webhook might take a few seconds to process
+        const retryDelays = [1000, 3000, 5000]; // 1s, 3s, 5s
+        retryDelays.forEach((delay, index) => {
+          setTimeout(() => {
+            console.log(`🔄 Refreshing subscription data (attempt ${index + 1}/${retryDelays.length})...`);
+            fetchUserData();
+          }, delay);
+        });
       }
     }
   }, [isLoaded, isSignedIn, user, fetchUserData]);

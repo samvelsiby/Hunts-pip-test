@@ -271,18 +271,32 @@ export async function updateTradingViewUsername(
  */
 export async function getUserSubscription(clerkUserId: string) {
   try {
+    console.log('🔍 getUserSubscription: Fetching subscription for clerkUserId:', clerkUserId);
+    
     // Get subscription directly from user_subscriptions table using Clerk user ID
     // This table is updated by Stripe webhooks when payments are completed
     const { data: subscription, error: subError } = await supabaseAdmin
       .from('user_subscriptions')
-      .select('plan_id, status, stripe_customer_id, stripe_subscription_id, created_at, updated_at')
+      .select('plan_id, status, stripe_customer_id, stripe_subscription_id, created_at, updated_at, user_id')
       .eq('user_id', clerkUserId)
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
 
+    console.log('🔍 getUserSubscription: Query result:', {
+      hasSubscription: !!subscription,
+      hasError: !!subError,
+      errorMessage: subError?.message,
+      subscriptionData: subscription ? {
+        plan_id: subscription.plan_id,
+        status: subscription.status,
+        user_id: subscription.user_id,
+        created_at: subscription.created_at,
+      } : null,
+    });
+
     if (subError) {
-      console.error('Error fetching subscription:', subError);
+      console.error('❌ Error fetching subscription:', subError);
       // Return default subscription if error
       return {
         data: { plan_type: 'free', status: 'active' },
@@ -293,6 +307,7 @@ export async function getUserSubscription(clerkUserId: string) {
 
     // If no subscription found, return default free plan
     if (!subscription) {
+      console.log('⚠️ No subscription found for user:', clerkUserId);
       return {
         data: { plan_type: 'free', status: 'active' },
         error: null,
@@ -306,6 +321,12 @@ export async function getUserSubscription(clerkUserId: string) {
     if (planType === 'pro') {
       planType = 'premium'; // Migrate old 'pro' to 'premium'
     }
+    
+    console.log('✅ getUserSubscription: Returning subscription:', {
+      plan_id: subscription.plan_id,
+      plan_type: planType,
+      status: subscription.status,
+    });
     
     // plan_id: 'free', 'premium', 'ultimate' -> plan_type: 'free', 'premium', 'ultimate'
     return {
@@ -321,7 +342,7 @@ export async function getUserSubscription(clerkUserId: string) {
       authorized: true,
     };
   } catch (error) {
-    console.error('Error in getUserSubscription:', error);
+    console.error('❌ Error in getUserSubscription:', error);
     return {
       data: { plan_type: 'free', status: 'active' },
       error: error instanceof Error ? error : new Error('Unknown error'),
