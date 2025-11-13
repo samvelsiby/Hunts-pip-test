@@ -14,6 +14,11 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: "HUNTS PIP - Professional Trading Tools",
   description: "Enhance your trading with professional TradingView indicators and tools designed to support your trading analysis.",
+  icons: {
+    icon: '/halflogo.svg',
+    shortcut: '/halflogo.svg',
+    apple: '/halflogo.svg',
+  },
 };
 
 export default function RootLayout({
