@@ -26,12 +26,36 @@ export default function IndicatorCard({ indicator }: { indicator: Indicator }) {
 
   const borderColor = planColors[indicator.planAccess];
   
+  // Convert hex to rgba for glow effect
+  const hexToRgba = (hex: string, alpha: number) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+  
+  // Glow effect based on plan type
+  const glowStyle = {
+    boxShadow: `0 0 20px ${hexToRgba(borderColor, 0.25)}, 0 0 40px ${hexToRgba(borderColor, 0.15)}, 0 0 60px ${hexToRgba(borderColor, 0.1)}`,
+  };
+  
+  const hoverGlowStyle = {
+    boxShadow: `0 0 30px ${hexToRgba(borderColor, 0.4)}, 0 0 60px ${hexToRgba(borderColor, 0.25)}, 0 0 90px ${hexToRgba(borderColor, 0.15)}`,
+  };
+  
   return (
     <Link href={`/library/${indicator.slug.current}`} className="block h-full">
       <div 
-        className="rounded-3xl shadow-lg transition-all duration-300 h-full flex flex-col bg-[#0A0A0A] relative hover:scale-[1.02] cursor-pointer"
+        className="rounded-3xl transition-all duration-300 h-full flex flex-col bg-[#0A0A0A] relative hover:scale-[1.02] cursor-pointer group"
         style={{
-          border: '2px solid #374151',
+          border: '1px solid #374151',
+          ...glowStyle,
+        }}
+        onMouseEnter={(e) => {
+          Object.assign(e.currentTarget.style, hoverGlowStyle);
+        }}
+        onMouseLeave={(e) => {
+          Object.assign(e.currentTarget.style, glowStyle);
         }}
       >
         {/* Card Header with Image */}
@@ -49,38 +73,29 @@ export default function IndicatorCard({ indicator }: { indicator: Indicator }) {
           )}
         </div>
         
-        {/* Card Content with colored bottom border */}
+        {/* Card Content with colored bottom border and inner glow */}
         <div 
-          className="p-6 flex-1 flex flex-col rounded-b-3xl"
+          className="p-6 flex-1 flex flex-col rounded-b-3xl relative"
           style={{
-            borderLeft: `2px solid ${borderColor}`,
-            borderRight: `2px solid ${borderColor}`,
-            borderBottom: `2px solid ${borderColor}`,
-            marginLeft: '-2px',
-            marginRight: '-2px',
-            marginBottom: '-2px',
+            borderLeft: `1px solid ${borderColor}`,
+            borderRight: `1px solid ${borderColor}`,
+            borderBottom: `1px solid ${borderColor}`,
+            marginLeft: '-1px',
+            marginRight: '-1px',
+            marginBottom: '-1px',
+            background: `linear-gradient(180deg, ${hexToRgba(borderColor, 0.12)} 0%, ${hexToRgba(borderColor, 0.05)} 30%, transparent 100%)`,
+            boxShadow: `inset 0 20px 40px ${hexToRgba(borderColor, 0.2)}, inset 0 10px 20px ${hexToRgba(borderColor, 0.15)}`,
           }}
         >
           {/* Title */}
-          <h3 className="text-2xl font-bold text-white mb-3">
+          <h3 className="text-2xl font-bold text-white mb-2">
             {indicator.title}
           </h3>
           
           {/* Description */}
-          <p className="text-gray-400 text-base line-clamp-3 mb-4 flex-1">
+          <p className="text-gray-400 text-sm line-clamp-2">
             {indicator.description}
           </p>
-          
-          {/* View Now Button */}
-          <button 
-            className="px-6 py-2 rounded-full font-semibold text-sm transition-all hover:scale-105"
-            style={{
-              backgroundColor: borderColor,
-              color: '#000000',
-            }}
-          >
-            View Now
-          </button>
         </div>
       </div>
     </Link>

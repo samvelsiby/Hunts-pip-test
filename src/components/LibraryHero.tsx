@@ -79,7 +79,7 @@ export default function LibraryHero() {
           {/* Scroll Down Button - positioned at the border line */}
           <button
             onClick={scrollToContent}
-            className="relative z-30 w-32 h-32 rounded-full bg-[#00DD5E] hover:bg-green-400 transition-all duration-300 flex items-center justify-center animate-bounce translate-y-10"
+            className="relative z-30 w-32 h-32 rounded-full bg-[#00DD5E] hover:bg-green-400 transition-all duration-300 flex items-center justify-center translate-y-10"
             aria-label="Scroll to explore indicators"
           >
             <div className="absolute inset-0 rounded-full border-2 border-green-400 animate-ping opacity-75" />

@@ -284,6 +284,7 @@ export const LaserFlow: React.FC<Props> = ({
 }) => {
   const mountRef = useRef<HTMLDivElement | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const uniformsRef = useRef<any>(null);
   const hasFadedRef = useRef(false);
   const rectRef = useRef<DOMRect | null>(null);
@@ -446,9 +447,13 @@ export const LaserFlow: React.FC<Props> = ({
     };
     const onMove = (ev: PointerEvent | MouseEvent) => updateMouse(ev.clientX, ev.clientY);
     const onLeave = () => mouseTarget.set(0, 0);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     canvas.addEventListener('pointermove', onMove as any, { passive: true });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     canvas.addEventListener('pointerdown', onMove as any, { passive: true });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     canvas.addEventListener('pointerenter', onMove as any, { passive: true });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     canvas.addEventListener('pointerleave', onLeave as any, { passive: true });
 
     const onCtxLost = (e: Event) => {
@@ -544,9 +549,13 @@ export const LaserFlow: React.FC<Props> = ({
       ro.disconnect();
       io.disconnect();
       document.removeEventListener('visibilitychange', onVis);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       canvas.removeEventListener('pointermove', onMove as any);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       canvas.removeEventListener('pointerdown', onMove as any);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       canvas.removeEventListener('pointerenter', onMove as any);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       canvas.removeEventListener('pointerleave', onLeave as any);
       canvas.removeEventListener('webglcontextlost', onCtxLost);
       canvas.removeEventListener('webglcontextrestored', onCtxRestored);

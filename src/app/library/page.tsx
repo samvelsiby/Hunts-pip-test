@@ -61,8 +61,6 @@ async function getIndicators(): Promise<Indicator[]> {
 export default async function LibraryPage() {
   const indicators = await getIndicators()
 
-  const categories = ['all', 'trend', 'momentum', 'volatility', 'volume', 'custom']
-
   return (
     <div className="min-h-screen bg-black">
       {/* Hero Section with Video Background */}
@@ -72,7 +70,7 @@ export default async function LibraryPage() {
       <main id="library-content" className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-12">
         {/* Client Component with Search and Filters */}
         {indicators.length > 0 ? (
-          <LibraryClient indicators={indicators} categories={categories} />
+          <LibraryClient indicators={indicators} />
         ) : (
           <div className="text-center py-20">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-800 mb-4">

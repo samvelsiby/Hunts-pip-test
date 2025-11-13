@@ -18,17 +18,16 @@ interface Indicator {
 
 interface LibraryClientProps {
   indicators: Indicator[]
-  categories: string[]
 }
 
-export default function LibraryClient({ indicators, categories }: LibraryClientProps) {
+export default function LibraryClient({ indicators }: LibraryClientProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedPlan, setSelectedPlan] = useState<'all' | 'free' | 'premium' | 'ultimate'>('all')
 
   // Filter indicators based on search, category, and plan access
   const filteredIndicators = useMemo(() => {
-    return indicators.filter((indicator) => {
+    const filtered = indicators.filter((indicator) => {
       const matchesSearch = 
         indicator.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         indicator.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -46,12 +45,36 @@ export default function LibraryClient({ indicators, categories }: LibraryClientP
 
       return matchesSearch && matchesCategory && matchesPlan
     })
+
+    // When "All" is selected, sort to show premium and ultimate first
+    if (selectedPlan === 'all') {
+      return filtered.sort((a, b) => {
+        const planPriority: Record<string, number> = {
+          'ultimate': 1,
+          'premium': 2,
+          'free': 3
+        }
+        return (planPriority[a.planAccess] || 999) - (planPriority[b.planAccess] || 999)
+      })
+    }
+
+    return filtered
   }, [indicators, searchQuery, selectedCategory, selectedPlan])
 
   return (
     <>
       {/* Plan Filter Buttons - Top Right */}
       <div className="flex justify-end gap-3 mb-8">
+        <button
+          onClick={() => setSelectedPlan('all')}
+          className={`px-5 py-2 text-xs font-bold rounded-full transition-all duration-200 ${
+            selectedPlan === 'all'
+              ? 'bg-gray-700 text-white border-2 border-gray-500'
+              : 'bg-gray-800/50 text-gray-400 border border-gray-700 hover:bg-gray-700'
+          }`}
+        >
+          All
+        </button>
         <button
           onClick={() => setSelectedPlan('free')}
           className={`px-5 py-2 text-xs font-bold rounded-full transition-all duration-200 ${
