@@ -143,7 +143,7 @@ export default function LibraryClient({ indicators, categories }: LibraryClientP
 
       {/* Indicators Grid */}
       {filteredIndicators.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div id="library-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredIndicators.map((indicator) => (
             <IndicatorCard key={indicator._id} indicator={indicator} />
           ))}
