@@ -50,95 +50,38 @@ export default function LibraryClient({ indicators, categories }: LibraryClientP
 
   return (
     <>
-      {/* Search and Category Filters */}
-      <div className="mb-8 space-y-4">
-        {/* Search Bar */}
-        <div className="max-w-2xl mx-auto">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <svg
-                className="h-5 w-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </div>
-            <input
-              type="text"
-              placeholder="Search indicators by name, description, or features..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-gray-600 transition-all"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-white transition-colors"
-              >
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Category Filter */}
-        <div className="flex flex-wrap gap-2 justify-center">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-1.5 text-sm rounded-full transition-all duration-200 border ${
-                selectedCategory === category
-                  ? 'bg-gray-700 text-white border-gray-600 shadow-lg'
-                  : 'bg-gray-800/50 hover:bg-gray-700 text-white border-gray-700 hover:border-gray-600'
-              }`}
-            >
-              {category.charAt(0).toUpperCase() + category.slice(1)}
-            </button>
-          ))}
-        </div>
-
-        {/* Plan Access Filter */}
-        <div className="flex flex-wrap gap-2 justify-center">
-          {(['all', 'free', 'premium', 'ultimate'] as const).map((plan) => (
-            <button
-              key={plan}
-              onClick={() => setSelectedPlan(plan)}
-              className={`px-4 py-1.5 text-sm rounded-full transition-all duration-200 border font-semibold ${
-                selectedPlan === plan
-                  ? 'bg-gray-700 text-white border-gray-600 shadow-lg'
-                  : 'bg-gray-800/50 hover:bg-gray-700 text-white border-gray-700 hover:border-gray-600'
-              }`}
-            >
-              {plan === 'all' ? 'All Plans' : plan.toUpperCase()}
-            </button>
-          ))}
-        </div>
-
-        {/* Results Count */}
-        {indicators.length > 0 && (
-          <div className="text-center text-gray-400 text-sm">
-            Showing {filteredIndicators.length} of {indicators.length} indicator
-            {filteredIndicators.length !== 1 ? 's' : ''}
-            {searchQuery && ` matching "${searchQuery}"`}
-            {selectedCategory !== 'all' && ` in ${selectedCategory} category`}
-            {selectedPlan !== 'all' && ` for ${selectedPlan.toUpperCase()} plan`}
-          </div>
-        )}
+      {/* Plan Filter Buttons - Top Right */}
+      <div className="flex justify-end gap-3 mb-8">
+        <button
+          onClick={() => setSelectedPlan('free')}
+          className={`px-5 py-2 text-xs font-bold rounded-full transition-all duration-200 ${
+            selectedPlan === 'free'
+              ? 'bg-gray-600 text-white border-2 border-gray-400'
+              : 'bg-gray-800/50 text-gray-400 border border-gray-700 hover:bg-gray-700'
+          }`}
+        >
+          Free
+        </button>
+        <button
+          onClick={() => setSelectedPlan('premium')}
+          className={`px-5 py-2 text-xs font-bold rounded-full transition-all duration-200 ${
+            selectedPlan === 'premium'
+              ? 'bg-red-600 text-white border-2 border-red-400'
+              : 'bg-gray-800/50 text-gray-400 border border-gray-700 hover:bg-red-900/30'
+          }`}
+        >
+          Premium
+        </button>
+        <button
+          onClick={() => setSelectedPlan('ultimate')}
+          className={`px-5 py-2 text-xs font-bold rounded-full transition-all duration-200 ${
+            selectedPlan === 'ultimate'
+              ? 'bg-[#00DD5E] text-black border-2 border-green-300'
+              : 'bg-gray-800/50 text-gray-400 border border-gray-700 hover:bg-green-900/30'
+          }`}
+        >
+          Ultimate
+        </button>
       </div>
 
       {/* Indicators Grid */}

@@ -1,51 +1,45 @@
 'use client';
 
-import { SignUpButton } from "@clerk/nextjs";
-import StatisticsSection from './StatisticsSection';
+import Link from 'next/link';
 
 export default function HeroSection() {
   return (
-    <main className="relative z-10 px-4 sm:px-8 py-8 sm:py-12 lg:py-20">
-      <div className="max-w-6xl mx-auto">
-        <div className="space-y-8">
-          {/* Hero Content */}
-          <div className="space-y-4 sm:space-y-6 max-w-3xl">
-            <div className="text-green-400 text-sm sm:text-base lg:text-lg font-medium">
-              Automate. Your. Life
-            </div>
-            
-            <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold leading-tight">
-              <span className="text-white">Enhance Your </span>
-              <span className="text-green-400">Trading</span>
-              <span className="text-white"> with</span>
-              <br />
-              <span className="text-white">Professional </span>
-              <span className="text-red-500 font-bold">Trading Tools</span>
-            </h1>
-            
-            <p className="text-gray-400 text-sm sm:text-base lg:text-lg leading-relaxed max-w-xl">
-              Access powerful TradingView indicators designed to enhance your trading analysis and decision-making process.
-            </p>
-            
-            <div className="pt-2 sm:pt-4">
-              <SignUpButton>
-                <button 
-                  className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 text-white text-sm sm:text-base font-semibold rounded-full transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
-                  style={{
-                    background: 'linear-gradient(135deg, #DD0000 0%, #FF5B41 100%)',
-                  }}
-                >
-                  Get Pivien
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </button>
-              </SignUpButton>
-            </div>
-          </div>
+    <main className="relative z-10 px-4 sm:px-8 pt-20 sm:pt-24 lg:pt-32 pb-12">
+      <div className="max-w-7xl mx-auto w-full">
+        <div className="space-y-6 max-w-3xl">
+          {/* Main Heading */}
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight">
+            <span className="text-white">GET </span>
+            <span className="text-red-500">ACCESS</span>
+            <span className="text-white"> TO</span>
+            <br />
+            <span className="text-white">INVISIBLE INSIGHTS</span>
+            <br />
+            <span className="text-white">IN MARKET</span>
+          </h1>
 
-          {/* Statistics Section */}
-          <StatisticsSection />
+          {/* Subtitle */}
+          <p className="text-gray-300 text-lg sm:text-xl font-light max-w-lg">
+            Powered by Neural Networks<br />
+            and Machine Learning
+          </p>
+
+          {/* CTA Button */}
+          <div className="pt-2">
+            <Link href="/library">
+              <button 
+                className="px-7 py-3.5 text-white text-base font-semibold rounded-full transition-all flex items-center gap-2 hover:scale-105 shadow-lg"
+                style={{
+                  background: 'linear-gradient(135deg, #DD0000 0%, #FF5B41 100%)',
+                }}
+              >
+                View Product Library
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
     </main>

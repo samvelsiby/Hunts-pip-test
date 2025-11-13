@@ -1,3 +1,4 @@
+// Backup of original middleware
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
@@ -25,6 +26,13 @@ export default clerkMiddleware(async (auth, req) => {
   // Skip authentication for webhook routes
   if (isWebhookRoute(req)) {
     return
+  }
+
+  // Remove CSP headers for library page
+  if (req.nextUrl.pathname.startsWith('/library')) {
+    const response = NextResponse.next()
+    response.headers.delete('Content-Security-Policy')
+    return response
   }
 
   // For API routes, return JSON error instead of redirecting

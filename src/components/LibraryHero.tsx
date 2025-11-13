@@ -15,10 +15,19 @@ export default function LibraryHero() {
       })
     }
 
+    const handleEnded = () => {
+      video.currentTime = 0
+      video.play().catch(err => {
+        console.log('Loop restart prevented:', err)
+      })
+    }
+
     video.addEventListener('canplay', handleCanPlay)
+    video.addEventListener('ended', handleEnded)
 
     return () => {
       video.removeEventListener('canplay', handleCanPlay)
+      video.removeEventListener('ended', handleEnded)
     }
   }, [])
 
