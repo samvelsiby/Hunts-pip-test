@@ -7,7 +7,7 @@ import { PricingHeader } from "./PricingHeader";
 
 export const Pricing = () => {
   const [selectedPaymentFreq, setSelectedPaymentFreq] = useState(
-    PAYMENT_FREQUENCIES[0],
+    PAYMENT_FREQUENCIES[1],
   );
 
   return (
@@ -16,7 +16,7 @@ export const Pricing = () => {
         {/* Section Header */}
         <PricingHeader
           title="Choose Your Trading Plan"
-          subtitle="Select the perfect plan to enhance your trading analysis. Save 15% when you pay yearly."
+          subtitle="Select the perfect plan to enhance your trading analysis. Save 30% when you pay yearly."
           frequencies={PAYMENT_FREQUENCIES}
           selectedFrequency={selectedPaymentFreq}
           onFrequencyChange={setSelectedPaymentFreq}

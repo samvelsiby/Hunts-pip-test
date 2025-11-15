@@ -5,7 +5,7 @@ import HeroSection from '@/components/HeroSection';
 import FeaturesComponent from '@/components/FeaturesComponent';
 import BentoGridComponent from '@/components/BentoGridComponent';
 import ServicesComponent from '@/components/ServicesComponent';
-import MoneyBackGuaranteeComponent from '@/components/MoneyBackGuaranteeComponent';
+import GlobalNetworkSection from '@/components/GlobalNetworkSection';
 import PricingComponent from '@/components/PricingComponent';
 import FAQComponent from '@/components/FAQComponent';
 
@@ -27,8 +27,8 @@ export default function Home() {
       {/* Services Section */}
       <ServicesComponent />
 
-      {/* Money-Back Guarantee Section */}
-      <MoneyBackGuaranteeComponent />
+      {/* Global Network / World Map Section */}
+      <GlobalNetworkSection />
 
       {/* Pricing Section */}
       <PricingComponent />

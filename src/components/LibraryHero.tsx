@@ -52,6 +52,9 @@ export default function LibraryHero() {
         src="/default.mp4"
       />
 
+      {/* Dark overlay for readability */}
+      <div className="absolute inset-0 bg-black/60 z-10 pointer-events-none" />
+  
       {/* Content Container with rounded bottom border */}
       <div className="relative z-20 flex flex-col items-center justify-between h-full">
         {/* Top Content */}
