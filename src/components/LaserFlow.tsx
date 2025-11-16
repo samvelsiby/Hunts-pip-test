@@ -1,5 +1,8 @@
-import React, { useEffect, useRef } from 'react';
-import * as THREE from 'three';
+"use client"
+
+import type React from "react"
+import { useEffect, useRef } from "react"
+import * as THREE from "three"
 
 type Props = {
   className?: string;

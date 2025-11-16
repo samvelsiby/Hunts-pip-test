@@ -30,7 +30,7 @@ export default function ServicesComponent() {
           {/* Left Feature: Data Encryption */}
           <div className="relative flex flex-col items-center text-center">
             {/* Video Preview */}
-            <div className="relative mb-8 w-full max-w-lg overflow-hidden rounded-2xl border border-white/10 bg-black/40">
+            <div className="relative mb-8 w-full max-w-lg overflow-hidden bg-black/20">
               <video
                 className="w-full h-full object-cover"
                 src="/services/2.mp4"
@@ -39,6 +39,12 @@ export default function ServicesComponent() {
                 muted
                 playsInline
               />
+              {/* Feathered edge overlay */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute inset-0" style={{
+                  background: 'linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 10%, transparent 90%, rgba(0,0,0,0.3) 100%), linear-gradient(to right, rgba(0,0,0,0.3) 0%, transparent 10%, transparent 90%, rgba(0,0,0,0.3) 100%)'
+                }} />
+              </div>
             </div>
 
             {/* Content */}
@@ -58,7 +64,7 @@ export default function ServicesComponent() {
           {/* Right Feature: High-Accuracy */}
           <div className="relative flex flex-col items-center text-center">
             {/* Video Preview */}
-            <div className="relative mb-8 w-full max-w-lg overflow-hidden rounded-2xl border border-white/10 bg-black/40">
+            <div className="relative mb-8 w-full max-w-lg overflow-hidden bg-black/20">
               <video
                 className="w-full h-full object-cover"
                 src="/services/OB CHARTS.mp4"
@@ -67,6 +73,12 @@ export default function ServicesComponent() {
                 muted
                 playsInline
               />
+              {/* Feathered edge overlay */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute inset-0" style={{
+                  background: 'linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 10%, transparent 90%, rgba(0,0,0,0.3) 100%), linear-gradient(to right, rgba(0,0,0,0.3) 0%, transparent 10%, transparent 90%, rgba(0,0,0,0.3) 100%)'
+                }} />
+              </div>
             </div>
 
             {/* Content */}

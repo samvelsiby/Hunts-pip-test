@@ -1,7 +1,7 @@
 'use client';
 
 import BackgroundParticles from '@/components/BackgroundParticles';
-import HeroSection from '@/components/HeroSection';
+import LaserHero from '@/components/LaserHero';
 import FeaturesComponent from '@/components/FeaturesComponent';
 import BentoGridComponent from '@/components/BentoGridComponent';
 import ServicesComponent from '@/components/ServicesComponent';
@@ -15,8 +15,8 @@ export default function Home() {
       {/* Background particles effect */}
       <BackgroundParticles />
 
-      {/* Hero Section */}
-      <HeroSection />
+      {/* Hero Section with LaserFlow */}
+      <LaserHero />
 
       {/* Features Section */}
       <FeaturesComponent />

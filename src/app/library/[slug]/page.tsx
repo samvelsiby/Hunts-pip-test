@@ -3,7 +3,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { PortableText, PortableTextComponents } from '@portabletext/react'
 import type { PortableTextBlock } from '@portabletext/types'
-import PageBreadcrumbs from '@/components/PageBreadcrumbs'
 import TradingViewButton from '@/components/TradingViewButton'
 
 // Revalidate every 5 minutes in production, or on-demand via webhook
@@ -209,12 +208,6 @@ export default async function IndicatorDetailPage({
     )
   }
 
-  const planColors = {
-    free: 'bg-green-500/10 text-green-400 border-green-500/20',
-    premium: 'bg-[#FF5B41]/10 text-[#FF5B41] border-[#FF5B41]/20',
-    ultimate: 'bg-[#DD0000]/10 text-[#DD0000] border-[#DD0000]/20',
-  }
-
   const categoryIcons = {
     trend: '📈',
     momentum: '⚡',
@@ -236,204 +229,115 @@ export default async function IndicatorDetailPage({
       </div>
       
       {/* Main Content */}
-      <main className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Breadcrumbs */}
-        <PageBreadcrumbs />
-        {/* Hero Section */}
-        <div className="bg-gradient-to-br from-gray-900/80 via-gray-800/60 to-gray-900/80 backdrop-blur-sm rounded-2xl p-8 md:p-12 mb-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-[#FF5B41]/10 to-transparent opacity-50"></div>
-          <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-gradient-to-t from-[#DD0000]/10 to-transparent opacity-50"></div>
-          <div className="relative z-10 flex flex-col md:flex-row gap-8">
-            {/* Icon */}
-            <div className="shrink-0">
-              {indicator.icon ? (
-                <div className="w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg">
+      <main className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+        {/* Top row: back + static badge */}
+        <div className="flex items-center justify-between gap-4">
+          <Link
+            href="/library"
+            className="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors"
+          >
+            <span className="text-lg">←</span>
+            <span>Back to library</span>
+          </Link>
+          <span className="px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-white/5 text-gray-100 border border-white/15">
+            {indicator.planAccess.toUpperCase()} PLAN
+          </span>
+        </div>
+
+        {/* Hero media card */}
+        <section className="rounded-[28px] bg-[#050505]/90 shadow-[0_0_60px_rgba(0,0,0,0.8)] overflow-hidden relative">
+          <div className="absolute inset-0 pointer-events-none">
+            <div
+              className="absolute -top-40 left-1/2 -translate-x-1/2 w-[720px] h-[720px] opacity-60 blur-3xl"
+              style={{ background: 'radial-gradient(circle, rgba(221,0,0,0.6) 0%, transparent 70%)' }}
+            />
+          </div>
+
+          <div className="relative z-10 px-6 pt-6 sm:px-10 sm:pt-8">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-2">
+              {indicator.title}
+            </h1>
+            <p className="text-sm sm:text-base text-gray-400 capitalize mb-6 flex items-center gap-2">
+              <span>{categoryIcons[indicator.category as keyof typeof categoryIcons] || '📊'}</span>
+              <span>{indicator.category} Indicator</span>
+            </p>
+          </div>
+
+          {/* Main preview image */}
+          <div className="relative z-10 px-4 pb-8 sm:px-8">
+            <div className="relative w-full max-w-3xl mx-auto rounded-[22px] overflow-hidden bg-black/80 border border-white/10 shadow-[0_18px_50px_rgba(0,0,0,0.9)]">
+              <div className="relative w-full aspect-[16/9] bg-black">
+                {indicator.icon ? (
                   <Image
-                    src={urlFor(indicator.icon).width(160).height(160).url()}
+                    src={urlFor(indicator.icon).width(1200).height(675).quality(100).url()}
                     alt={indicator.title}
-                    width={160}
-                    height={160}
-                    className="object-cover w-full h-full"
+                    fill
+                    className="object-cover"
                     placeholder="blur"
                     blurDataURL={getBlurDataURL(indicator.icon)}
                     priority
                   />
-                </div>
-              ) : (
-                <div className="w-32 h-32 md:w-40 md:h-40 rounded-2xl flex items-center justify-center text-6xl shadow-lg" style={{ background: 'linear-gradient(135deg, #DD0000 0%, #FF5B41 100%)' }}>
-                  {categoryIcons[indicator.category as keyof typeof categoryIcons] || '📊'}
-                </div>
-              )}
-            </div>
-
-            {/* Info */}
-            <div className="flex-1">
-              <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4 gap-4">
-                <div className="flex-1">
-                  <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">
-                    {indicator.title}
-                  </h1>
-                  <p className="text-lg md:text-xl text-gray-400 capitalize mb-4">
-                    {categoryIcons[indicator.category as keyof typeof categoryIcons]} {indicator.category} Indicator
-                  </p>
-                </div>
-                <span className={`px-4 py-2 rounded-full text-sm font-semibold ${planColors[indicator.planAccess]} self-start md:self-auto`}>
-                  {indicator.planAccess.toUpperCase()}
-                </span>
+                ) : (
+                  <div className="flex items-center justify-center w-full h-full text-5xl text-gray-600">
+                    {categoryIcons[indicator.category as keyof typeof categoryIcons] || '📊'}
+                  </div>
+                )}
               </div>
-
-              <p className="text-gray-300 text-lg md:text-xl mb-8 leading-relaxed">
-                {indicator.description}
-              </p>
-
-              {/* Action Button */}
-              {indicator.tradingViewLink && (
-                <div className="flex gap-4">
-                  <TradingViewButton href={indicator.tradingViewLink}>
-                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M10 6v2H5v11h11v-5h2v6a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1h6zm11-3v8h-2V6.413l-7.793 7.794-1.414-1.414L17.585 5H13V3h8z" />
-                    </svg>
-                    Open in TradingView
-                  </TradingViewButton>
-                </div>
-              )}
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Features Section */}
-        {indicator.features && indicator.features.length > 0 && (
-          <div className="bg-gradient-to-br from-gray-900/80 via-gray-800/60 to-gray-900/80 backdrop-blur-sm rounded-2xl p-8 md:p-12 mb-8">
-            <h2 className="text-3xl font-bold text-white mb-8">Key Features</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {indicator.features.map((feature, index) => (
-                <div
-                  key={index}
-                  className="flex items-start bg-gray-900/40 rounded-xl p-5 hover:bg-gray-900/60 transition-colors"
-                >
-                  <span className="text-[#FF5B41] mr-4 text-2xl font-bold">✓</span>
-                  <span className="text-gray-300 text-lg">{feature}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Documentation Section with Rich Content */}
-        {indicator.documentation && indicator.documentation.length > 0 && (
-          <div className="bg-gradient-to-br from-gray-900/80 via-gray-800/60 to-gray-900/80 backdrop-blur-sm rounded-2xl p-8 md:p-12 mb-8">
-            <h2 className="text-3xl font-bold text-white mb-8">Documentation</h2>
+        {/* Overview / documentation text */}
+        {indicator.documentation && indicator.documentation.length > 0 ? (
+          <section className="rounded-[28px] bg-[#050505]/90 px-6 py-8 sm:px-10 sm:py-10">
             <div className="prose prose-invert max-w-none">
               <PortableText
                 value={indicator.documentation as PortableTextBlock[]}
                 components={portableTextComponents}
               />
             </div>
-          </div>
+          </section>
+        ) : (
+          <section className="rounded-[28px] bg-[#050505]/90 px-6 py-8 sm:px-10 sm:py-10">
+            <p className="text-gray-300 text-lg leading-relaxed">
+              {indicator.description}
+            </p>
+          </section>
         )}
 
-        {/* Call to Action Section */}
-        {indicator.planAccess === 'free' ? (
-          <div className="relative overflow-hidden rounded-2xl p-8 md:p-12" style={{ background: 'linear-gradient(135deg, rgba(0, 221, 94, 0.2) 0%, rgba(0, 221, 94, 0.1) 30%, rgba(255, 0, 0, 0.1) 70%, rgba(255, 0, 0, 0.2) 100%)' }}>
-            <div className="absolute top-0 right-0 w-full h-full opacity-20" style={{ background: 'radial-gradient(circle at top right, #00dd5e 0%, transparent 60%)' }}></div>
-            <div className="absolute bottom-0 left-0 w-full h-full opacity-20" style={{ background: 'radial-gradient(circle at bottom left, #ff0000 0%, transparent 60%)' }}></div>
-            
-            <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
-              <div className="flex-shrink-0">
-                <Image 
-                  src="/hunts-pip-logo.svg" 
-                  alt="HUNTS PIP Logo" 
-                  width={180} 
-                  height={48}
-                  className="w-auto h-12 md:h-16"
-                  priority
-                />
-              </div>
-              
-              <div className="flex-1 text-center md:text-left">
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                  Get Started with <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #00dd5e 0%, #ff0000 100%)' }}>Free Access</span>
-                </h2>
-                <p className="text-lg md:text-xl text-gray-300 mb-6">
-                  Sign up for free to access this indicator and start enhancing your trading strategy today.
-                </p>
-                
-                <Link 
-                  href="/sign-up"
-                  className="inline-flex items-center gap-3 px-8 py-4 rounded-lg font-semibold text-white transition-all hover:scale-105 shadow-lg hover:shadow-xl border-2"
-                  style={{ 
-                    background: '#00dd5e',
-                    borderColor: '#ff0000',
-                    borderWidth: '2px'
-                  }}
-                >
-                  <span>Sign Up Free</span>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </Link>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="relative overflow-hidden rounded-2xl p-8 md:p-12" style={{ background: 'linear-gradient(135deg, rgba(255, 0, 0, 0.2) 0%, rgba(255, 0, 0, 0.1) 30%, rgba(0, 221, 94, 0.1) 70%, rgba(0, 221, 94, 0.2) 100%)' }}>
-            <div className="absolute top-0 right-0 w-full h-full opacity-20" style={{ background: 'radial-gradient(circle at top right, #ff0000 0%, transparent 60%)' }}></div>
-            <div className="absolute bottom-0 left-0 w-full h-full opacity-20" style={{ background: 'radial-gradient(circle at bottom left, #00dd5e 0%, transparent 60%)' }}></div>
-            
-            <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
-              <div className="flex-shrink-0">
-                <Image 
-                  src="/hunts-pip-logo.svg" 
-                  alt="HUNTS PIP Logo" 
-                  width={180} 
-                  height={48}
-                  className="w-auto h-12 md:h-16"
-                  priority
-                />
-              </div>
-              
-              <div className="flex-1 text-center md:text-left">
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                  Unlock <span className="text-transparent bg-clip-text uppercase" style={{ backgroundImage: 'linear-gradient(135deg, #ff0000 0%, #00dd5e 100%)' }}>{indicator.planAccess}</span> Access
-                </h2>
-                <p className="text-lg md:text-xl text-gray-300 mb-6">
-                  Upgrade to {indicator.planAccess} plan to access this premium indicator and unlock advanced trading features.
-                </p>
-                
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Link 
-                    href="/pricing"
-                    className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-lg font-semibold text-white transition-all hover:scale-105 shadow-lg hover:shadow-xl border-2"
-                    style={{ 
-                      background: '#ff0000',
-                      borderColor: '#00dd5e',
-                      borderWidth: '2px'
-                    }}
-                  >
-                    <span>View Pricing</span>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                  </Link>
-                  
-                  <Link 
-                    href="/sign-up"
-                    className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-lg font-semibold border-2 transition-all hover:scale-105"
-                    style={{ 
-                      borderColor: '#00dd5e',
-                      color: '#00dd5e',
-                      background: 'transparent'
-                    }}
-                  >
-                    <span>Try Free First</span>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* Optional: key features below documentation */}
+        {indicator.features && indicator.features.length > 0 && (
+          <section className="rounded-[24px] bg-[#050505]/90 px-6 py-8 sm:px-10 sm:py-9">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-white mb-6">Key Features</h2>
+            <ul className="space-y-3">
+              {indicator.features.map((feature, index) => (
+                <li key={index} className="flex items-start gap-3 text-gray-300 text-base sm:text-lg">
+                  <span className="text-[#FF5B41] mt-1 text-xl">●</span>
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {/* Bottom CTA row */}
+        {indicator.tradingViewLink && (
+          <section className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
+            <TradingViewButton href={indicator.tradingViewLink}>
+              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M10 6v2H5v11h11v-5h2v6a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1h6zm11-3v8h-2V6.413l-7.793 7.794-1.414-1.414L17.585 5H13V3h8z" />
+              </svg>
+              TradingView
+            </TradingViewButton>
+
+            <button
+              type="button"
+              disabled
+              className="inline-flex items-center justify-center px-6 py-3 rounded-lg text-gray-500 text-sm font-medium cursor-not-allowed bg-black/40"
+            >
+              NinjaTrader (coming soon)
+            </button>
+          </section>
         )}
       </main>
     </div>
