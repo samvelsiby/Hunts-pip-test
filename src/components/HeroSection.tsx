@@ -1,60 +1,20 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
 
 export default function HeroSection() {
-  const [splineLoaded, setSplineLoaded] = useState(false);
-  const splineUrl = 'https://my.spline.design/untitled-d20Iy1Eu6FRqsx4QVnJnsIfT/?zoom=false';
-
-  // Preload Spline resources
-  useEffect(() => {
-    // Preconnect to Spline domains for faster loading
-    const preconnectLink1 = document.createElement('link');
-    preconnectLink1.rel = 'preconnect';
-    preconnectLink1.href = 'https://my.spline.design';
-    document.head.appendChild(preconnectLink1);
-
-    const preconnectLink2 = document.createElement('link');
-    preconnectLink2.rel = 'preconnect';
-    preconnectLink2.href = 'https://prod.spline.design';
-    preconnectLink2.crossOrigin = 'anonymous';
-    document.head.appendChild(preconnectLink2);
-
-    // DNS prefetch for faster domain resolution
-    const dnsPrefetch = document.createElement('link');
-    dnsPrefetch.rel = 'dns-prefetch';
-    dnsPrefetch.href = 'https://prod.spline.design';
-    document.head.appendChild(dnsPrefetch);
-
-    return () => {
-      document.head.removeChild(preconnectLink1);
-      document.head.removeChild(preconnectLink2);
-      document.head.removeChild(dnsPrefetch);
-    };
-  }, []);
-
   return (
-    <main className="relative z-10 min-h-screen flex items-center overflow-hidden">
-      {/* Spline 3D Scene - Background */}
+    <main className="relative z-10 min-h-screen flex items-center overflow-hidden bg-black">
+      {/* Spline 3D Scene - Background - Always visible, no loading state */}
       <div className="absolute inset-0 w-full h-full pointer-events-auto">
-        {!splineLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black">
-            <div className="w-12 h-12 border-4 border-gray-700 border-t-red-500 rounded-full animate-spin" />
-          </div>
-        )}
-        
         <iframe
-          src={splineUrl}
+          src="https://my.spline.design/untitled-d20Iy1Eu6FRqsx4QVnJnsIfT/"
           frameBorder="0"
           width="100%"
           height="100%"
           loading="eager"
-          onLoad={() => setSplineLoaded(true)}
-          className={`transition-opacity duration-500 ${
-            splineLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          style={{ border: 'none', display: 'block' }}
         />
       </div>
 
