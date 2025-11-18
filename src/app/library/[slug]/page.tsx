@@ -57,20 +57,34 @@ async function getIndicator(slug: string): Promise<Indicator | null> {
 }
 
 // Custom components for PortableText to render images and rich content
-const portableTextComponents: PortableTextComponents = {
+const getPortableTextComponents = (themeColor: string, hexToRgba: (hex: string, alpha: number) => string): PortableTextComponents => ({
   types: {
     image: ({ value }) => {
       if (!value?.asset) return null
       
       return (
         <figure className="my-8">
-          <div className="relative w-full overflow-hidden bg-gray-800">
+          <div 
+            className="relative w-full overflow-hidden bg-black p-1 rounded-lg"
+            style={{
+              border: `2px solid ${themeColor}`,
+              boxShadow: `0 0 40px ${hexToRgba(themeColor, 0.5)}, 0 0 80px ${hexToRgba(themeColor, 0.3)}, inset 0 0 60px ${hexToRgba(themeColor, 0.1)}`,
+            }}
+          >
+            {/* Glow effect behind image */}
+            <div 
+              className="absolute inset-0 -z-10 blur-3xl opacity-50"
+              style={{
+                background: `radial-gradient(ellipse at center, ${hexToRgba(themeColor, 0.6)} 0%, transparent 70%)`,
+              }}
+            />
+            
             <Image
               src={urlFor(value).width(2400).quality(100).url()}
               alt={value.alt || 'Documentation image'}
               width={2400}
               height={1350}
-              className="w-full h-auto object-contain"
+              className="w-full h-auto object-contain rounded-md"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
               quality={100}
             />
@@ -184,7 +198,7 @@ const portableTextComponents: PortableTextComponents = {
     bullet: ({ children }) => <li className="ml-4">{children}</li>,
     number: ({ children }) => <li className="ml-4">{children}</li>,
   },
-}
+})
 
 export default async function IndicatorDetailPage({
   params,
@@ -218,130 +232,163 @@ export default async function IndicatorDetailPage({
     custom: '⚙️',
   }
 
+  // Plan-based color theme
+  const planColors = {
+    free: '#6B7280',      // Gray
+    premium: '#DC2626',   // Red
+    ultimate: '#00DD5E',  // Green
+  }
+
+  const themeColor = planColors[indicator.planAccess]
+  
+  // Convert hex to rgba for glow effects
+  const hexToRgba = (hex: string, alpha: number) => {
+    const r = parseInt(hex.slice(1, 3), 16)
+    const g = parseInt(hex.slice(3, 5), 16)
+    const b = parseInt(hex.slice(5, 7), 16)
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`
+  }
+
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden">
-      {/* Corner gradient */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+    <div 
+      className="min-h-screen relative overflow-hidden"
+      style={{
+        background: `linear-gradient(to bottom, ${hexToRgba(themeColor, 0.08)} 0%, #000000 50%, ${hexToRgba(themeColor, 0.08)} 100%)`,
+      }}
+    >
+      {/* Additional gradient overlays for depth */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Top gradient */}
         <div 
-          className="absolute top-0 left-0 w-[600px] h-[600px] opacity-20 blur-3xl"
+          className="absolute top-0 left-0 w-full h-1/2"
           style={{
-            background: 'radial-gradient(circle, #DD0000 0%, #FF5B41 50%, transparent 70%)',
+            background: `radial-gradient(ellipse at top center, ${hexToRgba(themeColor, 0.15)} 0%, transparent 60%)`,
+          }}
+        />
+        {/* Bottom gradient */}
+        <div 
+          className="absolute bottom-0 left-0 w-full h-1/2"
+          style={{
+            background: `radial-gradient(ellipse at bottom center, ${hexToRgba(themeColor, 0.15)} 0%, transparent 60%)`,
           }}
         />
       </div>
-      
+
       {/* Main Content */}
-      <main className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
-        {/* Top row: back + static badge */}
-        <div className="flex items-center justify-between gap-4">
+      <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        {/* Title with back button */}
+        <div className="mb-8">
           <Link
             href="/library"
-            className="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors"
+            className="inline-flex items-center gap-3 text-white hover:text-gray-300 transition-colors mb-4"
           >
-            <span className="text-lg">←</span>
-            <span>Back to library</span>
-          </Link>
-          <span className="px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-white/5 text-gray-100 border border-white/15">
-            {indicator.planAccess.toUpperCase()} PLAN
-          </span>
-        </div>
-
-        {/* Hero media card */}
-        <section className="rounded-[28px] bg-[#050505]/90 shadow-[0_0_60px_rgba(0,0,0,0.8)] overflow-hidden relative">
-          <div className="absolute inset-0 pointer-events-none">
-            <div
-              className="absolute -top-40 left-1/2 -translate-x-1/2 w-[720px] h-[720px] opacity-60 blur-3xl"
-              style={{ background: 'radial-gradient(circle, rgba(221,0,0,0.6) 0%, transparent 70%)' }}
-            />
-          </div>
-
-          <div className="relative z-10 px-6 pt-6 sm:px-10 sm:pt-8">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-2">
+            <span className="text-2xl">←</span>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight uppercase">
               {indicator.title}
             </h1>
-            <p className="text-sm sm:text-base text-gray-400 capitalize mb-6 flex items-center gap-2">
-              <span>{categoryIcons[indicator.category as keyof typeof categoryIcons] || '📊'}</span>
-              <span>{indicator.category} Indicator</span>
-            </p>
-          </div>
+          </Link>
+        </div>
 
-          {/* Main preview image */}
-          <div className="relative z-10 px-4 pb-8 sm:px-8">
-            <div className="relative w-full max-w-4xl mx-auto overflow-hidden bg-black/80 border border-white/10 shadow-[0_18px_50px_rgba(0,0,0,0.9)]">
-              <div className="relative w-full bg-black">
-                {indicator.icon ? (
-                  <Image
-                    src={urlFor(indicator.icon).width(2400).quality(100).url()}
-                    alt={indicator.title}
-                    width={2400}
-                    height={1350}
-                    className="w-full h-auto object-contain"
-                    placeholder="blur"
-                    blurDataURL={getBlurDataURL(indicator.icon)}
-                    priority
-                    quality={100}
-                  />
-                ) : (
-                  <div className="flex items-center justify-center w-full aspect-video text-5xl text-gray-600">
-                    {categoryIcons[indicator.category as keyof typeof categoryIcons] || '📊'}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Overview / documentation text */}
-        {indicator.documentation && indicator.documentation.length > 0 ? (
-          <section className="rounded-[28px] bg-[#050505]/90 px-6 py-8 sm:px-10 sm:py-10">
-            <div className="prose prose-invert max-w-none">
-              <PortableText
-                value={indicator.documentation as PortableTextBlock[]}
-                components={portableTextComponents}
+        {/* Main content area */}
+        <div className="space-y-8 mb-12">
+          {/* Large Image with glow */}
+          <div 
+            className="relative w-full bg-black p-1 rounded-lg"
+            style={{
+              border: `2px solid ${themeColor}`,
+              boxShadow: `0 0 40px ${hexToRgba(themeColor, 0.5)}, 0 0 80px ${hexToRgba(themeColor, 0.3)}, inset 0 0 60px ${hexToRgba(themeColor, 0.1)}`,
+            }}
+          >
+            {/* Glow effect behind image */}
+            <div 
+              className="absolute inset-0 -z-10 blur-3xl opacity-50"
+              style={{
+                background: `radial-gradient(ellipse at center, ${hexToRgba(themeColor, 0.6)} 0%, transparent 70%)`,
+              }}
+            />
+            
+            {indicator.icon ? (
+              <Image
+                src={urlFor(indicator.icon).width(2400).quality(100).url()}
+                alt={indicator.title}
+                width={2400}
+                height={1350}
+                className="w-full h-auto object-contain rounded-md"
+                placeholder="blur"
+                blurDataURL={getBlurDataURL(indicator.icon)}
+                priority
+                quality={100}
               />
-            </div>
-          </section>
-        ) : (
-          <section className="rounded-[28px] bg-[#050505]/90 px-6 py-8 sm:px-10 sm:py-10">
-            <p className="text-gray-300 text-lg leading-relaxed">
-              {indicator.description}
-            </p>
-          </section>
-        )}
+            ) : (
+              <div className="flex items-center justify-center w-full aspect-video text-5xl text-gray-600 bg-gray-900 rounded-md">
+                {categoryIcons[indicator.category as keyof typeof categoryIcons] || '📊'}
+              </div>
+            )}
+          </div>
 
-        {/* Optional: key features below documentation */}
-        {indicator.features && indicator.features.length > 0 && (
-          <section className="rounded-[24px] bg-[#050505]/90 px-6 py-8 sm:px-10 sm:py-9">
-            <h2 className="text-2xl sm:text-3xl font-semibold text-white mb-6">Key Features</h2>
-            <ul className="space-y-3">
-              {indicator.features.map((feature, index) => (
-                <li key={index} className="flex items-start gap-3 text-gray-300 text-base sm:text-lg">
-                  <span className="text-[#FF5B41] mt-1 text-xl">●</span>
-                  <span>{feature}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
+          {/* Description */}
+          <p className="text-gray-300 text-sm sm:text-base leading-relaxed max-w-4xl">
+            {indicator.description}
+          </p>
 
-        {/* Bottom CTA row */}
-        {indicator.tradingViewLink && (
-          <section className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
-            <TradingViewButton href={indicator.tradingViewLink}>
-              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M10 6v2H5v11h11v-5h2v6a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1h6zm11-3v8h-2V6.413l-7.793 7.794-1.414-1.414L17.585 5H13V3h8z" />
-              </svg>
-              TradingView
-            </TradingViewButton>
-
+          {/* TradingView and NinjaTrader Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            {indicator.tradingViewLink && (
+              <TradingViewButton href={indicator.tradingViewLink}>
+                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M10 6v2H5v11h11v-5h2v6a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1h6zm11-3v8h-2V6.413l-7.793 7.794-1.414-1.414L17.585 5H13V3h8z" />
+                </svg>
+                Trading View
+              </TradingViewButton>
+            )}
+            
             <button
               type="button"
               disabled
-              className="inline-flex items-center justify-center px-6 py-3 rounded-lg text-gray-500 text-sm font-medium cursor-not-allowed bg-black/40"
+              className="inline-flex items-center justify-center px-6 py-3 rounded-lg text-gray-500 text-sm font-medium cursor-not-allowed bg-black/40 border border-gray-700"
             >
-              NinjaTrader (coming soon)
+              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M10 6v2H5v11h11v-5h2v6a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1h6zm11-3v8h-2V6.413l-7.793 7.794-1.414-1.414L17.585 5H13V3h8z" />
+              </svg>
+              Ninja Trader
             </button>
-          </section>
+          </div>
+        </div>
+
+        {/* Documentation Section */}
+        {indicator.documentation && indicator.documentation.length > 0 && (
+          <>
+            {/* Documentation Divider */}
+            <div 
+              className="relative flex items-center justify-center my-12 py-8"
+              style={{
+                backgroundImage: `radial-gradient(circle, ${hexToRgba(themeColor, 0.5)} 1px, transparent 1px)`,
+                backgroundSize: '24px 24px',
+                backgroundPosition: 'center center',
+              }}
+            >
+              <div className="relative z-10 px-8 py-2">
+                <h2 
+                  className="text-xl sm:text-2xl font-bold tracking-wider relative inline-block"
+                  style={{ color: themeColor }}
+                >
+                  DOCUMENTATION
+                  <div 
+                    className="absolute bottom-0 left-0 right-0 h-0.5"
+                    style={{ backgroundColor: themeColor }}
+                  ></div>
+                </h2>
+              </div>
+            </div>
+
+            {/* Documentation Content */}
+            <div className="prose prose-invert max-w-none">
+              <PortableText
+                value={indicator.documentation as PortableTextBlock[]}
+                components={getPortableTextComponents(themeColor, hexToRgba)}
+              />
+            </div>
+          </>
         )}
       </main>
     </div>
