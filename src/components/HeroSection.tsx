@@ -5,59 +5,53 @@ import { useState, useEffect } from 'react';
 
 export default function HeroSection() {
   const [splineLoaded, setSplineLoaded] = useState(false);
-  const [showContent, setShowContent] = useState(false);
+  const splineUrl = 'https://my.spline.design/untitled-d20Iy1Eu6FRqsx4QVnJnsIfT/?zoom=false';
 
-  // Show content immediately, don't wait for Spline
+  // Preload Spline resources
   useEffect(() => {
-    setShowContent(true);
-    
-    // Suppress iframe communication errors
-    const handleError = (event: ErrorEvent) => {
-      if (event.message?.includes('message channel closed')) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-    };
-    
-    window.addEventListener('error', handleError);
-    
-    // If Spline takes too long (>10s), hide the loading indicator
-    const timeout = setTimeout(() => {
-      if (!splineLoaded) {
-        setSplineLoaded(true); // Hide loading spinner
-      }
-    }, 10000);
-    
+    // Preconnect to Spline domains for faster loading
+    const preconnectLink1 = document.createElement('link');
+    preconnectLink1.rel = 'preconnect';
+    preconnectLink1.href = 'https://my.spline.design';
+    document.head.appendChild(preconnectLink1);
+
+    const preconnectLink2 = document.createElement('link');
+    preconnectLink2.rel = 'preconnect';
+    preconnectLink2.href = 'https://prod.spline.design';
+    preconnectLink2.crossOrigin = 'anonymous';
+    document.head.appendChild(preconnectLink2);
+
+    // DNS prefetch for faster domain resolution
+    const dnsPrefetch = document.createElement('link');
+    dnsPrefetch.rel = 'dns-prefetch';
+    dnsPrefetch.href = 'https://prod.spline.design';
+    document.head.appendChild(dnsPrefetch);
+
     return () => {
-      clearTimeout(timeout);
-      window.removeEventListener('error', handleError);
+      document.head.removeChild(preconnectLink1);
+      document.head.removeChild(preconnectLink2);
+      document.head.removeChild(dnsPrefetch);
     };
-  }, [splineLoaded]);
+  }, []);
 
   return (
-    <main className="relative z-10 min-h-screen flex items-center overflow-hidden bg-black">
+    <main className="relative z-10 min-h-screen flex items-center overflow-hidden">
       {/* Spline 3D Scene - Background */}
       <div className="absolute inset-0 w-full h-full pointer-events-auto">
-        {/* Subtle gradient background while loading */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black" />
-        
         {!splineLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center z-20">
-            <div className="text-center">
-              <div className="w-12 h-12 border-4 border-gray-700 border-t-red-500 rounded-full animate-spin mx-auto mb-4" />
-              <p className="text-gray-400 text-sm">Loading 3D Scene...</p>
-            </div>
+          <div className="absolute inset-0 flex items-center justify-center bg-black">
+            <div className="w-12 h-12 border-4 border-gray-700 border-t-red-500 rounded-full animate-spin" />
           </div>
         )}
         
         <iframe
-          src="https://my.spline.design/untitled-d20Iy1Eu6FRqsx4QVnJnsIfT/"
+          src={splineUrl}
           frameBorder="0"
           width="100%"
           height="100%"
           loading="eager"
           onLoad={() => setSplineLoaded(true)}
-          className={`transition-opacity duration-1000 ${
+          className={`transition-opacity duration-500 ${
             splineLoaded ? 'opacity-100' : 'opacity-0'
           }`}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
