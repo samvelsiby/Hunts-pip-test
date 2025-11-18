@@ -1,10 +1,38 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function HeroSection() {
   const [splineLoaded, setSplineLoaded] = useState(false);
+  const splineUrl = 'https://my.spline.design/untitled-d20Iy1Eu6FRqsx4QVnJnsIfT/?zoom=false';
+
+  // Preload Spline resources
+  useEffect(() => {
+    // Preconnect to Spline domains for faster loading
+    const preconnectLink1 = document.createElement('link');
+    preconnectLink1.rel = 'preconnect';
+    preconnectLink1.href = 'https://my.spline.design';
+    document.head.appendChild(preconnectLink1);
+
+    const preconnectLink2 = document.createElement('link');
+    preconnectLink2.rel = 'preconnect';
+    preconnectLink2.href = 'https://prod.spline.design';
+    preconnectLink2.crossOrigin = 'anonymous';
+    document.head.appendChild(preconnectLink2);
+
+    // DNS prefetch for faster domain resolution
+    const dnsPrefetch = document.createElement('link');
+    dnsPrefetch.rel = 'dns-prefetch';
+    dnsPrefetch.href = 'https://prod.spline.design';
+    document.head.appendChild(dnsPrefetch);
+
+    return () => {
+      document.head.removeChild(preconnectLink1);
+      document.head.removeChild(preconnectLink2);
+      document.head.removeChild(dnsPrefetch);
+    };
+  }, []);
 
   return (
     <main className="relative z-10 min-h-screen flex items-center overflow-hidden">
@@ -17,14 +45,16 @@ export default function HeroSection() {
         )}
         
         <iframe
-          src="https://my.spline.design/untitled-d20Iy1Eu6FRqsx4QVnJnsIfT/?zoom=false"
+          src={splineUrl}
           frameBorder="0"
           width="100%"
           height="100%"
+          loading="eager"
           onLoad={() => setSplineLoaded(true)}
           className={`transition-opacity duration-500 ${
             splineLoaded ? 'opacity-100' : 'opacity-0'
           }`}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         />
       </div>
 

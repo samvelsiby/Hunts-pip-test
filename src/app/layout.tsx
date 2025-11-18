@@ -39,6 +39,12 @@ export default function RootLayout({
       afterSignUpUrl="/dashboard"
     >
       <html lang="en">
+        <head>
+          {/* Preconnect to Spline domains for faster loading */}
+          <link rel="preconnect" href="https://my.spline.design" />
+          <link rel="preconnect" href="https://prod.spline.design" crossOrigin="anonymous" />
+          <link rel="dns-prefetch" href="https://prod.spline.design" />
+        </head>
         <body
           className={`${manrope.variable} font-sans antialiased`}
         >
