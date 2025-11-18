@@ -1,5 +1,18 @@
-import React from 'react';
+'use client';
+
+import React, { Suspense } from 'react';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
+
+// Dynamically import the 3D model viewer with no SSR
+const Model3DViewer = dynamic(() => import('./Model3DViewer'), { 
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center">
+      <div className="w-12 h-12 border-4 border-gray-700 border-t-[#3AF48A] rounded-full animate-spin" />
+    </div>
+  )
+});
 
 export default function BentoGridComponent() {
   return (
@@ -18,14 +31,14 @@ export default function BentoGridComponent() {
 
         {/* Bento Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4">
-          {/* Large Card - Left Side (spans 2 rows) */}
+          {/* Large Card - Left Side (spans 2 rows) with 3D Model */}
           <div 
-            className="lg:row-span-2 lg:col-span-4 rounded-[20px] border border-[#3AF48A]/40 bg-linear-to-br from-[#0B301E] via-[#0B301E] to-[#152317] p-8 sm:p-10 min-h-[360px] lg:min-h-[560px] shadow-[0_0_60px_rgba(0,0,0,0.7)]"
+            className="lg:row-span-2 lg:col-span-4 rounded-[20px] border border-[#3AF48A]/40 bg-linear-to-br from-[#0B301E] via-[#0B301E] to-[#152317] min-h-[210px] lg:min-h-[560px] shadow-[0_0_60px_rgba(0,0,0,0.7)] overflow-hidden"
             style={{
               background: 'linear-gradient(135deg, #0B301E 0%, #152317 100%)'
             }}
           >
-            {/* Content will go here */}
+            <Model3DViewer />
           </div>
 
           {/* Card 1 - Save you from hours of charting */}

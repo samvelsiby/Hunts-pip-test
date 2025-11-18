@@ -253,23 +253,23 @@ export default async function IndicatorDetailPage({
     <div 
       className="min-h-screen relative overflow-hidden"
       style={{
-        background: `linear-gradient(to bottom, ${hexToRgba(themeColor, 0.08)} 0%, #000000 50%, ${hexToRgba(themeColor, 0.08)} 100%)`,
+        background: `linear-gradient(to bottom, ${hexToRgba(themeColor, 0.15)} 0%, #000000 50%, ${hexToRgba(themeColor, 0.15)} 100%)`,
       }}
     >
       {/* Additional gradient overlays for depth */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Top gradient */}
         <div 
-          className="absolute top-0 left-0 w-full h-1/2"
+          className="absolute top-0 left-0 w-full h-full"
           style={{
-            background: `radial-gradient(ellipse at top center, ${hexToRgba(themeColor, 0.15)} 0%, transparent 60%)`,
+            background: `radial-gradient(ellipse at top center, ${hexToRgba(themeColor, 0.3)} 0%, transparent 50%)`,
           }}
         />
         {/* Bottom gradient */}
         <div 
-          className="absolute bottom-0 left-0 w-full h-1/2"
+          className="absolute bottom-0 left-0 w-full h-full"
           style={{
-            background: `radial-gradient(ellipse at bottom center, ${hexToRgba(themeColor, 0.15)} 0%, transparent 60%)`,
+            background: `radial-gradient(ellipse at bottom center, ${hexToRgba(themeColor, 0.3)} 0%, transparent 50%)`,
           }}
         />
       </div>
