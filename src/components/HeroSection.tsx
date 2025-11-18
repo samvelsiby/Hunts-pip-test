@@ -1,18 +1,39 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function HeroSection() {
   const [splineLoaded, setSplineLoaded] = useState(false);
+  const [showContent, setShowContent] = useState(false);
+
+  // Show content immediately, don't wait for Spline
+  useEffect(() => {
+    setShowContent(true);
+    
+    // If Spline takes too long (>10s), hide the loading indicator
+    const timeout = setTimeout(() => {
+      if (!splineLoaded) {
+        setSplineLoaded(true); // Hide loading spinner
+      }
+    }, 10000);
+    
+    return () => clearTimeout(timeout);
+  }, [splineLoaded]);
 
   return (
-    <main className="relative z-10 min-h-screen flex items-center overflow-hidden">
+    <main className="relative z-10 min-h-screen flex items-center overflow-hidden bg-black">
       {/* Spline 3D Scene - Background */}
       <div className="absolute inset-0 w-full h-full pointer-events-auto">
+        {/* Subtle gradient background while loading */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black" />
+        
         {!splineLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black z-20">
-            <div className="w-12 h-12 border-4 border-gray-700 border-t-red-500 rounded-full animate-spin" />
+          <div className="absolute inset-0 flex items-center justify-center z-20">
+            <div className="text-center">
+              <div className="w-12 h-12 border-4 border-gray-700 border-t-red-500 rounded-full animate-spin mx-auto mb-4" />
+              <p className="text-gray-400 text-sm">Loading 3D Scene...</p>
+            </div>
           </div>
         )}
         
@@ -23,22 +44,11 @@ export default function HeroSection() {
           height="100%"
           loading="eager"
           onLoad={() => setSplineLoaded(true)}
-          className={`transition-opacity duration-500 ${
+          className={`transition-opacity duration-1000 ${
             splineLoaded ? 'opacity-100' : 'opacity-0'
           }`}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          style={{
-            border: 'none',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-          }}
         />
-        
-        {/* Hide Spline logo overlay */}
-        <div className="absolute bottom-0 right-0 w-32 h-16 bg-black z-30 pointer-events-none" />
       </div>
 
       {/* Content Overlay */}
