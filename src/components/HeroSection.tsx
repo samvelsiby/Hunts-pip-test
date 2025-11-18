@@ -27,7 +27,18 @@ export default function HeroSection() {
             splineLoaded ? 'opacity-100' : 'opacity-0'
           }`}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          style={{
+            border: 'none',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+          }}
         />
+        
+        {/* Hide Spline logo overlay */}
+        <div className="absolute bottom-0 right-0 w-32 h-16 bg-black z-30 pointer-events-none" />
       </div>
 
       {/* Content Overlay */}
