@@ -5,23 +5,18 @@ import { OrbitControls, useGLTF } from '@react-three/drei';
 import { Suspense, useState, useEffect } from 'react';
 
 function Model() {
-  try {
-    const { scene } = useGLTF('/bento/hunts_pip.glb');
-    
-    // Detect if mobile screen
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
-    
-    return (
-      <primitive 
-        object={scene} 
-        scale={isMobile ? 1.2 : 0.5}
-        position={[0, isMobile ? -0.5 : -0.3, 0]}
-      />
-    );
-  } catch (error) {
-    console.error('Error loading 3D model:', error);
-    return null;
-  }
+  const { scene } = useGLTF('/bento/hunts_pip.glb');
+  
+  // Detect if mobile screen
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
+  
+  return (
+    <primitive 
+      object={scene} 
+      scale={isMobile ? 1.2 : 0.5}
+      position={[0, isMobile ? -0.5 : -0.3, 0]}
+    />
+  );
 }
 
 export default function Model3DViewer() {

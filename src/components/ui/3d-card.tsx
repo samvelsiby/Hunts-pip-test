@@ -98,6 +98,7 @@ export const CardBody = ({
   );
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const CardItem = ({
   as: Tag = "div",
   children,
@@ -110,7 +111,8 @@ export const CardItem = ({
   rotateZ = 0,
   ...rest
 }: {
-  as?: React.ElementType;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  as?: any;
   children: React.ReactNode;
   className?: string;
   translateX?: number | string;
@@ -119,9 +121,10 @@ export const CardItem = ({
   rotateX?: number | string;
   rotateY?: number | string;
   rotateZ?: number | string;
-  [key: string]: unknown;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
 }) => {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLElement>(null);
   const [isMouseEntered] = useMouseEnter();
 
   useEffect(() => {
@@ -140,7 +143,8 @@ export const CardItem = ({
 
   return (
     <Tag
-      ref={ref}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ref={ref as any}
       className={cn("w-fit transition duration-200 ease-linear", className)}
       {...rest}
     >
