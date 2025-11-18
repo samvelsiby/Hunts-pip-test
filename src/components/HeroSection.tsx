@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import Spline from '@splinetool/react-spline';
 
 export default function HeroSection() {
   const [splineLoaded, setSplineLoaded] = useState(false);
@@ -17,13 +16,17 @@ export default function HeroSection() {
           </div>
         )}
         
-        <Spline
-          scene="https://prod.spline.design/d20Iy1Eu6FRqsx4QVnJnsIfT/scene.splinecode"
+        <iframe
+          src="https://my.spline.design/untitled-d20Iy1Eu6FRqsx4QVnJnsIfT/"
+          frameBorder="0"
+          width="100%"
+          height="100%"
+          loading="eager"
           onLoad={() => setSplineLoaded(true)}
           className={`transition-opacity duration-500 ${
             splineLoaded ? 'opacity-100' : 'opacity-0'
           }`}
-          style={{ width: '100%', height: '100%' }}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         />
       </div>
 
