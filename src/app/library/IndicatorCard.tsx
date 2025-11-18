@@ -59,17 +59,19 @@ export default function IndicatorCard({ indicator }: { indicator: Indicator }) {
         }}
       >
         {/* Card Header with Image */}
-        <div className="relative h-48 w-full overflow-hidden rounded-t-3xl">
+        <div className="relative w-full overflow-hidden rounded-t-3xl bg-black">
           {indicator.icon ? (
             <Image
-              src={urlFor(indicator.icon).width(800).height(600).url()}
+              src={urlFor(indicator.icon).width(1600).quality(100).url()}
               alt=""
-              fill
-              className="object-cover"
+              width={1600}
+              height={900}
+              className="w-full h-auto object-contain"
               priority
+              quality={100}
             />
           ) : (
-            <div className="h-full w-full" style={{ background: 'linear-gradient(135deg, #00dd5e 0%, #ff0000 100%)' }}></div>
+            <div className="h-48 w-full" style={{ background: 'linear-gradient(135deg, #00dd5e 0%, #ff0000 100%)' }}></div>
           )}
         </div>
         

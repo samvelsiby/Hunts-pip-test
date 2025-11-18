@@ -64,13 +64,15 @@ const portableTextComponents: PortableTextComponents = {
       
       return (
         <figure className="my-8">
-          <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-gray-800">
+          <div className="relative w-full overflow-hidden bg-gray-800">
             <Image
-              src={urlFor(value).width(1200).height(675).url()}
+              src={urlFor(value).width(2400).quality(100).url()}
               alt={value.alt || 'Documentation image'}
-              fill
-              className="object-contain"
+              width={2400}
+              height={1350}
+              className="w-full h-auto object-contain"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
+              quality={100}
             />
           </div>
           {value.caption && (
@@ -265,20 +267,22 @@ export default async function IndicatorDetailPage({
 
           {/* Main preview image */}
           <div className="relative z-10 px-4 pb-8 sm:px-8">
-            <div className="relative w-full max-w-3xl mx-auto rounded-[22px] overflow-hidden bg-black/80 border border-white/10 shadow-[0_18px_50px_rgba(0,0,0,0.9)]">
-              <div className="relative w-full aspect-[16/9] bg-black">
+            <div className="relative w-full max-w-4xl mx-auto overflow-hidden bg-black/80 border border-white/10 shadow-[0_18px_50px_rgba(0,0,0,0.9)]">
+              <div className="relative w-full bg-black">
                 {indicator.icon ? (
                   <Image
-                    src={urlFor(indicator.icon).width(1200).height(675).quality(100).url()}
+                    src={urlFor(indicator.icon).width(2400).quality(100).url()}
                     alt={indicator.title}
-                    fill
-                    className="object-cover"
+                    width={2400}
+                    height={1350}
+                    className="w-full h-auto object-contain"
                     placeholder="blur"
                     blurDataURL={getBlurDataURL(indicator.icon)}
                     priority
+                    quality={100}
                   />
                 ) : (
-                  <div className="flex items-center justify-center w-full h-full text-5xl text-gray-600">
+                  <div className="flex items-center justify-center w-full aspect-video text-5xl text-gray-600">
                     {categoryIcons[indicator.category as keyof typeof categoryIcons] || '📊'}
                   </div>
                 )}
