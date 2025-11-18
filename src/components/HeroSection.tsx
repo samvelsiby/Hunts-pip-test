@@ -14,7 +14,7 @@ export default function HeroSection() {
           height="100%"
           loading="eager"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          style={{ border: 'none', display: 'block', transform: 'translateX(-15%)' }}
+          style={{ border: 'none', display: 'block', transform: 'translateX(15%)' }}
         />
       </div>
 
