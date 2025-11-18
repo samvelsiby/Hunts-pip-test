@@ -11,6 +11,16 @@ export default function HeroSection() {
   useEffect(() => {
     setShowContent(true);
     
+    // Suppress iframe communication errors
+    const handleError = (event: ErrorEvent) => {
+      if (event.message?.includes('message channel closed')) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    };
+    
+    window.addEventListener('error', handleError);
+    
     // If Spline takes too long (>10s), hide the loading indicator
     const timeout = setTimeout(() => {
       if (!splineLoaded) {
@@ -18,7 +28,10 @@ export default function HeroSection() {
       }
     }, 10000);
     
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+      window.removeEventListener('error', handleError);
+    };
   }, [splineLoaded]);
 
   return (
