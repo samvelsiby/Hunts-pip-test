@@ -13,7 +13,7 @@ function Model() {
   return (
     <primitive 
       object={scene} 
-      scale={isMobile ? 1.2 : 0.5}
+      scale={isMobile ? 2.0 : 1.2}
       position={[0, isMobile ? -0.5 : -0.3, 0]}
     />
   );
@@ -43,9 +43,10 @@ export default function Model3DViewer() {
         onError={() => setError(true)}
       >
         <Suspense fallback={null}>
-          <ambientLight intensity={0.5} />
-          <directionalLight position={[10, 10, 5]} intensity={1} />
-          <spotLight position={[-10, 10, 10]} angle={0.3} intensity={0.5} />
+          <ambientLight intensity={0.4} />
+          <directionalLight position={[10, 10, 5]} intensity={0.8} color="#3AF48A" />
+          <spotLight position={[-10, 10, 10]} angle={0.3} intensity={0.6} color="#FF0000" />
+          <pointLight position={[0, -5, 5]} intensity={0.5} color="#00dd5e" />
           
           <Model />
           

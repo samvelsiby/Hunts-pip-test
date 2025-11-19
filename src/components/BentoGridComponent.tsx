@@ -33,7 +33,7 @@ export default function BentoGridComponent() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4">
           {/* Large Card - Left Side (spans 2 rows) with 3D Model */}
           <div 
-            className="lg:row-span-2 lg:col-span-4 rounded-[20px] border border-[#3AF48A]/40 bg-linear-to-br from-[#0B301E] via-[#0B301E] to-[#152317] min-h-[210px] lg:min-h-[560px] shadow-[0_0_60px_rgba(0,0,0,0.7)] overflow-hidden"
+            className="lg:row-span-2 lg:col-span-4 rounded-[20px] border border-[#3AF48A]/40 bg-linear-to-br from-[#0B301E] via-[#0B301E] to-[#152317] h-[260px] lg:h-auto lg:min-h-[560px] shadow-[0_0_60px_rgba(0,0,0,0.7)] overflow-hidden"
             style={{
               background: 'linear-gradient(135deg, #0B301E 0%, #152317 100%)'
             }}
@@ -43,7 +43,7 @@ export default function BentoGridComponent() {
 
           {/* Card 1 - Save you from hours of charting */}
           <div 
-            className="lg:col-span-4 rounded-[20px] border border-[#3AF48A]/40 bg-linear-to-br from-[#0B301E] via-[#0B301E] to-[#152317] min-h-[210px] flex flex-col justify-end shadow-[0_0_40px_rgba(0,0,0,0.6)] relative overflow-hidden group"
+            className="lg:col-span-4 rounded-[20px] border border-[#3AF48A]/40 bg-linear-to-br from-[#0B301E] via-[#0B301E] to-[#152317] min-h-[260px] flex flex-col justify-end shadow-[0_0_40px_rgba(0,0,0,0.6)] relative overflow-hidden group"
             style={{
               background: 'linear-gradient(135deg, #0B301E 0%, #152317 100%)'
             }}
@@ -81,16 +81,28 @@ export default function BentoGridComponent() {
 
           {/* Card 2 - Highly customizable */}
           <div 
-            className="lg:col-span-4 rounded-[20px] border border-[#3AF48A]/40 bg-linear-to-br from-[#0B301E] via-[#0B301E] to-[#152317] min-h-[240px] flex flex-col justify-end shadow-[0_0_40px_rgba(0,0,0,0.6)] relative overflow-hidden group"
+            className="lg:col-span-4 rounded-[20px] border border-[#3AF48A]/40 bg-linear-to-br from-[#0B301E] via-[#0B301E] to-[#152317] min-h-[260px] flex flex-col justify-end shadow-[0_0_40px_rgba(0,0,0,0.6)] relative overflow-hidden group"
             style={{
               background: 'linear-gradient(135deg, #0B301E 0%, #152317 100%)'
             }}
           >
             {/* Default compact view */}
-            <div className="p-6 sm:p-8 transition-opacity duration-300 ease-out group-hover:opacity-0">
-              <h3 className="text-xl sm:text-2xl font-bold text-white">
-                Highly customizable
-              </h3>
+            <div className="py-4 sm:py-6 px-0 transition-opacity duration-300 ease-out group-hover:opacity-0">
+              <div className="w-full mb-3 flex justify-center">
+                <Image
+                  src="/bento/card2.svg"
+                  alt="Highly customizable"
+                  width={280}
+                  height={180}
+                  className="w-3/4 max-w-[200px] h-auto object-contain"
+                  priority
+                />
+              </div>
+              <div className="px-6 sm:px-8">
+                <h3 className="text-xl sm:text-2xl font-bold text-white">
+                  Highly customizable
+                </h3>
+              </div>
             </div>
 
             {/* Hover detailed view */}
@@ -108,7 +120,7 @@ export default function BentoGridComponent() {
 
           {/* Card 3 - Receive a trading toolkit */}
           <div 
-            className="lg:col-span-5 rounded-[20px] border border-[#3AF48A]/40 bg-linear-to-br from-[#0B301E] via-[#0B301E] to-[#152317] min-h-[240px] flex flex-col justify-end shadow-[0_0_40px_rgba(0,0,0,0.6)] relative overflow-hidden group"
+            className="lg:col-span-5 rounded-[20px] border border-[#3AF48A]/40 bg-linear-to-br from-[#0B301E] via-[#0B301E] to-[#152317] min-h-[260px] flex flex-col justify-end shadow-[0_0_40px_rgba(0,0,0,0.6)] relative overflow-hidden group"
             style={{
               background: 'linear-gradient(135deg, #0B301E 0%, #152317 100%)'
             }}
@@ -148,16 +160,28 @@ export default function BentoGridComponent() {
 
           {/* Card 4 - Learning Accelerator (wider) */}
           <div 
-            className="lg:col-span-3 rounded-[20px] border border-[#3AF48A]/40 bg-linear-to-br from-[#0B301E] via-[#0B301E] to-[#152317] min-h-[240px] flex flex-col justify-end shadow-[0_0_40px_rgba(0,0,0,0.6)] relative overflow-hidden group"
+            className="lg:col-span-3 rounded-[20px] border border-[#3AF48A]/40 bg-linear-to-br from-[#0B301E] via-[#0B301E] to-[#152317] min-h-[260px] flex flex-col justify-end shadow-[0_0_40px_rgba(0,0,0,0.6)] relative overflow-hidden group"
             style={{
               background: 'linear-gradient(135deg, #0B301E 0%, #152317 100%)'
             }}
           >
             {/* Default compact view */}
-            <div className="p-6 sm:p-8 transition-opacity duration-300 ease-out group-hover:opacity-0">
-              <h3 className="text-xl sm:text-2xl font-bold text-white">
-                Learning Accelerator
-              </h3>
+            <div className="py-4 sm:py-6 px-0 transition-opacity duration-300 ease-out group-hover:opacity-0">
+              <div className="w-full mb-3 flex justify-center">
+                <Image
+                  src="/bento/card4.svg"
+                  alt="Learning Accelerator"
+                  width={260}
+                  height={170}
+                  className="w-3/4 max-w-[190px] h-auto object-contain"
+                  priority
+                />
+              </div>
+              <div className="px-6 sm:px-8">
+                <h3 className="text-xl sm:text-2xl font-bold text-white">
+                  Learning Accelerator
+                </h3>
+              </div>
             </div>
 
             {/* Hover detailed view */}
