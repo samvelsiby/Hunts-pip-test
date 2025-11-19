@@ -21,24 +21,39 @@ export default function FAQComponent() {
   // FAQ data
   const faqs: FAQItem[] = [
     {
-      question: "Why do I need a custom strategy?",
-      answer: "A custom trading strategy is tailored to your specific financial goals, risk tolerance, and market preferences. Unlike generic approaches, our custom strategies account for your unique circumstances, potentially leading to better performance and helping you navigate market volatility with greater confidence."
+      question: 'How does Hunts Pip work?',
+      answer:
+        'Once you choose a plan, you’ll get instant access to your dashboard along with an email link for convenience. You’ll be guided to connect your TradingView and Discord accounts, both completely free. From there, you can start using our tools right away on your charts. We use Stripe and PayPal for secure payments, and all credentials are safely encrypted for full protection.'
     },
     {
-      question: "How do you provide us with the subscription",
-      answer: "Our subscription service is delivered through our secure platform. Once you subscribe, you'll receive immediate access to your chosen plan's features via your dashboard. We provide regular updates, real-time signals, and comprehensive documentation to ensure you can maximize the value of your subscription."
+      question: 'Which markets do your indicators support?',
+      answer:
+        'All Hunts Pip indicators work on any market available on TradingView, including forex, crypto, stocks, indices, and commodities. You can use them across all timeframes such as 1m, 5m, 15m, 1H, 4H, and 1D, making them suitable for scalping, swing trading, or investing.'
     },
     {
-      question: "How to not be foolish",
-      answer: "Successful trading requires discipline, education, and strategic planning. We recommend starting with clear goals, developing a solid understanding of market fundamentals, diversifying your investments, and most importantly, making decisions based on analysis rather than emotions. Our educational resources can help guide you through this process."
+      question: 'Can I use Hunts Pip on MetaTrader 4 or 5?',
+      answer:
+        'Currently, our indicators are built exclusively for TradingView, a free and web-based charting platform. You can analyze trades using Hunts Pip tools on TradingView and then execute your positions on MT4, MT5, or any other platform in real time.'
     },
     {
-      question: "How not to be dumb",
-      answer: "Smart trading involves continuous learning, adapting to market changes, and maintaining realistic expectations. We encourage using proper risk management techniques, staying informed about market trends, and avoiding common pitfalls like overtrading or chasing losses. Our platform provides tools and insights to support informed decision-making."
+      question: 'Does Hunts Pip guarantee profits?',
+      answer:
+        'No trading system or indicator can guarantee profits or 100% accuracy. Hunts Pip provides powerful analytical tools to help you make informed decisions, not predictions. Trading involves risk, and results will always vary depending on the trader’s skill, discipline, and market conditions.'
     },
     {
-      question: "Why are these questions so hard",
-      answer: "Trading and investment questions often seem challenging because financial markets are complex and multifaceted. They involve understanding technical concepts, market psychology, and risk management principles. We strive to break down these complex topics into accessible information through our resources, support, and educational materials."
+      question: 'Is Hunts Pip suitable for beginners?',
+      answer:
+        'Absolutely. Our platform is designed for all experience levels. Beginners can follow our tutorials, learn visually with our Learning Accelerator, and engage with a supportive community for guidance. Advanced traders can take advantage of our customization features and multi–time frame analysis for deeper insights.'
+    },
+    {
+      question: 'What makes Hunts Pip different from other indicator providers?',
+      answer:
+        'Unlike most tools that offer limited settings, Hunts Pip gives you full customization and flexibility. You can tailor each indicator to your trading style, adjust visuals, alerts, and parameters, and access insights across multiple timeframes — all neatly organized for easy execution and learning.'
+    },
+    {
+      question: 'What do I get with my subscription?',
+      answer:
+        'Every subscription includes access to a complete trading toolkit — not just one indicator. You’ll receive a growing collection of tools, with new indicators added regularly, ensuring you always have the latest market technology and analysis power.'
     }
   ];
 

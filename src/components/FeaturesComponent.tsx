@@ -51,7 +51,9 @@ export default function FeaturesComponent() {
         </div>
 
         {/* Feature Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+        {/* Mobile: Single column, iPad: Horizontal scroll, Desktop: Grid */}
+        {/* Mobile - Single Column Grid */}
+        <div className="grid grid-cols-1 gap-4 md:hidden">
           {features.map((feature, index) => (
             <CardContainer key={index} className="inter-var" containerClassName="py-0">
               <CardBody 
@@ -61,7 +63,7 @@ export default function FeaturesComponent() {
                   WebkitBackdropFilter: 'blur(20px)',
                   boxShadow: 'inset 0 0 40px rgba(0, 0, 0, 0.3)'
                 }}
-                className="rounded-3xl px-5 pt-5 pb-3 sm:px-8 sm:pt-8 sm:pb-6 lg:px-10 lg:pt-10 lg:pb-8 border-2 border-[#FFE9E9]/20 hover:border-[#FFE9E9]/40 transition-all duration-300 w-full max-w-[320px] sm:max-w-[380px] min-h-[440px] sm:min-h-[520px] lg:min-h-[550px] flex flex-col relative overflow-hidden justify-center mx-auto h-auto"
+                className="rounded-3xl px-5 pt-5 pb-3 sm:px-8 sm:pt-8 sm:pb-6 border-2 border-[#FFE9E9]/20 hover:border-[#FFE9E9]/40 transition-all duration-300 w-full max-w-[320px] sm:max-w-[380px] min-h-[440px] sm:min-h-[520px] flex flex-col relative overflow-hidden justify-center mx-auto h-auto"
               >
                 {/* SVG Image - positioned at the top center */}
                 <CardItem translateZ="60" className="absolute top-4 left-1/2 transform -translate-x-1/2 w-[240px] h-[160px] sm:w-[280px] sm:h-[180px]">
@@ -75,7 +77,7 @@ export default function FeaturesComponent() {
                   />
                 </CardItem>
 
-                <CardItem translateZ="50" className="relative z-20 pt-[110px] sm:pt-[140px] md:mt-auto">
+                <CardItem translateZ="50" className="relative z-20 pt-[110px] sm:pt-[140px]">
                   {/* Title */}
                   <CardItem translateZ="80" as="h3" className="text-2xl sm:text-3xl font-bold text-white mb-4">
                     {feature.title}
@@ -83,6 +85,88 @@ export default function FeaturesComponent() {
 
                   {/* Description */}
                   <CardItem translateZ="60" as="p" className="text-gray-400 text-sm sm:text-base leading-relaxed">
+                    {feature.description}
+                  </CardItem>
+                </CardItem>
+              </CardBody>
+            </CardContainer>
+          ))}
+        </div>
+
+        {/* iPad - Horizontal Scroll */}
+        <div className="hidden md:flex lg:hidden overflow-x-auto gap-6 pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide">
+          {features.map((feature, index) => (
+            <CardContainer key={index} className="inter-var flex-shrink-0 w-[calc(50%-12px)] snap-center" containerClassName="py-0">
+              <CardBody 
+                style={{
+                  background: 'rgba(0, 0, 0, 0.2)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  boxShadow: 'inset 0 0 40px rgba(0, 0, 0, 0.3)'
+                }}
+                className="rounded-3xl px-8 pt-8 pb-6 border-2 border-[#FFE9E9]/20 hover:border-[#FFE9E9]/40 transition-all duration-300 w-full min-h-[520px] flex flex-col relative overflow-hidden justify-center h-auto"
+              >
+                {/* SVG Image - positioned at the top center */}
+                <CardItem translateZ="60" className="absolute top-4 left-1/2 transform -translate-x-1/2 w-[280px] h-[180px]">
+                  <Image 
+                    src={feature.imageSrc}
+                    alt={feature.title}
+                    width={331}
+                    height={244}
+                    className="w-full h-full object-contain"
+                    priority
+                  />
+                </CardItem>
+
+                <CardItem translateZ="50" className="relative z-20 pt-[140px]">
+                  {/* Title */}
+                  <CardItem translateZ="80" as="h3" className="text-3xl font-bold text-white mb-4">
+                    {feature.title}
+                  </CardItem>
+
+                  {/* Description */}
+                  <CardItem translateZ="60" as="p" className="text-gray-400 text-base leading-relaxed">
+                    {feature.description}
+                  </CardItem>
+                </CardItem>
+              </CardBody>
+            </CardContainer>
+          ))}
+        </div>
+
+        {/* Desktop - 3 Column Grid */}
+        <div className="hidden lg:grid grid-cols-3 gap-8">
+          {features.map((feature, index) => (
+            <CardContainer key={index} className="inter-var" containerClassName="py-0">
+              <CardBody 
+                style={{
+                  background: 'rgba(0, 0, 0, 0.2)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  boxShadow: 'inset 0 0 40px rgba(0, 0, 0, 0.3)'
+                }}
+                className="rounded-3xl px-10 pt-10 pb-8 border-2 border-[#FFE9E9]/20 hover:border-[#FFE9E9]/40 transition-all duration-300 w-full min-h-[550px] flex flex-col relative overflow-hidden justify-center h-auto"
+              >
+                {/* SVG Image - positioned at the top center */}
+                <CardItem translateZ="60" className="absolute top-4 left-1/2 transform -translate-x-1/2 w-[280px] h-[180px]">
+                  <Image 
+                    src={feature.imageSrc}
+                    alt={feature.title}
+                    width={331}
+                    height={244}
+                    className="w-full h-full object-contain"
+                    priority
+                  />
+                </CardItem>
+
+                <CardItem translateZ="50" className="relative z-20 pt-[140px]">
+                  {/* Title */}
+                  <CardItem translateZ="80" as="h3" className="text-3xl font-bold text-white mb-4">
+                    {feature.title}
+                  </CardItem>
+
+                  {/* Description */}
+                  <CardItem translateZ="60" as="p" className="text-gray-400 text-base leading-relaxed">
                     {feature.description}
                   </CardItem>
                 </CardItem>

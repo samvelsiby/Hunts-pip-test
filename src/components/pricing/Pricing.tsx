@@ -33,9 +33,12 @@ export const Pricing = () => {
           ))}
         </div>
         
-        <div className="text-center mt-12">
+        <div className="text-center mt-12 space-y-2">
           <p className="text-gray-400">
             All plans include our core trading signals and keyword access
+          </p>
+          <p className="text-gray-400 text-xs uppercase tracking-widest">
+            Premium includes everything in Free · Ultimate includes both Free + Premium
           </p>
         </div>
       </div>

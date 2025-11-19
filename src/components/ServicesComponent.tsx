@@ -17,11 +17,11 @@ export default function ServicesComponent() {
               className="block text-transparent bg-clip-text"
               style={{ backgroundImage: 'linear-gradient(135deg, #00dd5e 0%, #ff0000 100%)' }}
             >
-              What you Get
+              With Our Trading Accuracy Tools
             </span>
           </h2>
           <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean cursus elit nec dictum pharetra.
+            We deliver high-fidelity accuracy tools that surface institutional insights, verified market trends, and multi-frame confluence so you can trust every trading decision.
           </p>
         </div>
 
@@ -50,13 +50,13 @@ export default function ServicesComponent() {
             {/* Content */}
             <div className="mt-auto">
               <p className="text-[#00dd5e] text-sm font-semibold mb-3 uppercase tracking-wider">
-                Data Encryption
+                Market Connectivity
               </p>
               <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">
-                Connected Securely
+                Real-Time Market Shield
               </h3>
               <p className="text-gray-400 text-sm sm:text-base leading-relaxed">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean cursus elit nec dictum pharetra.
+                Precision background analysis, multi-frame confluence, and real-time triggers keep you ahead of breakouts, reversals, and institutional flow so you can optimize every trade with confidence.
               </p>
             </div>
           </div>
@@ -90,7 +90,7 @@ export default function ServicesComponent() {
                 Optimize Your Trades
               </h3>
               <p className="text-gray-400 text-sm sm:text-base leading-relaxed">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean cursus elit nec dictum pharetra.
+                Precision background analysis, multi-frame confluence, and real-time triggers keep you ahead of breakouts, reversals, and institutional flow so you can optimize every trade with confidence.
               </p>
             </div>
           </div>

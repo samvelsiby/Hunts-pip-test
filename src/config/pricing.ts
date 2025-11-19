@@ -19,7 +19,7 @@ export const TIERS: PricingTier[] = [
       monthly: 0,
       yearly: 0,
     },
-    description: "9 TradingView Indicators - Perfect for beginners",
+    description: "Core Hunts Pip toolkit for market structure visibility",
     features: [
       "Day Separator",
       "Sessions",
@@ -27,9 +27,8 @@ export const TIERS: PricingTier[] = [
       "Premium & Discount",
       "Fair Value Gaps",
       "Order Blocks",
-      "Breaker Blocks",
       "Mitigation Blocks",
-      "Session VWAP Bands"
+      "VWAP"
     ],
     cta: "Get Started Free",
   },
@@ -40,16 +39,15 @@ export const TIERS: PricingTier[] = [
       monthly: 30,
       yearly: 25,
     },
-    description: "6 Indicators + 3 Signals - Advanced trading tools",
+    description: "Premium indicator suite + everything in Free",
     features: [
-      "SMT Divergence",
-      "Support & Resistance (CPR, Pivot Points)",
-      "CBDR - Dealers Range",
-      "Day Separator + Sessions + True Day Open",
-      "SMC Markers",
-      "Silver Bullet Signal",
-      "Unicorn Signal",
-      "Retracement to Asian & London FVG"
+      "SMC",
+      "Breaker Blocks",
+      "SMT",
+      "Inverse Fair Value Gap",
+      "Support and Resistance Zones",
+      "Dealers Range - CBDR",
+      "Day Separator + Sessions + True Day Open Week Open"
     ],
     cta: "Subscribe Now",
     popular: true,
@@ -61,16 +59,14 @@ export const TIERS: PricingTier[] = [
       monthly: 50,
       yearly: 42,
     },
-    description: "All Premium + Ultimate Features - Complete trading solution",
+    description: "Ultimate access (Free + Premium + Ultimate indicators)",
     features: [
-      "All Premium Indicators & Strategies",
-      "Advanced Market Structure Tools",
-      "Liquidity & Volume Analysis",
-      "Trend & Momentum Indicators",
-      "Divergence & Confluence Tools",
-      "Smart Order Blocks & Risk Management",
-      "Institutional Trading Models",
-      "Premium & Ultimate Scanners"
+      "Liquidity Sweep",
+      "Reversal Prediction Oscillator",
+      "Multi-frame OTE",
+      "SMC Multi-frame Marker",
+      "Multi-frame OB",
+      "Multi-frame FVG"
     ],
     cta: "Subscribe Now",
     highlighted: true,
