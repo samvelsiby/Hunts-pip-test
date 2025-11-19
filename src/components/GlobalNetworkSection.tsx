@@ -25,7 +25,7 @@ export default function GlobalNetworkSection() {
   }, []);
 
   return (
-    <section className="relative w-full min-h-screen overflow-hidden bg-black flex items-center justify-center">
+    <section className="relative w-full min-h-screen bg-black overflow-hidden">
       {/* Loading placeholder */}
       {!isLoaded && (
         <div className="absolute inset-0 flex items-center justify-center bg-black">
@@ -36,7 +36,7 @@ export default function GlobalNetworkSection() {
       {/* Video */}
       <video
         ref={videoRef}
-        className={`w-full h-auto max-w-full transition-opacity duration-500 ${
+        className={`w-full min-h-screen object-cover transition-opacity duration-500 ${
           isLoaded ? 'opacity-100' : 'opacity-0'
         }`}
         src="/network/Phooen.mp4"
