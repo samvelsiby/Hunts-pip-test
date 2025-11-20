@@ -99,4 +99,4 @@ tmp/
 temp/
 
 # MCP config files with secrets
-.mcp-config.json
+.mcp-config.json.stripe-keys-SECURE.txt

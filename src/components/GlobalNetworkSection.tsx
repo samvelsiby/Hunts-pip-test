@@ -48,15 +48,15 @@ export default function GlobalNetworkSection() {
         preload="auto"
       />
 
-      <div className="absolute inset-x-0 bottom-0 px-8 pb-12 pt-20 bg-gradient-to-t from-black via-black/85 to-transparent text-center translate-y-8 sm:translate-y-14">
+      <div className="absolute inset-x-0 bottom-0 px-8 pb-16 sm:pb-20 pt-20 bg-gradient-to-t from-black via-black/85 to-transparent text-center">
         <div className="max-w-3xl mx-auto text-white">
           <p className="text-[#00dd5e] text-sm font-semibold mb-3 uppercase tracking-wider">
             Unbeatable Accuracy
           </p>
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 leading-tight">
             Price Level Precision
           </h2>
-          <p className="text-base sm:text-lg text-gray-300 leading-relaxed">
+          <p className="text-base sm:text-lg text-gray-300 leading-relaxed pb-2">
             Zones are calculated with exact precision to specific price points, not rounded estimates. Get the accurate levels where point of interest actually exist for better entry and exit timing.
           </p>
         </div>
