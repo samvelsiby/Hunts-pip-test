@@ -21,14 +21,16 @@ export default function Home() {
       {/* Features Section */}
       <FeaturesComponent />
 
-      {/* Bento Grid Section */}
-      <BentoGridComponent />
-
-      {/* Services Section */}
+        {/* Services Section */}
       <ServicesComponent />
 
       {/* Global Network / World Map Section */}
       <GlobalNetworkSection />
+
+      {/* Bento Grid Section */}
+      <BentoGridComponent />
+
+    
 
       {/* Pricing Section */}
       <PricingComponent />

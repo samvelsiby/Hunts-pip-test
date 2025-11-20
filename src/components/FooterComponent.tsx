@@ -46,11 +46,7 @@ export default function FooterComponent() {
             <ul className="space-y-3">
               <li><Link href="/about" className="text-gray-400 hover:text-white transition-colors text-sm">About</Link></li>
               <li><Link href="/pricing" className="text-gray-400 hover:text-white transition-colors text-sm">Pricing</Link></li>
-              <li><Link href="/docs" className="text-gray-400 hover:text-white transition-colors text-sm">Knowledge Base</Link></li>
-              <li><Link href="/support" className="text-gray-400 hover:text-white transition-colors text-sm">Support</Link></li>
-              <li><Link href="/careers" className="text-gray-400 hover:text-white transition-colors text-sm">Careers</Link></li>
-              <li><Link href="/open-source" className="text-gray-400 hover:text-white transition-colors text-sm">Open Source</Link></li>
-              <li><Link href="/strategies-kit" className="text-gray-400 hover:text-white transition-colors text-sm">Strategies Kit</Link></li>
+              
             </ul>
           </div>
 
@@ -58,12 +54,8 @@ export default function FooterComponent() {
           <div>
             <h3 className="text-lg font-medium mb-6">Legal</h3>
             <ul className="space-y-3">
-              <li><Link href="/imprint" className="text-gray-400 hover:text-white transition-colors text-sm">Imprint</Link></li>
               <li><Link href="/privacy" className="text-gray-400 hover:text-white transition-colors text-sm">Privacy Policy</Link></li>
               <li><Link href="/terms" className="text-gray-400 hover:text-white transition-colors text-sm">Terms & Condition</Link></li>
-              <li><Link href="/transparency" className="text-gray-400 hover:text-white transition-colors text-sm">Transparency Report</Link></li>
-              <li><Link href="/threat-model" className="text-gray-400 hover:text-white transition-colors text-sm">Threat Model</Link></li>
-              <li><Link href="/report-abuse" className="text-gray-400 hover:text-white transition-colors text-sm">Report Abuse</Link></li>
             </ul>
           </div>
 
@@ -82,7 +74,7 @@ export default function FooterComponent() {
               </div>
             </div>
             <p className="text-gray-400 text-sm mb-6 max-w-xs">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean cursus elit nec dictum pharetra.
+              Get weekly breakdowns of new indicators, strategy tips, and platform updates so you can act on fresh market intel the moment it drops.
             </p>
             
             <div className="mt-8">
@@ -118,7 +110,7 @@ export default function FooterComponent() {
           <div className="max-w-4xl mx-auto">
             <div className="mb-4">
               <p className="text-xs text-gray-400 leading-relaxed mb-3">
-                <strong className="text-white">Risk Disclaimer:</strong> Our site is for educational use only and should not be considered financial advice. Trading and investing activities are inherently risky, and users of our material should be prepared to incur losses in connection with such activities. All content on this site is not intended to, and should not be, construed as financial advice. Decisions to buy, sell, hold or trade in securities, commodities and other investments involve risk and are best made based on the advice of qualified financial professionals. Past performance does not guarantee future results.
+                <strong className="text-white">Disclaimer:</strong> Our site is for educational use only and should not be considered financial advice. Trading and investing activities are inherently risky, and users of our material should be prepared to incur losses in connection with such activities. All content on this site is not intended to, and should not be, construed as financial advice. Decisions to buy, sell, hold or trade in securities, commodities and other investments involve risk and are best made based on the advice of qualified financial professionals. Past performance does not guarantee future results.
               </p>
               <button
                 onClick={() => setShowDisclaimer(!showDisclaimer)}

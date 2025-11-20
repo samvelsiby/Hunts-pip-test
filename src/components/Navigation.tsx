@@ -26,14 +26,10 @@ export default function Navigation({ mobileMenuOpen, setMobileMenuOpen }: Naviga
       
       {/* Desktop Navigation */}
       <div className="hidden lg:flex items-center gap-8">
-        <Link href="/library" className="flex items-center gap-1 text-white hover:text-gray-300 text-sm">
-          <span>Library</span>
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
+        <Link href="/library" className="text-white hover:text-gray-300 text-sm">
+          Library
         </Link>
         <Link href="/pricing" className="text-white hover:text-gray-300 text-sm">Pricing</Link>
-        <Link href="/docs" className="text-white hover:text-gray-300 text-sm">Knowledge Base</Link>
         <AuthButtons />
       </div>
 

@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function ServicesComponent() {
   return (
@@ -21,14 +22,16 @@ export default function ServicesComponent() {
             </span>
           </h2>
           <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto">
-            We deliver high-fidelity accuracy tools that surface institutional insights, verified market trends, and multi-frame confluence so you can trust every trading decision.
+           Get Access to out exclusive tool kit
           </p>
         </div>
 
         {/* Feature Blocks */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 max-w-5xl mx-auto items-stretch">
           {/* Left Feature: Data Encryption */}
-          <div className="relative flex flex-col items-center text-center">
+          <div 
+            className="relative flex flex-col items-center text-center h-full"
+          >
             {/* Video Preview */}
             <div className="relative mb-8 w-full max-w-lg overflow-hidden bg-black/20">
               <video
@@ -48,21 +51,21 @@ export default function ServicesComponent() {
             </div>
 
             {/* Content */}
-            <div className="mt-auto">
+            <div className="mt-auto space-y-4">
               <p className="text-[#00dd5e] text-sm font-semibold mb-3 uppercase tracking-wider">
                 Market Connectivity
               </p>
               <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">
-                Real-Time Market Shield
+                Lifetime Updates Included
               </h3>
               <p className="text-gray-400 text-sm sm:text-base leading-relaxed">
-                Precision background analysis, multi-frame confluence, and real-time triggers keep you ahead of breakouts, reversals, and institutional flow so you can optimize every trade with confidence.
+                Your subscription automatically unlocks every future refinement, feature, and performance upgrade at no extra cost. As we sharpen algorithms and add new tools, they drop straight into your toolkit so you always stay ahead.
               </p>
             </div>
           </div>
 
           {/* Right Feature: High-Accuracy */}
-          <div className="relative flex flex-col items-center text-center">
+          <div className="relative flex flex-col items-center text-center h-full">
             {/* Video Preview */}
             <div className="relative mb-8 w-full max-w-lg overflow-hidden bg-black/20">
               <video
@@ -82,18 +85,30 @@ export default function ServicesComponent() {
             </div>
 
             {/* Content */}
-            <div className="mt-auto">
+            <div className="mt-auto space-y-4">
               <p className="text-[#00dd5e] text-sm font-semibold mb-3 uppercase tracking-wider">
-                High-Accuracy
+                Architecture You Can Trust
               </p>
               <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">
-                Optimize Your Trades
+                Non-Repainting Accuracy
               </h3>
               <p className="text-gray-400 text-sm sm:text-base leading-relaxed">
-                Precision background analysis, multi-frame confluence, and real-time triggers keep you ahead of breakouts, reversals, and institutional flow so you can optimize every trade with confidence.
+                What you see is what you get. Our indicators never redraw or change historical values, so every backtest, screenshot, and data point stays fixed and reliable. Build and refine strategies with confidence that past signals remain exactly as plotted.
               </p>
             </div>
           </div>
+        </div>
+
+        <div className="mt-10 flex justify-center">
+          <Link
+            href="/library"
+            className="inline-flex items-center gap-2 rounded-full border border-[#00dd5e] px-8 py-2.5 text-white text-base font-semibold hover:bg-[#00dd5e]/10 transition-colors"
+          >
+            Explore Library
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
         </div>
       </div>
     </section>

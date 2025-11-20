@@ -48,8 +48,9 @@ export default function BentoGridComponent() {
               background: 'linear-gradient(135deg, #0B301E 0%, #152317 100%)'
             }}
           >
+            <div className="absolute inset-0 bg-linear-to-t from-white/40 via-white/15 to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-0" />
             {/* Default compact view with SVG */}
-            <div className="py-4 sm:py-6 px-0 transition-opacity duration-300 ease-out group-hover:opacity-0">
+            <div className="relative z-10 py-4 sm:py-6 px-0 transition-opacity duration-300 ease-out group-hover:opacity-0">
               <div className="w-full mb-3 flex justify-center">
                 <Image
                   src="/bento/card1.svg"
@@ -86,8 +87,9 @@ export default function BentoGridComponent() {
               background: 'linear-gradient(135deg, #0B301E 0%, #152317 100%)'
             }}
           >
+            <div className="absolute inset-0 bg-gradient-to-t from-white/40 via-white/15 to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-0" />
             {/* Default compact view */}
-            <div className="py-4 sm:py-6 px-0 transition-opacity duration-300 ease-out group-hover:opacity-0">
+            <div className="relative z-10 py-4 sm:py-6 px-0 transition-opacity duration-300 ease-out group-hover:opacity-0">
               <div className="w-full mb-3 flex justify-center">
                 <Image
                   src="/bento/card2.svg"
@@ -125,8 +127,9 @@ export default function BentoGridComponent() {
               background: 'linear-gradient(135deg, #0B301E 0%, #152317 100%)'
             }}
           >
+            <div className="absolute inset-0 bg-linear-to-t from-white/40 via-white/15 to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-0" />
             {/* Default compact view with SVG */}
-            <div className="py-6 sm:py-8 px-0 transition-opacity duration-300 ease-out group-hover:opacity-0">
+            <div className="relative z-10 py-6 sm:py-8 px-0 transition-opacity duration-300 ease-out group-hover:opacity-0">
               <div className="w-full mb-4">
                 <Image
                   src="/bento/card3.svg"
@@ -165,8 +168,9 @@ export default function BentoGridComponent() {
               background: 'linear-gradient(135deg, #0B301E 0%, #152317 100%)'
             }}
           >
+            <div className="absolute inset-0 bg-linear-to-t from-white/40 via-white/15 to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-0" />
             {/* Default compact view */}
-            <div className="py-4 sm:py-6 px-0 transition-opacity duration-300 ease-out group-hover:opacity-0">
+            <div className="relative z-10 py-4 sm:py-6 px-0 transition-opacity duration-300 ease-out group-hover:opacity-0">
               <div className="w-full mb-3 flex justify-center">
                 <Image
                   src="/bento/card4.svg"

@@ -36,8 +36,8 @@ export const TIERS: PricingTier[] = [
     id: "premium",
     name: "Premium",
     price: {
-      monthly: 30,
-      yearly: 25,
+      monthly: 44.25,
+      yearly: 30.99,
     },
     description: "Premium indicator suite + everything in Free",
     features: [
@@ -56,8 +56,8 @@ export const TIERS: PricingTier[] = [
     id: "ultimate",
     name: "Ultimate",
     price: {
-      monthly: 50,
-      yearly: 42,
+      monthly: 64.25,
+      yearly: 44.99,
     },
     description: "Ultimate access (Free + Premium + Ultimate indicators)",
     features: [
