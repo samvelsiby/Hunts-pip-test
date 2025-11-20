@@ -15,12 +15,12 @@
 
 export const STRIPE_PRICE_IDS: Record<string, Record<string, string>> = {
   premium: {
-    monthly: process.env.STRIPE_PRICE_PREMIUM_MONTHLY || 'price_1SRHOxQKnoBObMWtOHxepKH5', // Premium Monthly - LIVE
-    yearly: process.env.STRIPE_PRICE_PREMIUM_YEARLY || 'price_1SRHOxQKnoBObMWtrCx6RP8D', // Premium Yearly - LIVE
+    monthly: process.env.STRIPE_PRICE_PREMIUM_MONTHLY || 'price_1SVQxvQKnoBObMWtVHOxXwGv', // Premium Monthly - LIVE
+    yearly: process.env.STRIPE_PRICE_PREMIUM_YEARLY || 'price_1SVQxvQKnoBObMWtJ49xF5U6', // Premium Yearly - LIVE
   },
   ultimate: {
-    monthly: process.env.STRIPE_PRICE_ULTIMATE_MONTHLY || 'price_1SRHQXQKnoBObMWthlvEkITP', // Ultimate Monthly - LIVE
-    yearly: process.env.STRIPE_PRICE_ULTIMATE_YEARLY || 'price_1SRHQXQKnoBObMWt2dPQfFsW', // Ultimate Yearly - LIVE
+    monthly: process.env.STRIPE_PRICE_ULTIMATE_MONTHLY || 'price_1SVQycQKnoBObMWtdaYVb942', // Ultimate Monthly - LIVE
+    yearly: process.env.STRIPE_PRICE_ULTIMATE_YEARLY || 'price_1SVQzNQKnoBObMWtoCYaPhiN', // Ultimate Yearly - LIVE
   },
 };
 

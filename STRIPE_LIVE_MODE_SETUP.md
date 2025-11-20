@@ -17,10 +17,10 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_YOUR_PUBLISHABLE_KEY_HERE
 STRIPE_WEBHOOK_SECRET=whsec_YOUR_WEBHOOK_SECRET_HERE
 
 # Optional: Live Price IDs (already set as fallbacks in code)
-STRIPE_PRICE_PREMIUM_MONTHLY=price_1SRHOxQKnoBObMWtOHxepKH5
-STRIPE_PRICE_PREMIUM_YEARLY=price_1SRHOxQKnoBObMWtrCx6RP8D
-STRIPE_PRICE_ULTIMATE_MONTHLY=price_1SRHQXQKnoBObMWthlvEkITP
-STRIPE_PRICE_ULTIMATE_YEARLY=price_1SRHQXQKnoBObMWt2dPQfFsW
+STRIPE_PRICE_PREMIUM_MONTHLY=price_1SVQxvQKnoBObMWtVHOxXwGv
+STRIPE_PRICE_PREMIUM_YEARLY=price_1SVQxvQKnoBObMWtJ49xF5U6
+STRIPE_PRICE_ULTIMATE_MONTHLY=price_1SVQycQKnoBObMWtdaYVb942
+STRIPE_PRICE_ULTIMATE_YEARLY=price_1SVQzNQKnoBObMWtoCYaPhiN
 ```
 
 ## 🪝 Webhook Setup (CRITICAL)
@@ -108,10 +108,10 @@ Monitor your application logs for:
 
 | Plan | Frequency | Price ID | Amount |
 |------|-----------|----------|--------|
-| Premium | Monthly | `price_1SRHOxQKnoBObMWtOHxepKH5` | $30/month |
-| Premium | Yearly | `price_1SRHOxQKnoBObMWtrCx6RP8D` | $25/month (billed yearly) |
-| Ultimate | Monthly | `price_1SRHQXQKnoBObMWthlvEkITP` | $50/month |
-| Ultimate | Yearly | `price_1SRHQXQKnoBObMWt2dPQfFsW` | $42/month (billed yearly) |
+| Premium | Monthly | `price_1SVQxvQKnoBObMWtVHOxXwGv` | $30/month |
+| Premium | Yearly | `price_1SVQxvQKnoBObMWtJ49xF5U6` | $25/month (billed yearly) |
+| Ultimate | Monthly | `price_1SVQycQKnoBObMWtdaYVb942` | $50/month |
+| Ultimate | Yearly | `price_1SVQzNQKnoBObMWtoCYaPhiN` | $42/month (billed yearly) |
 
 ## ⚠️ Important Security Notes
 
