@@ -16,7 +16,7 @@ export const Pricing = () => {
         {/* Section Header */}
         <PricingHeader
           title="Choose Your Trading Plan"
-          subtitle="Select the perfect plan to enhance your trading analysis. Save 30% when you pay yearly."
+          subtitle="Select the perfect plan to enhance your trading . Save 30% when you pay yearly."
           frequencies={PAYMENT_FREQUENCIES}
           selectedFrequency={selectedPaymentFreq}
           onFrequencyChange={setSelectedPaymentFreq}
@@ -35,11 +35,9 @@ export const Pricing = () => {
         
         <div className="text-center mt-12 space-y-2">
           <p className="text-gray-400">
-            All plans include our core trading signals and keyword access
+     All updates and new indicators are included at no additional cost throughout your active subscription
           </p>
-          <p className="text-gray-400 text-xs uppercase tracking-widest">
-            Premium includes everything in Free · Ultimate includes both Free + Premium
-          </p>
+         
         </div>
       </div>
     </section>

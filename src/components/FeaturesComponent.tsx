@@ -12,12 +12,12 @@ export default function FeaturesComponent() {
     },
     {
       title: "Mechanical Trading Edge",
-      description: "100% rule-based signals eliminate emotional trading. No interpretation, no second-guessing—just clear mechanical rules that execute the same way every time. Remove the human error from your trading.",
+      description: "100% rule-based signals eliminate emotional trading. No interpretation, no second-guessing, just clear mechanical rules that execute the same way every time. Remove the human error from your trading.",
       imageSrc: "/offer/Image (4).svg"
     },
     {
       title: "Institutional Grade Tools",
-      description: "Professional traders use advanced systems with built-in risk management, multi-indicator confluence, and automated stops. Now you can too. Get bank-level analysis at a fraction of the cost.",
+      description: "Professional traders use advanced systems with risk management in mind, multi-timframe confluence, and automated stops. Now you can too. Get bank-level analysis at a fraction of the cost.",
       imageSrc: "/offer/Image (5).svg"
     }
   ];
@@ -46,7 +46,7 @@ export default function FeaturesComponent() {
             Why Use HuntsPip
           </h2>
           <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto">
-            we offering a range of cutting-edge features that set us apart in the world of Forex and Automation.
+            we offer a range of cutting-edge tools that set us apart in the world of Trading and Automation.
           </p>
         </div>
 

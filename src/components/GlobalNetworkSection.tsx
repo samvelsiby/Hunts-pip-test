@@ -48,7 +48,7 @@ export default function GlobalNetworkSection() {
         preload="auto"
       />
 
-      <div className="absolute inset-x-0 bottom-0 px-4 pb-12 pt-20 bg-gradient-to-t from-black via-black/85 to-transparent text-center">
+      <div className="absolute inset-x-0 bottom-0 px-8 pb-12 pt-20 bg-gradient-to-t from-black via-black/85 to-transparent text-center translate-y-8 sm:translate-y-14">
         <div className="max-w-3xl mx-auto text-white">
           <p className="text-[#00dd5e] text-sm font-semibold mb-3 uppercase tracking-wider">
             Unbeatable Accuracy

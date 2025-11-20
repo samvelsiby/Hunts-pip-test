@@ -54,14 +54,19 @@ export default function HeroSection() {
             <h1 className="text-[1.8rem] sm:text-[3rem] lg:text-[4rem] font-extrabold leading-tight text-white">
               <span className="inline-flex flex-wrap sm:flex-nowrap items-center justify-center gap-3 whitespace-normal sm:whitespace-nowrap text-center">
                 <span className="text-white tracking-[0.15em]">GET</span>
-                <span className="relative inline-flex items-center justify-center px-4 sm:px-5 py-1.5 sm:py-2 uppercase tracking-[0.2em] sm:tracking-[0.25em] font-extrabold text-[#E60012] mt-2 sm:mt-0">
-                  <span className="absolute inset-0 rounded-md border border-[#E60012]" />
-                  <span className="absolute -left-2 -top-2 w-3 h-3 border-2 border-[#E60012]" />
-                  <span className="absolute -right-2 -top-2 w-3 h-3 border-2 border-[#E60012]" />
-                  <span className="absolute -left-2 -bottom-2 w-3 h-3 border-2 border-[#E60012]" />
-                  <span className="absolute -right-2 -bottom-2 w-3 h-3 border-2 border-[#E60012]" />
-                  <span className="relative z-10">ACCESS</span>
-                </span>
+                <div className="relative inline-flex items-center justify-center px-5 sm:px-7 py-1 sm:py-1.5 uppercase tracking-[0.2em] sm:tracking-[0.25em] font-extrabold text-white mt-2 sm:mt-0">
+                  <div className="absolute inset-0 border border-[#E60012] bg-gradient-to-r from-[#8B0000] via-[#C40000] to-[#FF1A00] opacity-90" />
+                  <div className="absolute -left-2 -top-2 w-3 h-3 border-2 border-[#E60012]" />
+                  <div className="absolute -right-2 -top-2 w-3 h-3 border-2 border-[#E60012]" />
+                  <div className="absolute -left-2 -bottom-2 w-3 h-3 border-2 border-[#E60012]" />
+                  <div className="absolute -right-2 -bottom-2 w-3 h-3 border-2 border-[#E60012]" />
+                  <span
+                    className="relative z-10 text-white tracking-[0.3em]"
+                    style={{ animation: 'accessShift 2.4s ease-in-out infinite' }}
+                  >
+                    ACCESS
+                  </span>
+                </div>
                 <span className="text-white tracking-[0.15em] sm:tracking-[0.2em]">TO INVISIBLE</span>
               </span>
               <span className="block mt-3 text-white tracking-[0.2em] sm:tracking-[0.25em] uppercase">INSIGHTS IN MARKET</span>

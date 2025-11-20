@@ -39,7 +39,7 @@ export const TIERS: PricingTier[] = [
       monthly: 44.25,
       yearly: 30.99,
     },
-    description: "Premium indicator suite + everything in Free",
+    description: "Premium includes everything in Free",
     features: [
       "SMC",
       "Breaker Blocks",
@@ -59,7 +59,7 @@ export const TIERS: PricingTier[] = [
       monthly: 64.25,
       yearly: 44.99,
     },
-    description: "Ultimate access (Free + Premium + Ultimate indicators)",
+    description: "Ultimate includes everything in both Free and Premium",
     features: [
       "Liquidity Sweep",
       "Reversal Prediction Oscillator",

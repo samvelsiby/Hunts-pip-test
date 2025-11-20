@@ -61,7 +61,7 @@ const getPortableTextComponents = (themeColor: string, hexToRgba: (hex: string, 
   types: {
     image: ({ value }) => {
       if (!value?.asset) return null
-      
+
       return (
         <figure className="my-8">
           <div 
@@ -240,6 +240,7 @@ export default async function IndicatorDetailPage({
   }
 
   const themeColor = planColors[indicator.planAccess]
+  const isFreeIndicator = indicator.planAccess === 'free'
   
   // Convert hex to rgba for glow effects
   const hexToRgba = (hex: string, alpha: number) => {
@@ -331,28 +332,30 @@ export default async function IndicatorDetailPage({
             {indicator.description}
           </p>
 
-          {/* TradingView and NinjaTrader Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            {indicator.tradingViewLink && (
-              <TradingViewButton href={indicator.tradingViewLink}>
+          {/* Trading platform links (only for free indicators) */}
+          {isFreeIndicator && (
+            <div className="flex flex-col sm:flex-row gap-4">
+              {indicator.tradingViewLink && (
+                <TradingViewButton href={indicator.tradingViewLink}>
+                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M10 6v2H5v11h11v-5h2v6a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1h6zm11-3v8h-2V6.413l-7.793 7.794-1.414-1.414L17.585 5H13V3h8z" />
+                  </svg>
+                  Trading View
+                </TradingViewButton>
+              )}
+              
+              <button
+                type="button"
+                disabled
+                className="inline-flex items-center justify-center px-6 py-3 rounded-lg text-gray-500 text-sm font-medium cursor-not-allowed bg-black/40 border border-gray-700"
+              >
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M10 6v2H5v11h11v-5h2v6a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1h6zm11-3v8h-2V6.413l-7.793 7.794-1.414-1.414L17.585 5H13V3h8z" />
                 </svg>
-                Trading View
-              </TradingViewButton>
-            )}
-            
-            <button
-              type="button"
-              disabled
-              className="inline-flex items-center justify-center px-6 py-3 rounded-lg text-gray-500 text-sm font-medium cursor-not-allowed bg-black/40 border border-gray-700"
-            >
-              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M10 6v2H5v11h11v-5h2v6a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1h6zm11-3v8h-2V6.413l-7.793 7.794-1.414-1.414L17.585 5H13V3h8z" />
-              </svg>
-              Ninja Trader
-            </button>
-          </div>
+                Ninja Trader
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Documentation Section */}

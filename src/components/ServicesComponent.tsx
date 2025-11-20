@@ -18,11 +18,11 @@ export default function ServicesComponent() {
               className="block text-transparent bg-clip-text"
               style={{ backgroundImage: 'linear-gradient(135deg, #00dd5e 0%, #ff0000 100%)' }}
             >
-              With Our Trading Accuracy Tools
+               Our Trading Accuracy Tools
             </span>
           </h2>
           <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto">
-           Get Access to out exclusive tool kit
+           Start Trading Today wth Exclusive Tool Kit
           </p>
         </div>
 
@@ -53,7 +53,7 @@ export default function ServicesComponent() {
             {/* Content */}
             <div className="mt-auto space-y-4">
               <p className="text-[#00dd5e] text-sm font-semibold mb-3 uppercase tracking-wider">
-                Market Connectivity
+                Something for your future
               </p>
               <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">
                 Lifetime Updates Included
@@ -104,7 +104,7 @@ export default function ServicesComponent() {
             href="/library"
             className="inline-flex items-center gap-2 rounded-full border border-[#00dd5e] px-8 py-2.5 text-white text-base font-semibold hover:bg-[#00dd5e]/10 transition-colors"
           >
-            Explore Library
+            Explore Our Collection
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>

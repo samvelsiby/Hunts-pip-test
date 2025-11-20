@@ -16,7 +16,7 @@ const Model3DViewer = dynamic(() => import('./Model3DViewer'), {
 
 export default function BentoGridComponent() {
   return (
-    <section className="relative z-10 px-4 sm:px-8 py-12 sm:py-16 lg:py-20">
+    <section className="relative z-10 px-4 sm:px-8 py-12 sm:py-16 lg:py-30">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12 sm:mb-16">
@@ -25,7 +25,7 @@ export default function BentoGridComponent() {
             What can HuntsPip do for you?
           </h2>
           <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto">
-            we offering a range of cutting-edge features that set us apart in the world of Trading and Automation.
+            Professional trading tools powerd by algorithemic analysis for engineered precision
           </p>
         </div>
 
@@ -114,8 +114,7 @@ export default function BentoGridComponent() {
               </h3>
               <div className="space-y-2 text-sm sm:text-base leading-relaxed">
                 <p>Most indicators force you into fixed settings.</p>
-                <p>Hunts Pip lets you adjust parameters, visuals, and alerts to match your style.</p>
-                <p>See structure, key zones, and confirmations in one view for precise trading.</p>
+                <p>Hunts Pip lets you adjust parameters, visuals, and alerts to match your style.See structure, key zones, and confirmations in one view for precise trading.</p>
               </div>
             </div>
           </div>
@@ -153,10 +152,8 @@ export default function BentoGridComponent() {
                 Receive a trading toolkit
               </h3>
               <div className="space-y-2 text-sm sm:text-base leading-relaxed">
-                <p>At Hunts Pip, you get a complete trading toolkit  not just one indicator.</p>
-                <p>Access a growing library of tools designed to boost clarity, timing, and risk control.</p>
-                <p>New modules are added regularly so your edge evolves with the market.</p>
-                <p>Keep your toolkit sharp and stay ahead of changing conditions.</p>
+                <p>At Hunts Pip, you get a complete trading toolkit  not just one indicator.Access a growing library of tools designed to boost clarity, timing, and risk control.</p>
+                <p>New modules are added regularly so your edge evolves with the market.Keep your toolkit sharp and stay ahead of changing conditions.</p>
               </div>
             </div>
           </div>
@@ -194,8 +191,8 @@ export default function BentoGridComponent() {
                 Learning Accelerator
               </h3>
               <div className="space-y-2 text-sm sm:text-base leading-relaxed">
-                <p>Learn faster with concepts shown directly on the chart.</p>
-                <p>Use visual, rule-based signals to bridge the gap between theory and execution.</p>
+            
+                <p>Learn faster with visual and rule-based signals to bridge the gap between theory and execution.</p>
                 <p>Turn what you learn into confident, repeatable trades in real market conditions.</p>
               </div>
             </div>
