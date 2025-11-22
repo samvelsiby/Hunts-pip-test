@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 
@@ -15,6 +15,35 @@ const Model3DViewer = dynamic(() => import('./Model3DViewer'), {
 });
 
 export default function BentoGridComponent() {
+  const [isMobile, setIsMobile] = useState(false);
+  const [expandedCard, setExpandedCard] = useState<string | null>(null);
+
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+
+    return () => {
+      window.removeEventListener('resize', checkIsMobile);
+    };
+  }, []);
+
+  const handleCardToggle = (cardId: string) => {
+    if (!isMobile) return;
+    setExpandedCard((prev) => (prev === cardId ? null : cardId));
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>, cardId: string) => {
+    if (!isMobile) return;
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleCardToggle(cardId);
+    }
+  };
+
   return (
     <section className="relative z-10 px-4 sm:px-8 py-12 sm:py-16 lg:py-30">
       <div className="max-w-7xl mx-auto">
@@ -43,14 +72,23 @@ export default function BentoGridComponent() {
 
           {/* Card 1 - Save you from hours of charting */}
           <div 
-            className="lg:col-span-4 rounded-[20px] border border-[#3AF48A]/40 bg-linear-to-br from-[#0B301E] via-[#0B301E] to-[#152317] min-h-[260px] flex flex-col justify-end shadow-[0_0_40px_rgba(0,0,0,0.6)] relative overflow-hidden group"
+            className="lg:col-span-4 rounded-[20px] border border-[#3AF48A]/40 bg-linear-to-br from-[#0B301E] via-[#0B301E] to-[#152317] min-h-[260px] flex flex-col justify-end shadow-[0_0_40px_rgba(0,0,0,0.6)] relative overflow-hidden group cursor-pointer lg:cursor-default"
             style={{
               background: 'linear-gradient(135deg, #0B301E 0%, #152317 100%)'
             }}
+            onClick={() => handleCardToggle('card1')}
+            onKeyDown={(event) => handleKeyDown(event, 'card1')}
+            role={isMobile ? 'button' : undefined}
+            tabIndex={isMobile ? 0 : undefined}
+            aria-expanded={isMobile ? expandedCard === 'card1' : undefined}
           >
             <div className="absolute inset-0 bg-linear-to-t from-white/40 via-white/15 to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-0" />
             {/* Default compact view with SVG */}
-            <div className="relative z-10 py-4 sm:py-6 px-0 transition-opacity duration-300 ease-out group-hover:opacity-0">
+            <div
+              className={`relative z-10 py-4 sm:py-6 px-0 transition-opacity duration-300 ease-out ${
+                isMobile && expandedCard === 'card1' ? 'opacity-0' : 'opacity-100'
+              } lg:group-hover:opacity-0`}
+            >
               <div className="w-full mb-3 flex justify-center">
                 <Image
                   src="/bento/card1.svg"
@@ -69,7 +107,11 @@ export default function BentoGridComponent() {
             </div>
 
             {/* Hover detailed view */}
-            <div className="absolute inset-0 px-6 sm:px-8 py-6 sm:py-8 flex flex-col justify-center bg-linear-to-br from-[#53FF9B] via-[#7DFFB5] to-[#42E37F] text-black opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out">
+            <div
+              className={`absolute inset-0 px-6 sm:px-8 py-6 sm:py-8 flex flex-col justify-center bg-linear-to-br from-[#53FF9B] via-[#7DFFB5] to-[#42E37F] text-black opacity-0 transition-opacity duration-300 ease-out ${
+                isMobile && expandedCard === 'card1' ? 'opacity-100' : ''
+              } lg:group-hover:opacity-100`}
+            >
               <h3 className="text-xl sm:text-2xl font-bold mb-4">
                 Save you from hours of charting
               </h3>
@@ -82,14 +124,23 @@ export default function BentoGridComponent() {
 
           {/* Card 2 - Highly customizable */}
           <div 
-            className="lg:col-span-4 rounded-[20px] border border-[#3AF48A]/40 bg-linear-to-br from-[#0B301E] via-[#0B301E] to-[#152317] min-h-[260px] flex flex-col justify-end shadow-[0_0_40px_rgba(0,0,0,0.6)] relative overflow-hidden group"
+            className="lg:col-span-4 rounded-[20px] border border-[#3AF48A]/40 bg-linear-to-br from-[#0B301E] via-[#0B301E] to-[#152317] min-h-[260px] flex flex-col justify-end shadow-[0_0_40px_rgba(0,0,0,0.6)] relative overflow-hidden group cursor-pointer lg:cursor-default"
             style={{
               background: 'linear-gradient(135deg, #0B301E 0%, #152317 100%)'
             }}
+            onClick={() => handleCardToggle('card2')}
+            onKeyDown={(event) => handleKeyDown(event, 'card2')}
+            role={isMobile ? 'button' : undefined}
+            tabIndex={isMobile ? 0 : undefined}
+            aria-expanded={isMobile ? expandedCard === 'card2' : undefined}
           >
             <div className="absolute inset-0 bg-gradient-to-t from-white/40 via-white/15 to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-0" />
             {/* Default compact view */}
-            <div className="relative z-10 py-4 sm:py-6 px-0 transition-opacity duration-300 ease-out group-hover:opacity-0">
+            <div
+              className={`relative z-10 py-4 sm:py-6 px-0 transition-opacity duration-300 ease-out ${
+                isMobile && expandedCard === 'card2' ? 'opacity-0' : 'opacity-100'
+              } lg:group-hover:opacity-0`}
+            >
               <div className="w-full mb-3 flex justify-center">
                 <Image
                   src="/bento/card2.svg"
@@ -108,7 +159,11 @@ export default function BentoGridComponent() {
             </div>
 
             {/* Hover detailed view */}
-            <div className="absolute inset-0 px-6 sm:px-8 py-6 sm:py-8 flex flex-col justify-center bg-linear-to-br from-[#53FF9B] via-[#7DFFB5] to-[#42E37F] text-black opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out">
+            <div
+              className={`absolute inset-0 px-6 sm:px-8 py-6 sm:py-8 flex flex-col justify-center bg-linear-to-br from-[#53FF9B] via-[#7DFFB5] to-[#42E37F] text-black opacity-0 transition-opacity duration-300 ease-out ${
+                isMobile && expandedCard === 'card2' ? 'opacity-100' : ''
+              } lg:group-hover:opacity-100`}
+            >
               <h3 className="text-xl sm:text-2xl font-bold mb-4">
                 Highly customizable
               </h3>
@@ -121,14 +176,23 @@ export default function BentoGridComponent() {
 
           {/* Card 3 - Receive a trading toolkit */}
           <div 
-            className="lg:col-span-5 rounded-[20px] border border-[#3AF48A]/40 bg-linear-to-br from-[#0B301E] via-[#0B301E] to-[#152317] min-h-[260px] flex flex-col justify-end shadow-[0_0_40px_rgba(0,0,0,0.6)] relative overflow-hidden group"
+            className="lg:col-span-5 rounded-[20px] border border-[#3AF48A]/40 bg-linear-to-br from-[#0B301E] via-[#0B301E] to-[#152317] min-h-[260px] flex flex-col justify-end shadow-[0_0_40px_rgba(0,0,0,0.6)] relative overflow-hidden group cursor-pointer lg:cursor-default"
             style={{
               background: 'linear-gradient(135deg, #0B301E 0%, #152317 100%)'
             }}
+            onClick={() => handleCardToggle('card3')}
+            onKeyDown={(event) => handleKeyDown(event, 'card3')}
+            role={isMobile ? 'button' : undefined}
+            tabIndex={isMobile ? 0 : undefined}
+            aria-expanded={isMobile ? expandedCard === 'card3' : undefined}
           >
             <div className="absolute inset-0 bg-linear-to-t from-white/40 via-white/15 to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-0" />
             {/* Default compact view with SVG */}
-            <div className="relative z-10 py-6 sm:py-8 px-0 transition-opacity duration-300 ease-out group-hover:opacity-0">
+            <div
+              className={`relative z-10 py-6 sm:py-8 px-0 transition-opacity duration-300 ease-out ${
+                isMobile && expandedCard === 'card3' ? 'opacity-0' : 'opacity-100'
+              } lg:group-hover:opacity-0`}
+            >
               <div className="w-full mb-4">
                 <Image
                   src="/bento/card3.svg"
@@ -147,7 +211,11 @@ export default function BentoGridComponent() {
             </div>
 
             {/* Hover detailed view */}
-            <div className="absolute inset-0 px-6 sm:px-8 py-6 sm:py-8 flex flex-col justify-center bg-linear-to-br from-[#53FF9B] via-[#7DFFB5] to-[#42E37F] text-black opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out">
+            <div
+              className={`absolute inset-0 px-6 sm:px-8 py-6 sm:py-8 flex flex-col justify-center bg-linear-to-br from-[#53FF9B] via-[#7DFFB5] to-[#42E37F] text-black opacity-0 transition-opacity duration-300 ease-out ${
+                isMobile && expandedCard === 'card3' ? 'opacity-100' : ''
+              } lg:group-hover:opacity-100`}
+            >
               <h3 className="text-xl sm:text-2xl font-bold mb-4">
                 Receive a trading toolkit
               </h3>
@@ -160,14 +228,23 @@ export default function BentoGridComponent() {
 
           {/* Card 4 - Learning Accelerator (wider) */}
           <div 
-            className="lg:col-span-3 rounded-[20px] border border-[#3AF48A]/40 bg-linear-to-br from-[#0B301E] via-[#0B301E] to-[#152317] min-h-[260px] flex flex-col justify-end shadow-[0_0_40px_rgba(0,0,0,0.6)] relative overflow-hidden group"
+            className="lg:col-span-3 rounded-[20px] border border-[#3AF48A]/40 bg-linear-to-br from-[#0B301E] via-[#0B301E] to-[#152317] min-h-[260px] flex flex-col justify-end shadow-[0_0_40px_rgba(0,0,0,0.6)] relative overflow-hidden group cursor-pointer lg:cursor-default"
             style={{
               background: 'linear-gradient(135deg, #0B301E 0%, #152317 100%)'
             }}
+            onClick={() => handleCardToggle('card4')}
+            onKeyDown={(event) => handleKeyDown(event, 'card4')}
+            role={isMobile ? 'button' : undefined}
+            tabIndex={isMobile ? 0 : undefined}
+            aria-expanded={isMobile ? expandedCard === 'card4' : undefined}
           >
             <div className="absolute inset-0 bg-linear-to-t from-white/40 via-white/15 to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-0" />
             {/* Default compact view */}
-            <div className="relative z-10 py-4 sm:py-6 px-0 transition-opacity duration-300 ease-out group-hover:opacity-0">
+            <div
+              className={`relative z-10 py-4 sm:py-6 px-0 transition-opacity duration-300 ease-out ${
+                isMobile && expandedCard === 'card4' ? 'opacity-0' : 'opacity-100'
+              } lg:group-hover:opacity-0`}
+            >
               <div className="w-full mb-3 flex justify-center">
                 <Image
                   src="/bento/card4.svg"
@@ -186,7 +263,11 @@ export default function BentoGridComponent() {
             </div>
 
             {/* Hover detailed view */}
-            <div className="absolute inset-0 px-6 sm:px-8 py-6 sm:py-8 flex flex-col justify-center bg-linear-to-br from-[#53FF9B] via-[#7DFFB5] to-[#42E37F] text-black opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out">
+            <div
+              className={`absolute inset-0 px-6 sm:px-8 py-6 sm:py-8 flex flex-col justify-center bg-linear-to-br from-[#53FF9B] via-[#7DFFB5] to-[#42E37F] text-black opacity-0 transition-opacity duration-300 ease-out ${
+                isMobile && expandedCard === 'card4' ? 'opacity-100' : ''
+              } lg:group-hover:opacity-100`}
+            >
               <h3 className="text-xl sm:text-2xl font-bold mb-4">
                 Learning Accelerator
               </h3>
