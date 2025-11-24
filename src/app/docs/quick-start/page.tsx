@@ -19,8 +19,6 @@ export default function QuickStartPage() {
         <nav className="mb-8 text-sm text-gray-400">
           <Link href="/" className="hover:text-white transition-colors">Home</Link>
           <span className="mx-2">/</span>
-          <Link href="/docs" className="hover:text-white transition-colors">Docs</Link>
-          <span className="mx-2">/</span>
           <span className="text-white">Quick Start</span>
         </nav>
 
@@ -105,22 +103,11 @@ export default function QuickStartPage() {
           </p>
           <div className="flex flex-wrap gap-4">
             <Link 
-              href="/docs"
+              href="/library"
               className="px-6 py-3 rounded-lg font-semibold text-white transition-all hover:scale-105 border-2"
               style={{ 
                 background: '#ff0000',
                 borderColor: '#00dd5e',
-              }}
-            >
-              View Documentation
-            </Link>
-            <Link 
-              href="/library"
-              className="px-6 py-3 rounded-lg font-semibold border-2 transition-all hover:scale-105"
-              style={{ 
-                borderColor: '#00dd5e',
-                color: '#00dd5e',
-                background: 'transparent'
               }}
             >
               Browse Indicators

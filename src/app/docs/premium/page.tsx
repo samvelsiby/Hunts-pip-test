@@ -46,8 +46,6 @@ export default function PremiumDocsPage() {
         <nav className="mb-8 text-sm text-gray-400">
           <Link href="/" className="hover:text-white transition-colors">Home</Link>
           <span className="mx-2">/</span>
-          <Link href="/docs" className="hover:text-white transition-colors">Knowledge Base</Link>
-          <span className="mx-2">/</span>
           <span className="text-white">Premium Plan</span>
         </nav>
 
