@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import IndicatorCard from './IndicatorCard'
 
 interface Indicator {
@@ -24,6 +24,8 @@ export default function LibraryClient({ indicators }: LibraryClientProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedPlan, setSelectedPlan] = useState<'all' | 'free' | 'premium' | 'ultimate'>('all')
+  const [visibleIndicators, setVisibleIndicators] = useState<Set<string>>(new Set())
+  const observerRef = useRef<IntersectionObserver | null>(null)
 
   // Filter indicators based on search, category, and plan access
   const filteredIndicators = useMemo(() => {
@@ -60,6 +62,60 @@ export default function LibraryClient({ indicators }: LibraryClientProps) {
 
     return filtered
   }, [indicators, searchQuery, selectedCategory, selectedPlan])
+
+  // Set up intersection observer for lazy loading with preloading
+  useEffect(() => {
+    // Show first 10 indicators immediately (preload for faster initial render)
+    const initialVisible = new Set(
+      filteredIndicators.slice(0, 10).map(ind => ind._id)
+    )
+    setVisibleIndicators(initialVisible)
+
+    // Preload/prefetch the first 10 indicator detail pages for faster navigation
+    filteredIndicators.slice(0, 10).forEach((indicator) => {
+      const link = document.createElement('link')
+      link.rel = 'prefetch'
+      link.href = `/library/${indicator.slug.current}`
+      document.head.appendChild(link)
+    })
+
+    // Clean up previous observer
+    if (observerRef.current) {
+      observerRef.current.disconnect()
+    }
+
+    // Set up intersection observer for the rest
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const indicatorId = entry.target.getAttribute('data-indicator-id')
+            if (indicatorId) {
+              setVisibleIndicators((prev) => new Set([...prev, indicatorId]))
+              // Unobserve once visible to improve performance
+              observerRef.current?.unobserve(entry.target)
+            }
+          }
+        })
+      },
+      {
+        rootMargin: '200px', // Start loading 200px before entering viewport for better preloading
+      }
+    )
+
+    // Use setTimeout to ensure DOM is ready
+    const timeoutId = setTimeout(() => {
+      const cards = document.querySelectorAll('[data-indicator-id]')
+      cards.forEach((card) => {
+        observerRef.current?.observe(card)
+      })
+    }, 100)
+
+    return () => {
+      clearTimeout(timeoutId)
+      observerRef.current?.disconnect()
+    }
+  }, [filteredIndicators])
 
   return (
     <>
@@ -110,9 +166,22 @@ export default function LibraryClient({ indicators }: LibraryClientProps) {
       {/* Indicators Grid */}
       {filteredIndicators.length > 0 ? (
         <div id="library-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredIndicators.map((indicator) => (
-            <IndicatorCard key={indicator._id} indicator={indicator} />
-          ))}
+          {filteredIndicators.map((indicator, index) => {
+            const isVisible = visibleIndicators.has(indicator._id) || index < 10
+            return (
+              <div
+                key={indicator._id}
+                data-indicator-id={indicator._id}
+                className={!isVisible ? 'min-h-[400px]' : ''}
+              >
+                {isVisible ? (
+                  <IndicatorCard indicator={indicator} priority={index < 10} />
+                ) : (
+                  <div className="w-full h-full bg-gray-900/50 rounded-3xl animate-pulse" />
+                )}
+              </div>
+            )
+          })}
         </div>
       ) : indicators.length > 0 ? (
         <div className="text-center py-20">

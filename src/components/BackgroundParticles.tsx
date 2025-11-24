@@ -2,7 +2,23 @@
 
 import { useState, useEffect } from 'react';
 
+// Generate particles - only called on client side
+const generateParticles = (count: number) => {
+  return Array.from({ length: count }, (_, i) => {
+    const baseOpacity = Math.random() * 0.3 + 0.1;
+    return {
+      id: i,
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      size: Math.random() * 2 + 0.5,
+      delay: Math.random() * 3000,
+      opacity: baseOpacity,
+    };
+  });
+};
+
 export default function BackgroundParticles() {
+  // Only generate particles on client side to avoid hydration mismatch
   const [particles, setParticles] = useState<Array<{
     id: number;
     top: string;
@@ -13,19 +29,8 @@ export default function BackgroundParticles() {
   }>>([]);
 
   useEffect(() => {
-    // Generate many particles for a starry effect
-    const generatedParticles = Array.from({ length: 100 }, (_, i) => {
-      const baseOpacity = Math.random() * 0.3 + 0.1;
-      return {
-        id: i,
-        top: `${Math.random() * 100}%`,
-        left: `${Math.random() * 100}%`,
-        size: Math.random() * 2 + 0.5,
-        delay: Math.random() * 3000,
-        opacity: baseOpacity,
-      };
-    });
-    setParticles(generatedParticles);
+    // Generate particles only on client mount
+    setParticles(generateParticles(100));
   }, []);
 
   return (

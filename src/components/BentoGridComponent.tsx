@@ -96,7 +96,7 @@ export default function BentoGridComponent() {
                   width={320}
                   height={200}
                   className="w-3/4 max-w-[220px] h-auto object-contain"
-                  priority
+                  loading="lazy"
                 />
               </div>
               <div className="px-6 sm:px-8">
@@ -148,7 +148,7 @@ export default function BentoGridComponent() {
                   width={280}
                   height={180}
                   className="w-3/4 max-w-[200px] h-auto object-contain"
-                  priority
+                  loading="lazy"
                 />
               </div>
               <div className="px-6 sm:px-8">
@@ -200,7 +200,7 @@ export default function BentoGridComponent() {
                   width={320}
                   height={200}
                   className="w-full h-auto object-contain"
-                  priority
+                  loading="lazy"
                 />
               </div>
               <div className="px-6 sm:px-8">
@@ -252,7 +252,7 @@ export default function BentoGridComponent() {
                   width={260}
                   height={170}
                   className="w-3/4 max-w-[190px] h-auto object-contain"
-                  priority
+                  loading="lazy"
                 />
               </div>
               <div className="px-6 sm:px-8">

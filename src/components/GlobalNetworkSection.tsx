@@ -45,7 +45,7 @@ export default function GlobalNetworkSection() {
         loop
         muted
         playsInline
-        preload="auto"
+        preload="metadata"
       />
 
       <div className="absolute inset-x-0 bottom-0 px-8 pb-16 sm:pb-20 pt-20 bg-gradient-to-t from-black via-black/85 to-transparent text-center">

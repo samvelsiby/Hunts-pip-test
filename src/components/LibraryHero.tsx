@@ -48,7 +48,7 @@ export default function LibraryHero() {
         loop
         muted
         playsInline
-        preload="auto"
+        preload="metadata"
         src="/default.mp4"
       />
 

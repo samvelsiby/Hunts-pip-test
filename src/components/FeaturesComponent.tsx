@@ -33,7 +33,7 @@ export default function FeaturesComponent() {
             width={1440} 
             height={265} 
             className="w-full h-auto"
-            priority
+            loading="lazy"
           />
         </div>
       </div>
@@ -73,7 +73,7 @@ export default function FeaturesComponent() {
                     width={331}
                     height={244}
                     className="w-full h-full object-contain"
-                    priority
+                    loading="lazy"
                   />
                 </CardItem>
 
@@ -114,7 +114,7 @@ export default function FeaturesComponent() {
                     width={331}
                     height={244}
                     className="w-full h-full object-contain"
-                    priority
+                    loading="lazy"
                   />
                 </CardItem>
 
@@ -155,7 +155,7 @@ export default function FeaturesComponent() {
                     width={331}
                     height={244}
                     className="w-full h-full object-contain"
-                    priority
+                    loading="lazy"
                   />
                 </CardItem>
 

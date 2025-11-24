@@ -10,12 +10,12 @@ export default function HeroSection() {
   const [isLoading, setIsLoading] = useState(true);
   const [shouldLoad, setShouldLoad] = useState(false);
 
-  // Load Spline with optimized lazy loading
+  // Load Spline with optimized lazy loading - delay to prioritize initial render
   useEffect(() => {
-    // Small delay to allow initial page render for better performance
+    // Delay loading to allow initial page render and improve LCP
     const timer = setTimeout(() => {
       setShouldLoad(true);
-    }, 100);
+    }, 500); // Increased delay for better initial page load
 
     return () => clearTimeout(timer);
   }, []);

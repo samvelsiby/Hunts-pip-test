@@ -17,7 +17,7 @@ interface Indicator {
   order: number
 }
 
-export default function IndicatorCard({ indicator }: { indicator: Indicator }) {
+export default function IndicatorCard({ indicator, priority = false }: { indicator: Indicator; priority?: boolean }) {
   const planColors = {
     free: '#6B7280',      // Gray
     premium: '#DC2626',   // Red
@@ -44,7 +44,11 @@ export default function IndicatorCard({ indicator }: { indicator: Indicator }) {
   };
   
   return (
-    <Link href={`/library/${indicator.slug.current}`} className="block h-full">
+    <Link 
+      href={`/library/${indicator.slug.current}`} 
+      className="block h-full"
+      prefetch={priority}
+    >
       <div 
         className="rounded-3xl transition-all duration-300 h-full flex flex-col bg-[#0A0A0A] relative hover:scale-[1.02] cursor-pointer group"
         style={{
@@ -62,13 +66,14 @@ export default function IndicatorCard({ indicator }: { indicator: Indicator }) {
         <div className="relative w-full overflow-hidden rounded-t-3xl bg-black">
           {indicator.icon ? (
             <Image
-              src={urlFor(indicator.icon).width(1600).quality(100).url()}
+              src={urlFor(indicator.icon).width(1600).quality(85).url()}
               alt=""
               width={1600}
               height={900}
               className="w-full h-auto object-contain"
-              priority
-              quality={100}
+              loading={priority ? "eager" : "lazy"}
+              priority={priority}
+              quality={85}
             />
           ) : (
             <div className="h-48 w-full" style={{ background: 'linear-gradient(135deg, #00dd5e 0%, #ff0000 100%)' }}></div>

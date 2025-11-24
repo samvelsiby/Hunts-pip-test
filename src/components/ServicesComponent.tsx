@@ -41,6 +41,7 @@ export default function ServicesComponent() {
                 loop
                 muted
                 playsInline
+                preload="metadata"
               />
               {/* Feathered edge overlay */}
               <div className="absolute inset-0 pointer-events-none">
@@ -75,6 +76,7 @@ export default function ServicesComponent() {
                 loop
                 muted
                 playsInline
+                preload="metadata"
               />
               {/* Feathered edge overlay */}
               <div className="absolute inset-0 pointer-events-none">
