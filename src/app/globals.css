@@ -119,8 +119,14 @@ body {
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    @apply bg-black;
+    height: 100%;
+  }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-black text-foreground;
+    min-height: 100vh;
+    height: 100%;
   }
 }
 
@@ -142,6 +148,24 @@ body {
   }
   100% {
     transform: translateX(-2px);
+  }
+}
+
+@keyframes logoScale {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
   }
 }
 

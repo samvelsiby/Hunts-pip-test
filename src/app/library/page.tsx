@@ -62,7 +62,7 @@ export default async function LibraryPage() {
   const indicators = await getIndicators()
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-black w-full">
       {/* Hero Section with Video Background */}
       <LibraryHero />
       
