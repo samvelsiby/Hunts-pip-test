@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { PortableText, PortableTextComponents } from '@portabletext/react'
 import type { PortableTextBlock } from '@portabletext/types'
 import TradingViewButton from '@/components/TradingViewButton'
+import PurchaseButton from '@/components/PurchaseButton'
 
 // Revalidate every 5 minutes in production, or on-demand via webhook
 export const revalidate = 300
@@ -354,6 +355,18 @@ export default async function IndicatorDetailPage({
                 </svg>
                 Ninja Trader
               </button>
+            </div>
+          )}
+
+          {/* Purchase CTA for premium/ultimate indicators */}
+          {!isFreeIndicator && (
+            <div className="flex flex-col sm:flex-row gap-4">
+              <PurchaseButton href="/pricing" themeColor={themeColor}>
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                Purchase to Access
+              </PurchaseButton>
             </div>
           )}
         </div>
