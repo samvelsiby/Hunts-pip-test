@@ -27,23 +27,23 @@ export async function POST(req: NextRequest) {
     if (_type === 'indicator') {
       // Revalidate the library listing page
       revalidatePath('/library', 'page')
-      revalidateTag('indicators')
-      revalidateTag('sanity-content')
+      await revalidateTag('indicators', 'page')
+      await revalidateTag('sanity-content', 'page')
       
       // If we have a slug, also revalidate the specific indicator page
       if (slug?.current) {
         revalidatePath(`/library/${slug.current}`, 'page')
-        revalidateTag(`indicator-${slug.current}`)
+        await revalidateTag(`indicator-${slug.current}`, 'page')
         console.log(`✅ Revalidated indicator page: /library/${slug.current}`)
       }
       
       // Revalidate by document ID as well
-      revalidateTag(`indicator-${_id}`)
+      await revalidateTag(`indicator-${_id}`, 'page')
       console.log(`✅ Revalidated library listing and indicator: ${_id}`)
     } else {
       // For any other document type, revalidate all Sanity content
       revalidatePath('/library', 'page')
-      revalidateTag('sanity-content')
+      await revalidateTag('sanity-content', 'page')
       console.log(`✅ Revalidated all Sanity content`)
     }
 
