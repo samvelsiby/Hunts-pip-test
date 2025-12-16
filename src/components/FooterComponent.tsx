@@ -55,6 +55,7 @@ export default function FooterComponent() {
             <ul className="space-y-3">
               <li><Link href="/privacy" className="text-gray-400 hover:text-white transition-colors text-sm">Privacy Policy</Link></li>
               <li><Link href="/terms" className="text-gray-400 hover:text-white transition-colors text-sm">Terms & Condition</Link></li>
+              <li><Link href="/disclaimer" className="text-gray-400 hover:text-white transition-colors text-sm">Disclaimer</Link></li>
             </ul>
           </div>
 
@@ -84,7 +85,7 @@ export default function FooterComponent() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
-                  className="flex-grow bg-gray-800 border border-gray-700 rounded-full px-4 py-2 focus:outline-none focus:ring-1 focus:ring-red-500 text-white text-sm"
+                  className="grow bg-gray-800 border border-gray-700 rounded-full px-4 py-2 focus:outline-none focus:ring-1 focus:ring-red-500 text-white text-sm"
                   required
                 />
                 <button
@@ -111,12 +112,6 @@ export default function FooterComponent() {
               <p className="text-xs text-gray-400 leading-relaxed mb-3">
                 <strong className="text-white">Disclaimer:</strong> Our site is for educational use only and should not be considered financial advice. Trading and investing activities are inherently risky, and users of our material should be prepared to incur losses in connection with such activities. All content on this site is not intended to, and should not be, construed as financial advice. Decisions to buy, sell, hold or trade in securities, commodities and other investments involve risk and are best made based on the advice of qualified financial professionals. Past performance does not guarantee future results.
               </p>
-              <Link
-                href="/disclaimer"
-                className="text-xs text-[#00dd5e] hover:text-[#00dd5e]/80 transition-colors underline"
-              >
-                View Full Disclaimer
-              </Link>
             </div>
           </div>
           

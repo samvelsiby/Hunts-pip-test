@@ -335,8 +335,9 @@ export default function Dashboard() {
   // Get plan display info
   const planInfo = {
     free: { name: 'Free', color: 'text-gray-400', bgColor: 'bg-gray-800/50', borderColor: 'border-gray-700', icon: Award },
-    premium: { name: 'Premium', color: 'text-green-400', bgColor: 'bg-green-950/20', borderColor: 'border-green-500/30', icon: Sparkles },
-    ultimate: { name: 'Ultimate', color: 'text-purple-400', bgColor: 'bg-purple-950/20', borderColor: 'border-purple-500/30', icon: Crown },
+    // Match site-wide theme: Premium = Red, Ultimate = Green
+    premium: { name: 'Premium', color: 'text-red-400', bgColor: 'bg-red-950/20', borderColor: 'border-red-500/30', icon: Sparkles },
+    ultimate: { name: 'Ultimate', color: 'text-[#00DD5E]', bgColor: 'bg-[#00DD5E]/10', borderColor: 'border-[#00DD5E]/30', icon: Crown },
   };
 
   const currentPlanInfo = planInfo[planType as keyof typeof planInfo] || planInfo.free;
@@ -385,7 +386,7 @@ export default function Dashboard() {
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
                 <span className="text-gray-400">Current Plan</span>
-                <span className="text-green-400 font-semibold capitalize">{planType}</span>
+                <span className={`${currentPlanInfo.color} font-semibold capitalize`}>{planType}</span>
               </div>
               
               <div className="flex justify-between items-center">
@@ -407,8 +408,8 @@ export default function Dashboard() {
               )}
 
               {planType === 'premium' && (
-                <div className="mt-2 p-3 bg-green-950/20 border border-green-500/30 rounded-md">
-                  <h4 className="text-green-400 font-semibold text-sm mb-2 flex items-center gap-2">
+                <div className="mt-2 p-3 bg-red-950/20 border border-red-500/30 rounded-md">
+                  <h4 className="text-red-400 font-semibold text-sm mb-2 flex items-center gap-2">
                     <Award className="h-4 w-4" /> Premium Plan Features
                   </h4>
                   <ul className="text-gray-300 text-xs space-y-1">
@@ -421,8 +422,8 @@ export default function Dashboard() {
               )}
 
               {planType === 'ultimate' && (
-                <div className="mt-2 p-3 bg-purple-950/20 border border-purple-500/30 rounded-md">
-                  <h4 className="text-purple-400 font-semibold text-sm mb-2 flex items-center gap-2">
+                <div className="mt-2 p-3 bg-[#00DD5E]/10 border border-[#00DD5E]/30 rounded-md">
+                  <h4 className="text-[#00DD5E] font-semibold text-sm mb-2 flex items-center gap-2">
                     <Award className="h-4 w-4" /> Ultimate Plan Features
                   </h4>
                   <ul className="text-gray-300 text-xs space-y-1">
@@ -515,7 +516,7 @@ export default function Dashboard() {
             </div>
 
             {saveStatus === 'success' && (
-              <div className="bg-green-950/20 border border-green-500/30 rounded-md p-3 flex items-start gap-3">
+              <div className="bg-[#00DD5E]/10 border border-[#00DD5E]/30 rounded-md p-3 flex items-start gap-3">
                 <Check className="h-5 w-5 text-green-500 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-green-500">TradingView username saved successfully</p>

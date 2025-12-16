@@ -25,7 +25,40 @@ export default function LibraryClient({ indicators }: LibraryClientProps) {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedPlan, setSelectedPlan] = useState<'all' | 'free' | 'premium' | 'ultimate'>('all')
   const [visibleIndicators, setVisibleIndicators] = useState<Set<string>>(new Set())
+  const [shuffleSeed, setShuffleSeed] = useState<string>('')
   const observerRef = useRef<IntersectionObserver | null>(null)
+
+  // Initialize a stable shuffle seed per session so ordering doesn't jump while scrolling.
+  useEffect(() => {
+    try {
+      const key = 'libraryShuffleSeed'
+      const existing = window.sessionStorage.getItem(key)
+      if (existing) {
+        setShuffleSeed(existing)
+        return
+      }
+      const next = Math.random().toString(36).slice(2)
+      window.sessionStorage.setItem(key, next)
+      setShuffleSeed(next)
+    } catch {
+      // If sessionStorage is blocked, fall back to a fixed seed for stability.
+      setShuffleSeed('fallback-seed')
+    }
+  }, [])
+
+  const seededRank = (id: string) => {
+    // Deterministic hash (xmur3-inspired) -> 32-bit unsigned
+    const str = `${shuffleSeed}:${id}`
+    let h = 1779033703 ^ str.length
+    for (let i = 0; i < str.length; i++) {
+      h = Math.imul(h ^ str.charCodeAt(i), 3432918353)
+      h = (h << 13) | (h >>> 19)
+    }
+    h = Math.imul(h ^ (h >>> 16), 2246822507)
+    h = Math.imul(h ^ (h >>> 13), 3266489909)
+    h ^= h >>> 16
+    return h >>> 0
+  }
 
   // Filter indicators based on search, category, and plan access
   const filteredIndicators = useMemo(() => {
@@ -48,20 +81,28 @@ export default function LibraryClient({ indicators }: LibraryClientProps) {
       return matchesSearch && matchesCategory && matchesPlan
     })
 
-    // When "All" is selected, sort to show premium and ultimate first
+    // If seed isn't ready yet, keep the backend order (order asc) for the first paint.
+    if (!shuffleSeed) return filtered
+
+    // "Properly shuffled" but still smart:
+    // - When "All": keep plan priority (ultimate -> premium -> free) but shuffle within each tier.
+    // - When filtering by a single plan: shuffle the results within that plan.
     if (selectedPlan === 'all') {
-      return filtered.sort((a, b) => {
-        const planPriority: Record<string, number> = {
-          'ultimate': 1,
-          'premium': 2,
-          'free': 3
-        }
-        return (planPriority[a.planAccess] || 999) - (planPriority[b.planAccess] || 999)
+      const planPriority: Record<string, number> = {
+        ultimate: 1,
+        premium: 2,
+        free: 3,
+      }
+      return [...filtered].sort((a, b) => {
+        const pa = planPriority[a.planAccess] ?? 999
+        const pb = planPriority[b.planAccess] ?? 999
+        if (pa !== pb) return pa - pb
+        return seededRank(a._id) - seededRank(b._id)
       })
     }
 
-    return filtered
-  }, [indicators, searchQuery, selectedCategory, selectedPlan])
+    return [...filtered].sort((a, b) => seededRank(a._id) - seededRank(b._id))
+  }, [indicators, searchQuery, selectedCategory, selectedPlan, shuffleSeed])
 
   // Set up intersection observer for lazy loading with preloading
   useEffect(() => {
