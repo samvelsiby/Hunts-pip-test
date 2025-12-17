@@ -424,7 +424,7 @@ export default function Dashboard() {
             </CardContent>
             <CardFooter>
               <Button className="w-full" variant="outline" asChild>
-                <Link href="/pricing">
+                <Link href="/dashboard/billing">
                   Manage Subscription <ExternalLink className="ml-2 h-4 w-4" />
                 </Link>
               </Button>

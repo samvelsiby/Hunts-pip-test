@@ -45,15 +45,16 @@ export async function POST(request: NextRequest) {
     const currentPlan = existingSubscription?.plan_type || 'free';
     const currentStatus = existingSubscription?.status || 'inactive';
 
-    // If user already has an active subscription (premium or ultimate), block them
-    // They need to contact support to upgrade
+    // If user already has an active subscription (premium or ultimate), block checkout.
+    // Subscription management is handled in the dashboard billing portal.
     if (currentStatus === 'active' && (currentPlan === 'premium' || currentPlan === 'ultimate')) {
       return NextResponse.json({ 
         error: 'You already have an active subscription',
         currentPlan,
         status: currentStatus,
-        message: `You are already subscribed to the ${currentPlan} plan. Please contact support to upgrade your plan.`,
+        message: `You are already subscribed to the ${currentPlan} plan. Manage your subscription from Dashboard → Billing.`,
         requiresContact: true,
+        redirectTo: '/dashboard/billing',
       }, { status: 400 });
     }
 
