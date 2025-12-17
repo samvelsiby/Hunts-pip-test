@@ -29,9 +29,25 @@ export default function BackgroundParticles() {
   }>>([]);
 
   useEffect(() => {
-    // Generate particles only on client mount
-    setParticles(generateParticles(100));
+    // Disable on mobile + reduced motion + data saver + very slow networks.
+    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    const isMobile = window.innerWidth < 768;
+    const nav: any = navigator as any;
+    const saveData = !!nav?.connection?.saveData;
+    const effectiveType: string | undefined = nav?.connection?.effectiveType;
+    const isSlowNetwork = effectiveType === '2g' || effectiveType === 'slow-2g';
+
+    if (prefersReducedMotion || isMobile || saveData || isSlowNetwork) return;
+
+    // Defer work a bit so first paint can happen first.
+    const t = window.setTimeout(() => {
+      setParticles(generateParticles(50));
+    }, 1200);
+
+    return () => window.clearTimeout(t);
   }, []);
+
+  if (particles.length === 0) return null;
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
