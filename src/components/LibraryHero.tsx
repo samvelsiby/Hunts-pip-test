@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import HlsVideo from '@/components/HlsVideo'
+import { CLOUDFLARE_STREAM_UIDS, cloudflareStreamHlsUrl } from '@/config/cloudflare-stream'
 
 export default function LibraryHero() {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -15,19 +17,10 @@ export default function LibraryHero() {
       })
     }
 
-    const handleEnded = () => {
-      video.currentTime = 0
-      video.play().catch(err => {
-        console.log('Loop restart prevented:', err)
-      })
-    }
-
     video.addEventListener('canplay', handleCanPlay)
-    video.addEventListener('ended', handleEnded)
 
     return () => {
       video.removeEventListener('canplay', handleCanPlay)
-      video.removeEventListener('ended', handleEnded)
     }
   }, [])
 
@@ -41,7 +34,7 @@ export default function LibraryHero() {
   return (
     <div className="relative w-full h-screen overflow-hidden">
       {/* Video Background */}
-      <video
+      <HlsVideo
         ref={videoRef}
         className="absolute top-0 left-0 w-full h-full object-cover z-0"
         autoPlay
@@ -49,7 +42,7 @@ export default function LibraryHero() {
         muted
         playsInline
         preload="metadata"
-        src="/default.mp4"
+        src={cloudflareStreamHlsUrl(CLOUDFLARE_STREAM_UIDS.tradeChartsLoop)}
       />
 
       {/* Dark overlay for readability */}

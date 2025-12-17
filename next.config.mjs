@@ -26,11 +26,11 @@ const nextConfig = {
       "img-src 'self' https://cdn.sanity.io https://*.clerk.com https://*.clerk.dev https://*.clerk.accounts.dev https://clerk.huntspip.com https://www.huntspip.com https://huntspip.com https://*.huntspip.com https://*.spline.design data: blob: https:",
       "font-src 'self' data: https://*.spline.design",
       // Allow Clerk APIs and realtime connections
-      "connect-src 'self' https://*.sanity.io https://cdn.sanity.io https://vitals.vercel-insights.com https://vercel.live https://api.clerk.com https://*.clerk.com https://*.clerk.dev https://*.clerk.accounts.dev https://challenges.cloudflare.com https://*.cloudflare.com https://clerk.huntspip.com https://www.huntspip.com https://huntspip.com https://*.huntspip.com https://*.spline.design https://my.spline.design wss://*.spline.design",
+      "connect-src 'self' https://*.sanity.io https://cdn.sanity.io https://vitals.vercel-insights.com https://vercel.live https://api.clerk.com https://*.clerk.com https://*.clerk.dev https://*.clerk.accounts.dev https://challenges.cloudflare.com https://*.cloudflare.com https://*.cloudflarestream.com https://clerk.huntspip.com https://www.huntspip.com https://huntspip.com https://*.huntspip.com https://*.spline.design https://my.spline.design wss://*.spline.design",
       // Allow Clerk hosted widgets, YouTube embeds, and Spline 3D
       "frame-src https://www.youtube.com https://*.clerk.com https://*.clerk.dev https://*.clerk.accounts.dev https://challenges.cloudflare.com https://*.cloudflare.com https://clerk.huntspip.com https://www.huntspip.com https://huntspip.com https://*.huntspip.com https://my.spline.design https://*.spline.design",
       "child-src https://my.spline.design https://*.spline.design blob:",
-      "media-src 'self' blob: https://*.spline.design",
+      "media-src 'self' blob: https://*.spline.design https://*.cloudflarestream.com",
       "worker-src 'self' blob: https://*.spline.design",
       'upgrade-insecure-requests',
     ].join('; ')

@@ -2,6 +2,8 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import HlsVideo from '@/components/HlsVideo'
+import { CLOUDFLARE_STREAM_UIDS, cloudflareStreamHlsUrl } from '@/config/cloudflare-stream'
 
 export default function ServicesComponent() {
   return (
@@ -34,9 +36,9 @@ export default function ServicesComponent() {
           >
             {/* Video Preview */}
             <div className="relative mb-8 w-full max-w-lg overflow-hidden bg-black/20">
-              <video
+              <HlsVideo
                 className="w-full h-full object-cover"
-                src="/services/2.mp4"
+                src={cloudflareStreamHlsUrl(CLOUDFLARE_STREAM_UIDS.services2)}
                 autoPlay
                 loop
                 muted
@@ -69,9 +71,9 @@ export default function ServicesComponent() {
           <div className="relative flex flex-col items-center text-center h-full">
             {/* Video Preview */}
             <div className="relative mb-8 w-full max-w-lg overflow-hidden bg-black/20">
-              <video
+              <HlsVideo
                 className="w-full h-full object-cover"
-                src="/services/OB CHARTS.mp4"
+                src={cloudflareStreamHlsUrl(CLOUDFLARE_STREAM_UIDS.obCharts)}
                 autoPlay
                 loop
                 muted

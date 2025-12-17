@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import HlsVideo from '@/components/HlsVideo'
+import { CLOUDFLARE_STREAM_UIDS, cloudflareStreamHlsUrl } from '@/config/cloudflare-stream'
 
 export default function GlobalNetworkSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -35,12 +37,12 @@ export default function GlobalNetworkSection() {
       )}
       
       {/* Video */}
-      <video
+      <HlsVideo
         ref={videoRef}
         className={`w-full min-h-screen object-cover transition-opacity duration-500 ${
           isLoaded ? 'opacity-100' : 'opacity-0'
         }`}
-        src="/network/Phooen.mp4"
+        src={cloudflareStreamHlsUrl(CLOUDFLARE_STREAM_UIDS.phooen)}
         autoPlay
         loop
         muted
@@ -48,7 +50,7 @@ export default function GlobalNetworkSection() {
         preload="metadata"
       />
 
-      <div className="absolute inset-x-0 bottom-0 px-8 pb-16 sm:pb-20 pt-20 bg-gradient-to-t from-black via-black/85 to-transparent text-center">
+      <div className="absolute inset-x-0 bottom-0 px-8 pb-16 sm:pb-20 pt-20 bg-linear-to-t from-black via-black/85 to-transparent text-center">
         <div className="max-w-3xl mx-auto text-white">
           <p className="text-[#00dd5e] text-sm font-semibold mb-3 uppercase tracking-wider">
             Unbeatable Accuracy
