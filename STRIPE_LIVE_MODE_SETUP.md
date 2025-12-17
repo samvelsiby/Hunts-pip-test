@@ -42,6 +42,25 @@ STRIPE_PRICE_ULTIMATE_YEARLY=price_1SVQzNQKnoBObMWtoCYaPhiN
 7. Copy the **Signing secret** (starts with `whsec_`)
 8. Add it to your environment variables as `STRIPE_WEBHOOK_SECRET`
 
+## 🧾 Customer Portal Setup (Upgrade/Downgrade/Cancel)
+
+This app supports subscription changes via **Stripe Customer Portal**:
+- Users with an active paid plan are redirected to the portal from the dashboard.
+- The portal can handle **upgrade**, **downgrade**, **cancel**, and **payment method** updates.
+
+### Enable and configure the portal
+1. Go to Stripe Dashboard (Live Mode) → **Settings → Billing → Customer portal**
+2. Enable **Customer portal**
+3. Under **Subscriptions**, enable:
+   - **Allow customers to update subscriptions** (switch between Premium and Ultimate)
+   - **Allow customers to cancel subscriptions**
+4. Under **Payment methods**, enable updating payment methods
+5. Save changes
+
+### Important
+- Your webhook endpoint already includes `customer.subscription.updated` and `customer.subscription.deleted` events so Supabase stays in sync when users change plans in the portal.
+- Make sure the portal “Return URL” is allowed to return to your site (the app uses `/dashboard` as the return path).
+
 ### Step 2: Test Webhook
 After deploying with live keys:
 ```bash

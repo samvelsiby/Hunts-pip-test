@@ -24,6 +24,7 @@ export default function Dashboard() {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isOpeningPortal, setIsOpeningPortal] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [showTradingViewModal, setShowTradingViewModal] = useState(false);
@@ -343,6 +344,28 @@ export default function Dashboard() {
   const currentPlanInfo = planInfo[planType as keyof typeof planInfo] || planInfo.free;
   const PlanIcon = currentPlanInfo.icon;
 
+  const openBillingPortal = async () => {
+    try {
+      setIsOpeningPortal(true);
+      const res = await fetch('/api/billing-portal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ returnPath: '/dashboard' }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data?.url) {
+        throw new Error(data?.message || data?.error || 'Failed to open billing portal');
+      }
+      window.location.href = data.url;
+    } catch (e) {
+      console.error(e);
+      alert('Could not open subscription manager. Please try again.');
+    } finally {
+      setIsOpeningPortal(false);
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* TradingView Username Modal - Required after payment */}
@@ -423,11 +446,31 @@ export default function Dashboard() {
               )}
             </CardContent>
             <CardFooter>
-              <Button className="w-full" variant="outline" asChild>
-                <Link href="/pricing">
-                  Manage Subscription <ExternalLink className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
+              {planType !== 'free' ? (
+                <Button
+                  className="w-full"
+                  variant="outline"
+                  onClick={openBillingPortal}
+                  disabled={isOpeningPortal}
+                >
+                  {isOpeningPortal ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Opening…
+                    </>
+                  ) : (
+                    <>
+                      Manage Subscription <ExternalLink className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              ) : (
+                <Button className="w-full" variant="outline" asChild>
+                  <Link href="/pricing">
+                    Upgrade Plan <ExternalLink className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              )}
             </CardFooter>
           </Card>
         </div>

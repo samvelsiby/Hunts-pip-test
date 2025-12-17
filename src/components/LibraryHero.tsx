@@ -1,13 +1,25 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 export default function LibraryHero() {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const [shouldUseVideo, setShouldUseVideo] = useState(true)
 
   useEffect(() => {
+    // Disable heavy background video on mobile/slow connections.
+    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
+    const isSmallScreen = typeof window !== 'undefined' && window.innerWidth < 768
+    const nav: any = typeof navigator !== 'undefined' ? navigator : null
+    const saveData = !!nav?.connection?.saveData
+    const effectiveType: string | undefined = nav?.connection?.effectiveType
+    const isSlowNetwork = effectiveType === '2g' || effectiveType === 'slow-2g'
+    const disable = prefersReducedMotion || saveData || isSlowNetwork || isSmallScreen
+    setShouldUseVideo(!disable)
+
     const video = videoRef.current
     if (!video) return
+    if (prefersReducedMotion || saveData || isSlowNetwork || isSmallScreen) return
 
     const handleCanPlay = () => {
       video.play().catch(err => {
@@ -31,6 +43,14 @@ export default function LibraryHero() {
     }
   }, [])
 
+  const fallbackBgStyle = useMemo(
+    () => ({
+      background:
+        'radial-gradient(circle at 20% 20%, rgba(0, 221, 94, 0.18), transparent 55%), radial-gradient(circle at 80% 30%, rgba(255, 0, 0, 0.16), transparent 55%), linear-gradient(180deg, rgba(0,0,0,0.9), rgba(0,0,0,1))',
+    }),
+    []
+  )
+
   const scrollToContent = () => {
     const element = document.getElementById('library-content')
     if (element) {
@@ -41,16 +61,20 @@ export default function LibraryHero() {
   return (
     <div className="relative w-full h-screen overflow-hidden">
       {/* Video Background */}
-      <video
-        ref={videoRef}
-        className="absolute top-0 left-0 w-full h-full object-cover z-0"
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="metadata"
-        src="/default.mp4"
-      />
+      {shouldUseVideo ? (
+        <video
+          ref={videoRef}
+          className="absolute top-0 left-0 w-full h-full object-cover z-0"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="none"
+          src="/default.mp4"
+        />
+      ) : (
+        <div className="absolute inset-0 z-0" style={fallbackBgStyle} />
+      )}
 
       {/* Dark overlay for readability */}
       <div className="absolute inset-0 bg-black/60 z-10 pointer-events-none" />

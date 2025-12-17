@@ -2,6 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { supabaseAdmin } from '@/lib/supabase-server';
 import { getUserSubscription } from '@/lib/data-access-layer';
+import Stripe from 'stripe';
+
+function getStripe() {
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+  if (!secretKey) {
+    throw new Error('STRIPE_SECRET_KEY is not configured');
+  }
+  return new Stripe(secretKey, {
+    apiVersion: '2025-10-29.clover',
+  });
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,15 +35,47 @@ export async function POST(request: NextRequest) {
     const currentStatus = existingSubscription?.status || 'inactive';
 
     // If user has an active paid subscription, block them from switching to free
-    // They need to contact support to downgrade
+    // They should manage cancellation/downgrade via Stripe Customer Portal
     if (currentStatus === 'active' && (currentPlan === 'premium' || currentPlan === 'ultimate')) {
-      return NextResponse.json({ 
-        error: 'You have an active paid subscription',
-        currentPlan,
-        status: currentStatus,
-        message: `You are currently subscribed to the ${currentPlan} plan. Please contact support to change your subscription plan.`,
-        requiresContact: true,
-      }, { status: 400 });
+      const stripeCustomerId = existingSubscription?.stripe_customer_id;
+      if (stripeCustomerId) {
+        const baseUrl =
+          process.env.NEXT_PUBLIC_APP_URL ||
+          process.env.APP_BASE_URL ||
+          (request.headers.get('origin') && !request.headers.get('origin')?.includes('localhost')
+            ? request.headers.get('origin')
+            : null) ||
+          'https://huntspip.com';
+
+        const stripe = getStripe();
+        const portalSession = await stripe.billingPortal.sessions.create({
+          customer: stripeCustomerId,
+          return_url: `${baseUrl}/dashboard`,
+        });
+
+        return NextResponse.json(
+          {
+            error: 'You have an active paid subscription',
+            currentPlan,
+            status: currentStatus,
+            message: `You are currently subscribed to the ${currentPlan} plan. Please manage your subscription in Stripe.`,
+            requiresPortal: true,
+            url: portalSession.url,
+          },
+          { status: 400 }
+        );
+      }
+
+      return NextResponse.json(
+        {
+          error: 'You have an active paid subscription',
+          currentPlan,
+          status: currentStatus,
+          message: `You are currently subscribed to the ${currentPlan} plan. Please manage your subscription from your dashboard.`,
+          requiresPortal: true,
+        },
+        { status: 400 }
+      );
     }
 
     // Check if subscription exists in database

@@ -25,8 +25,22 @@ export const CardContainer = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMouseEntered, setIsMouseEntered] = useState(false);
+  const [enable3d, setEnable3d] = useState(false);
+
+  useEffect(() => {
+    // Disable 3D hover effects on touch devices/small screens to reduce JS work.
+    const isSmallScreen = typeof window !== "undefined" && window.innerWidth < 1024;
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    const canHover =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(hover: hover) and (pointer: fine)")?.matches;
+    setEnable3d(!!canHover && !isSmallScreen && !prefersReducedMotion);
+  }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!enable3d) return;
     if (!containerRef.current) return;
     const { left, top, width, height } =
       containerRef.current.getBoundingClientRect();
@@ -36,6 +50,7 @@ export const CardContainer = ({
   };
 
   const handleMouseEnter = () => {
+    if (!enable3d) return;
     setIsMouseEntered(true);
     if (!containerRef.current) return;
   };
@@ -53,14 +68,14 @@ export const CardContainer = ({
           containerClassName
         )}
         style={{
-          perspective: "1000px",
+          perspective: enable3d ? "1000px" : undefined,
         }}
       >
         <div
           ref={containerRef}
-          onMouseEnter={handleMouseEnter}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
+          onMouseEnter={enable3d ? handleMouseEnter : undefined}
+          onMouseMove={enable3d ? handleMouseMove : undefined}
+          onMouseLeave={enable3d ? handleMouseLeave : undefined}
           className={cn(
             "flex items-center justify-center relative transition-all duration-200 ease-linear",
             className

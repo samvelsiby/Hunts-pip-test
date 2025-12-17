@@ -2,8 +2,21 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 export default function ServicesComponent() {
+  const [shouldAutoplayVideo, setShouldAutoplayVideo] = useState(false);
+
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    const isSmallScreen = window.innerWidth < 768;
+    const nav: any = navigator as any;
+    const saveData = !!nav?.connection?.saveData;
+    const effectiveType: string | undefined = nav?.connection?.effectiveType;
+    const isSlowNetwork = effectiveType === '2g' || effectiveType === 'slow-2g';
+    setShouldAutoplayVideo(!(prefersReducedMotion || saveData || isSlowNetwork || isSmallScreen));
+  }, []);
+
   return (
     <section className="relative z-10 px-4 sm:px-8 py-16 sm:py-20 lg:py-24">
       <div className="max-w-7xl mx-auto">
@@ -37,11 +50,11 @@ export default function ServicesComponent() {
               <video
                 className="w-full h-full object-cover"
                 src="/services/2.mp4"
-                autoPlay
+                autoPlay={shouldAutoplayVideo}
                 loop
                 muted
                 playsInline
-                preload="metadata"
+                preload="none"
               />
               {/* Feathered edge overlay */}
               <div className="absolute inset-0 pointer-events-none">
@@ -72,11 +85,11 @@ export default function ServicesComponent() {
               <video
                 className="w-full h-full object-cover"
                 src="/services/OB CHARTS.mp4"
-                autoPlay
+                autoPlay={shouldAutoplayVideo}
                 loop
                 muted
                 playsInline
-                preload="metadata"
+                preload="none"
               />
               {/* Feathered edge overlay */}
               <div className="absolute inset-0 pointer-events-none">
