@@ -112,7 +112,13 @@ export default function FAQComponent() {
 
         {/* Contact Link */}
         <div className="text-center mt-8 text-sm text-gray-400">
-          More questions? <Link href="/contact" className="text-red-500 hover:text-red-400 transition-colors">Contact Us</Link>
+          More questions?{" "}
+          <a
+            href="mailto:contact@huntspip.com"
+            className="text-red-500 hover:text-red-400 transition-colors"
+          >
+            contact@huntspip.com
+          </a>
         </div>
       </div>
     </section>
