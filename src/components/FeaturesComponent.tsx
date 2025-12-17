@@ -93,10 +93,10 @@ export default function FeaturesComponent() {
           ))}
         </div>
 
-        {/* iPad - Horizontal Scroll */}
-        <div className="hidden md:flex lg:hidden overflow-x-auto gap-6 pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide">
+        {/* Tablet (md) - 2 Column Grid (prevents card squishing/breaking between 768-1023px) */}
+        <div className="hidden md:grid lg:hidden grid-cols-2 gap-6">
           {features.map((feature, index) => (
-            <CardContainer key={index} className="inter-var flex-shrink-0 w-[calc(50%-12px)] snap-center" containerClassName="py-0">
+            <CardContainer key={index} className="inter-var" containerClassName="py-0">
               <CardBody 
                 style={{
                   background: 'rgba(0, 0, 0, 0.2)',

@@ -92,7 +92,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </SidebarHeader>
           <SidebarContent>
             <SidebarGroup>
-              <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+              <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   {navItems.map((item) => (
@@ -101,7 +101,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         asChild
                         isActive={pathname === item.href}
                         className={cn(
-                          pathname === item.href && "bg-gradient-to-r from-[#DD0000]/20 to-[#FF5B41]/20 text-white border-l-2 border-[#FF5B41]"
+                          pathname === item.href && "bg-linear-to-r from-[#DD0000]/20 to-[#FF5B41]/20 text-white border-l-2 border-[#FF5B41]"
                         )}
                       >
                         <Link href={item.href}>

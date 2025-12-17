@@ -378,7 +378,7 @@ export default function Dashboard() {
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Subscription Management */}
-          <Card>
+          <Card className="md:col-span-2">
             <CardHeader>
               <CardTitle>Subscription Management</CardTitle>
               <CardDescription>Your current plan and billing information</CardDescription>
@@ -407,20 +407,6 @@ export default function Dashboard() {
                 </div>
               )}
 
-              {planType === 'premium' && (
-                <div className="mt-2 p-3 bg-red-950/20 border border-red-500/30 rounded-md">
-                  <h4 className="text-red-400 font-semibold text-sm mb-2 flex items-center gap-2">
-                    <Award className="h-4 w-4" /> Premium Plan Features
-                  </h4>
-                  <ul className="text-gray-300 text-xs space-y-1">
-                    <li className="flex items-center gap-2">• Advanced trading signals</li>
-                    <li className="flex items-center gap-2">• Unlimited keyword access</li>
-                    <li className="flex items-center gap-2">• Priority support</li>
-                    <li className="flex items-center gap-2">• Custom alerts</li>
-                  </ul>
-                </div>
-              )}
-
               {planType === 'ultimate' && (
                 <div className="mt-2 p-3 bg-[#00DD5E]/10 border border-[#00DD5E]/30 rounded-md">
                   <h4 className="text-[#00DD5E] font-semibold text-sm mb-2 flex items-center gap-2">
@@ -443,37 +429,6 @@ export default function Dashboard() {
                 </Link>
               </Button>
             </CardFooter>
-          </Card>
-
-          {/* Active Indicators */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Active Indicators</CardTitle>
-              <CardDescription>Indicators currently deployed to your TradingView account</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {originalUsername ? (
-                <div className="space-y-3">
-                  <div className="bg-gray-800/50 rounded-md p-4">
-                    <p className="text-sm text-gray-400 mb-3">Your indicators are active and deployed to:</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-white font-medium">{originalUsername}</span>
-                      <span className="text-green-400 text-sm">Active</span>
-                    </div>
-                  </div>
-                  <Link href="/library">
-                    <Button variant="outline" className="w-full">
-                      Browse Indicator Library <ExternalLink className="ml-2 h-4 w-4" />
-                    </Button>
-                  </Link>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-[200px] bg-gray-800/50 rounded-md">
-                  <p className="text-gray-400 mb-4">Connect your TradingView account to see your indicators</p>
-                  <p className="text-sm text-gray-500">Enter your TradingView username below to get started</p>
-                </div>
-              )}
-            </CardContent>
           </Card>
         </div>
 

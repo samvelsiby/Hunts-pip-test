@@ -11,6 +11,29 @@ import { Separator } from '@/components/ui/separator';
 import { Check, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function SettingsPage() {
+  const [emailUpdates, setEmailUpdates] = useState(true);
+  const [productUpdates, setProductUpdates] = useState(true);
+
+  // Persist simple preferences locally (UI only for now)
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem('dashboardSettings');
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      setEmailUpdates(parsed.emailUpdates ?? true);
+      setProductUpdates(parsed.productUpdates ?? true);
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        'dashboardSettings',
+        JSON.stringify({ emailUpdates, productUpdates })
+      );
+    } catch {}
+  }, [emailUpdates, productUpdates]);
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="space-y-6">
@@ -25,7 +48,7 @@ export default function SettingsPage() {
         <TabsList className="mb-6">
           <TabsTrigger value="tradingview">TradingView</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="appearance">Appearance</TabsTrigger>
+          <TabsTrigger value="plan">Plan</TabsTrigger>
         </TabsList>
         
         <TabsContent value="tradingview">
@@ -39,24 +62,57 @@ export default function SettingsPage() {
               <CardDescription>Configure how you receive notifications.</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Notification settings will be available soon.
-              </p>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-white">Email updates</p>
+                    <p className="text-xs text-muted-foreground">Receive important account updates.</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setEmailUpdates(v => !v)}
+                    className={`h-6 w-11 rounded-full transition-colors ${emailUpdates ? 'bg-[#00DD5E]' : 'bg-gray-700'}`}
+                    aria-pressed={emailUpdates}
+                  >
+                    <span className={`block h-5 w-5 bg-white rounded-full transition-transform ${emailUpdates ? 'translate-x-5' : 'translate-x-1'}`} />
+                  </button>
+                </div>
+                <Separator />
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-white">Product updates</p>
+                    <p className="text-xs text-muted-foreground">New indicators and feature announcements.</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setProductUpdates(v => !v)}
+                    className={`h-6 w-11 rounded-full transition-colors ${productUpdates ? 'bg-[#00DD5E]' : 'bg-gray-700'}`}
+                    aria-pressed={productUpdates}
+                  >
+                    <span className={`block h-5 w-5 bg-white rounded-full transition-transform ${productUpdates ? 'translate-x-5' : 'translate-x-1'}`} />
+                  </button>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
-        
-        <TabsContent value="appearance">
+
+        <TabsContent value="plan">
           <Card>
             <CardHeader>
-              <CardTitle>Appearance</CardTitle>
-              <CardDescription>Customize the look and feel of the application.</CardDescription>
+              <CardTitle>Plan</CardTitle>
+              <CardDescription>Change or upgrade your plan.</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Appearance settings will be available soon.
+                You can upgrade/downgrade from the pricing page.
               </p>
             </CardContent>
+            <CardFooter className="flex gap-3">
+              <Button asChild>
+                <a href="/pricing">Change plan</a>
+              </Button>
+            </CardFooter>
           </Card>
         </TabsContent>
       </Tabs>
