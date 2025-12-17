@@ -101,16 +101,16 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Plan</CardTitle>
-              <CardDescription>Manage your subscription and billing.</CardDescription>
+              <CardDescription>Change or upgrade your plan.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Update your plan, cancel, or manage billing details from the Billing page.
+                You can upgrade/downgrade from the pricing page.
               </p>
             </CardContent>
             <CardFooter className="flex gap-3">
               <Button asChild>
-                <a href="/dashboard/billing">Open Billing</a>
+                <a href="/pricing">Change plan</a>
               </Button>
             </CardFooter>
           </Card>

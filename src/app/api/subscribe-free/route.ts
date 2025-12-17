@@ -23,16 +23,15 @@ export async function POST(request: NextRequest) {
     const currentPlan = existingSubscription?.plan_type || 'free';
     const currentStatus = existingSubscription?.status || 'inactive';
 
-    // If user has an active paid subscription, block them from switching to free.
-    // They can cancel/manage in the dashboard billing portal.
+    // If user has an active paid subscription, block them from switching to free
+    // They need to contact support to downgrade
     if (currentStatus === 'active' && (currentPlan === 'premium' || currentPlan === 'ultimate')) {
       return NextResponse.json({ 
         error: 'You have an active paid subscription',
         currentPlan,
         status: currentStatus,
-        message: `You are currently subscribed to the ${currentPlan} plan. Manage your subscription from Dashboard → Billing.`,
+        message: `You are currently subscribed to the ${currentPlan} plan. Please contact support to change your subscription plan.`,
         requiresContact: true,
-        redirectTo: '/dashboard/billing',
       }, { status: 400 });
     }
 

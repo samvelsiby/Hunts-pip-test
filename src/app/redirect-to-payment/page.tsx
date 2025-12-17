@@ -78,11 +78,7 @@ function RedirectToPaymentContent() {
           if (!response.ok) {
             const error = await response.json();
             console.error('Failed to create checkout session:', error);
-            if (error?.redirectTo) {
-              router.push(error.redirectTo);
-              return;
-            }
-            alert(error.error || error.message || 'Failed to create checkout session. Please try again.');
+            alert(error.error || 'Failed to create checkout session. Please try again.');
             router.push('/pricing');
             return;
           }

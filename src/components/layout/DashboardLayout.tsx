@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { CreditCard, Home, Settings, User, BookOpen } from 'lucide-react';
+import { Home, Settings, User, BookOpen } from 'lucide-react';
 
 // Dynamically import UserButton to avoid hydration issues
 const UserButton = dynamic(
@@ -39,11 +39,6 @@ const navItems: NavItem[] = [
     title: 'Dashboard',
     href: '/dashboard',
     icon: <Home className="h-5 w-5" />,
-  },
-  {
-    title: 'Billing',
-    href: '/dashboard/billing',
-    icon: <CreditCard className="h-5 w-5" />,
   },
   {
     title: 'Library',

@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, ArrowRight } from 'lucide-react';
+import { Mail, AlertTriangle } from 'lucide-react';
 
 interface DowngradeToFreeModalProps {
   open: boolean;
@@ -23,6 +23,7 @@ export function DowngradeToFreeModal({
   currentPlan,
 }: DowngradeToFreeModalProps) {
   const planName = currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1);
+  const supportEmail = 'support@huntspip.com'; // Update with your actual support email
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -50,13 +51,22 @@ export function DowngradeToFreeModal({
 
           <div className="space-y-3">
             <p className="text-sm text-gray-400">
-              To downgrade (including switching to free), cancel or change your subscription in the Billing page.
+              To change your subscription plan (upgrade or downgrade), please contact our support team.
             </p>
             
             <div className="bg-gray-800/50 border border-gray-700 rounded-md p-4">
-              <p className="text-xs text-gray-400">
-                Go to <span className="text-white">Dashboard → Billing</span> to manage cancellation and plan changes.
-              </p>
+              <div className="flex items-center gap-3">
+                <Mail className="h-5 w-5 text-green-400" />
+                <div>
+                  <p className="text-xs text-gray-400 mb-1">Contact Support</p>
+                  <a
+                    href={`mailto:${supportEmail}?subject=Subscription Change Request&body=Hello,%0D%0A%0D%0AI would like to change my subscription plan.%0D%0ACurrent Plan: ${planName}%0D%0ARequested Plan: Free%0D%0A%0D%0AThank you!`}
+                    className="text-green-400 hover:text-green-300 font-medium text-sm break-all"
+                  >
+                    {supportEmail}
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -70,12 +80,12 @@ export function DowngradeToFreeModal({
           </Button>
           <Button
             onClick={() => {
-              window.location.href = '/dashboard/billing';
+              window.location.href = `mailto:${supportEmail}?subject=Subscription Change Request&body=Hello,%0D%0A%0D%0AI would like to change my subscription plan.%0D%0ACurrent Plan: ${planName}%0D%0ARequested Plan: Free%0D%0A%0D%0AThank you!`;
             }}
             className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white"
           >
-            <ArrowRight className="mr-2 h-4 w-4" />
-            Open Billing
+            <Mail className="mr-2 h-4 w-4" />
+            Contact Support
           </Button>
         </DialogFooter>
       </DialogContent>
