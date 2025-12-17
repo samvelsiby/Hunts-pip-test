@@ -8,9 +8,8 @@ export interface HlsVideoProps extends React.VideoHTMLAttributes<HTMLVideoElemen
   hlsConfig?: Partial<HlsConfig>
 }
 
-const HlsVideo = React.forwardRef<HTMLVideoElement, HlsVideoProps>(({ src, hlsConfig, ...props }, forwardedRef) => {
-  const innerRef = useRef<HTMLVideoElement>(null)
-  const videoRef = (forwardedRef as React.RefObject<HTMLVideoElement>) ?? innerRef
+export default function HlsVideo({ src, hlsConfig, ...props }: HlsVideoProps) {
+  const videoRef = useRef<HTMLVideoElement>(null)
 
   const mergedConfig = useMemo<Partial<HlsConfig>>(
     () => ({
@@ -25,7 +24,7 @@ const HlsVideo = React.forwardRef<HTMLVideoElement, HlsVideoProps>(({ src, hlsCo
   )
 
   useEffect(() => {
-    const video = videoRef.current || innerRef.current
+    const video = videoRef.current
     if (!video) return
 
     // Safari supports native HLS
@@ -64,17 +63,7 @@ const HlsVideo = React.forwardRef<HTMLVideoElement, HlsVideoProps>(({ src, hlsCo
     }
   }, [src, mergedConfig])
 
-  return <video ref={(node) => {
-    // Support both internal ref and forwarded ref
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(innerRef as any).current = node
-    if (typeof forwardedRef === 'function') forwardedRef(node)
-    else if (forwardedRef && typeof forwardedRef === 'object') (forwardedRef as any).current = node
-  }} {...props} />
-})
-
-HlsVideo.displayName = 'HlsVideo'
-
-export default HlsVideo
+  return <video ref={videoRef} {...props} />
+}
 
 

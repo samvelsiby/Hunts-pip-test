@@ -1,29 +1,17 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import HlsVideo from '@/components/HlsVideo'
 import { CLOUDFLARE_STREAM_UIDS, cloudflareStreamHlsUrl } from '@/config/cloudflare-stream'
 
 export default function GlobalNetworkSection() {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (video) {
-      video.load();
-      
-      const handleCanPlay = () => {
-        setIsLoaded(true);
-        video.play().catch(err => console.log('Video autoplay failed:', err));
-      };
-
-      video.addEventListener('canplay', handleCanPlay);
-      
-      return () => {
-        video.removeEventListener('canplay', handleCanPlay);
-      };
-    }
+    // If HLS playback works, onCanPlay will flip isLoaded.
+    // Keep a small timeout to avoid a stuck spinner if browser blocks autoplay.
+    const t = window.setTimeout(() => setIsLoaded(true), 2500);
+    return () => window.clearTimeout(t);
   }, []);
 
   return (
@@ -38,7 +26,6 @@ export default function GlobalNetworkSection() {
       
       {/* Video */}
       <HlsVideo
-        ref={videoRef}
         className={`w-full min-h-screen object-cover transition-opacity duration-500 ${
           isLoaded ? 'opacity-100' : 'opacity-0'
         }`}
@@ -48,6 +35,10 @@ export default function GlobalNetworkSection() {
         muted
         playsInline
         preload="metadata"
+        onCanPlay={(e) => {
+          setIsLoaded(true);
+          e.currentTarget.play().catch(() => {});
+        }}
       />
 
       <div className="absolute inset-x-0 bottom-0 px-8 pb-16 sm:pb-20 pt-20 bg-linear-to-t from-black via-black/85 to-transparent text-center">

@@ -1,27 +1,16 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import HlsVideo from '@/components/HlsVideo'
 import { CLOUDFLARE_STREAM_UIDS, cloudflareStreamHlsUrl } from '@/config/cloudflare-stream'
 
 export default function LibraryHero() {
-  const videoRef = useRef<HTMLVideoElement>(null)
+  const [hasCanPlay, setHasCanPlay] = useState(false)
 
   useEffect(() => {
-    const video = videoRef.current
-    if (!video) return
-
-    const handleCanPlay = () => {
-      video.play().catch(err => {
-        console.log('Autoplay prevented:', err)
-      })
-    }
-
-    video.addEventListener('canplay', handleCanPlay)
-
-    return () => {
-      video.removeEventListener('canplay', handleCanPlay)
-    }
+    // Safety: avoid a stuck "not started" state if autoplay is blocked.
+    const t = window.setTimeout(() => setHasCanPlay(true), 2500)
+    return () => window.clearTimeout(t)
   }, [])
 
   const scrollToContent = () => {
@@ -35,7 +24,6 @@ export default function LibraryHero() {
     <div className="relative w-full h-screen overflow-hidden">
       {/* Video Background */}
       <HlsVideo
-        ref={videoRef}
         className="absolute top-0 left-0 w-full h-full object-cover z-0"
         autoPlay
         loop
@@ -43,6 +31,10 @@ export default function LibraryHero() {
         playsInline
         preload="metadata"
         src={cloudflareStreamHlsUrl(CLOUDFLARE_STREAM_UIDS.tradeChartsLoop)}
+        onCanPlay={(e) => {
+          setHasCanPlay(true)
+          e.currentTarget.play().catch(() => {})
+        }}
       />
 
       {/* Dark overlay for readability */}
