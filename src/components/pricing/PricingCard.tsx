@@ -110,8 +110,8 @@ export const PricingCard = ({
           const error = await response.json();
           console.error('Failed to activate free plan:', error);
           
-          // If user has a paid subscription, guide them to manage it
-          if ((error.requiresPortal || error.requiresContact) && error.currentPlan) {
+          // If user has a paid subscription, show modal instead of alert
+          if (error.requiresContact && error.currentPlan) {
             setCurrentPlan(error.currentPlan);
             setShowDowngradeModal(true);
             setIsLoading(false);
@@ -143,8 +143,8 @@ export const PricingCard = ({
           const error = await response.json();
           console.error('Failed to create checkout session:', error);
           
-          // If user already has a subscription, guide them to manage it
-          if ((error.requiresPortal || error.requiresContact) && error.currentPlan) {
+          // If user already has a subscription, show modal instead of alert
+          if (error.requiresContact && error.currentPlan) {
             setCurrentPlan(error.currentPlan);
             setShowSubscriptionModal(true);
             setIsLoading(false);
@@ -192,14 +192,14 @@ export const PricingCard = ({
       {/* Subscription Exists Modal */}
       <SubscriptionExistsModal
         open={showSubscriptionModal}
-        onOpenChangeAction={setShowSubscriptionModal}
+        onOpenChange={setShowSubscriptionModal}
         currentPlan={currentPlan}
       />
 
       {/* Downgrade to Free Modal */}
       <DowngradeToFreeModal
         open={showDowngradeModal}
-        onOpenChangeAction={setShowDowngradeModal}
+        onOpenChange={setShowDowngradeModal}
         currentPlan={currentPlan}
       />
 

@@ -45,45 +45,16 @@ export async function POST(request: NextRequest) {
     const currentPlan = existingSubscription?.plan_type || 'free';
     const currentStatus = existingSubscription?.status || 'inactive';
 
-    const stripe = getStripe();
-    
-    // Get base URL - prioritize production URL, then environment variable, then request origin
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
-                    process.env.APP_BASE_URL || 
-                    (request.headers.get('origin') && !request.headers.get('origin')?.includes('localhost') 
-                      ? request.headers.get('origin') 
-                      : null) ||
-                    'https://huntspip.com';
-
-    // If user already has an active paid subscription, send them to Stripe Customer Portal
-    // (supports upgrade/downgrade/cancel without manual support)
+    // If user already has an active subscription (premium or ultimate), block them
+    // They need to contact support to upgrade
     if (currentStatus === 'active' && (currentPlan === 'premium' || currentPlan === 'ultimate')) {
-      const stripeCustomerId = existingSubscription?.stripe_customer_id
-      if (!stripeCustomerId) {
-        return NextResponse.json(
-          {
-            error: 'You already have an active subscription, but no Stripe customer is associated with your account.',
-            currentPlan,
-            status: currentStatus,
-            message: 'Please contact support to fix your billing profile.',
-          },
-          { status: 400 }
-        )
-      }
-
-      const portalSession = await stripe.billingPortal.sessions.create({
-        customer: stripeCustomerId,
-        return_url: `${baseUrl}/dashboard`,
-      })
-
-      return NextResponse.json({
-        url: portalSession.url,
-        sessionId: null,
-        redirectType: 'billing_portal',
+      return NextResponse.json({ 
+        error: 'You already have an active subscription',
         currentPlan,
         status: currentStatus,
-        message: `You are already subscribed to the ${currentPlan} plan. Redirecting you to manage your subscription.`,
-      })
+        message: `You are already subscribed to the ${currentPlan} plan. Please contact support to upgrade your plan.`,
+        requiresContact: true,
+      }, { status: 400 });
     }
 
     // Allow new subscriptions (free -> premium/ultimate)
@@ -96,6 +67,16 @@ export async function POST(request: NextRequest) {
         error: `Price ID not found for plan: ${planId}, frequency: ${frequency}. Please configure Stripe Price IDs.` 
       }, { status: 400 });
     }
+
+    const stripe = getStripe();
+    
+    // Get base URL - prioritize production URL, then environment variable, then request origin
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
+                    process.env.APP_BASE_URL || 
+                    (request.headers.get('origin') && !request.headers.get('origin')?.includes('localhost') 
+                      ? request.headers.get('origin') 
+                      : null) ||
+                    'https://huntspip.com';
 
     // Create checkout session with subscription mode
     const session = await stripe.checkout.sessions.create({

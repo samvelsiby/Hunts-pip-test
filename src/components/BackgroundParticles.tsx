@@ -29,22 +29,8 @@ export default function BackgroundParticles() {
   }>>([]);
 
   useEffect(() => {
-    // Skip on reduced motion / data saver / small screens to improve mobile performance.
-    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
-    const isSmallScreen = typeof window !== 'undefined' && window.innerWidth < 768;
-    const nav: any = typeof navigator !== 'undefined' ? navigator : null;
-    const saveData = !!nav?.connection?.saveData;
-    const effectiveType: string | undefined = nav?.connection?.effectiveType;
-    const isSlowNetwork = effectiveType === '2g' || effectiveType === 'slow-2g';
-
-    if (prefersReducedMotion || saveData || isSlowNetwork || isSmallScreen) return;
-
-    // Defer generation so first paint/LCP can happen without extra work.
-    const timer = window.setTimeout(() => {
-      setParticles(generateParticles(50));
-    }, 1200);
-
-    return () => window.clearTimeout(timer);
+    // Generate particles only on client mount
+    setParticles(generateParticles(100));
   }, []);
 
   return (

@@ -12,22 +12,10 @@ export default function HeroSection() {
 
   // Load Spline with optimized lazy loading - delay to prioritize initial render
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
-    const isSmallScreen = typeof window !== 'undefined' && window.innerWidth < 768;
-    const nav: any = typeof navigator !== 'undefined' ? navigator : null;
-    const saveData = !!nav?.connection?.saveData;
-    const effectiveType: string | undefined = nav?.connection?.effectiveType;
-    const isSlowNetwork = effectiveType === '2g' || effectiveType === 'slow-2g';
-
-    // On mobile / slow connections / reduced motion: skip Spline entirely.
-    if (prefersReducedMotion || saveData || isSlowNetwork || isSmallScreen) {
-      setShouldLoad(false);
-      setIsLoading(false);
-      return;
-    }
-
-    // Otherwise, delay loading to allow initial page render and improve LCP.
-    const timer = setTimeout(() => setShouldLoad(true), 1200);
+    // Delay loading to allow initial page render and improve LCP
+    const timer = setTimeout(() => {
+      setShouldLoad(true);
+    }, 500); // Increased delay for better initial page load
 
     return () => clearTimeout(timer);
   }, []);
@@ -53,7 +41,7 @@ export default function HeroSection() {
             }`}
           />
         )}
-        <div className="absolute inset-x-0 bottom-0 h-64 bg-linear-to-t from-black via-black/90 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black via-black/90 to-transparent pointer-events-none" />
         <div className="absolute bottom-0 right-0 w-56 sm:w-64 h-40 bg-black pointer-events-none" />
       </div>
 
@@ -67,7 +55,7 @@ export default function HeroSection() {
               <span className="inline-flex flex-wrap sm:flex-nowrap items-center justify-center gap-3 whitespace-normal sm:whitespace-nowrap text-center">
                 <span className="text-white tracking-[0.15em]">GET</span>
                 <div className="relative inline-flex items-center justify-center px-5 sm:px-7 py-1 sm:py-1.5 uppercase tracking-[0.2em] sm:tracking-[0.25em] font-extrabold text-white mt-2 sm:mt-0">
-                  <div className="absolute inset-0 border border-[#E60012] bg-linear-to-r from-[#8B0000] via-[#C40000] to-[#FF1A00] opacity-90" />
+                  <div className="absolute inset-0 border border-[#E60012] bg-gradient-to-r from-[#8B0000] via-[#C40000] to-[#FF1A00] opacity-90" />
                   <div className="absolute -left-2 -top-2 w-3 h-3 border-2 border-[#E60012]" />
                   <div className="absolute -right-2 -top-2 w-3 h-3 border-2 border-[#E60012]" />
                   <div className="absolute -left-2 -bottom-2 w-3 h-3 border-2 border-[#E60012]" />
