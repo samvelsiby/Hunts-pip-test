@@ -84,21 +84,11 @@ export default function LibraryClient({ indicators }: LibraryClientProps) {
     // If seed isn't ready yet, keep the backend order (order asc) for the first paint.
     if (!shuffleSeed) return filtered
 
-    // "Properly shuffled" but still smart:
-    // - When "All": keep plan priority (ultimate -> premium -> free) but shuffle within each tier.
-    // - When filtering by a single plan: shuffle the results within that plan.
+    // Stable shuffle:
+    // - When "All": mix everything together (free/premium/ultimate interleaved).
+    // - When filtering by a single plan: shuffle within that plan.
     if (selectedPlan === 'all') {
-      const planPriority: Record<string, number> = {
-        ultimate: 1,
-        premium: 2,
-        free: 3,
-      }
-      return [...filtered].sort((a, b) => {
-        const pa = planPriority[a.planAccess] ?? 999
-        const pb = planPriority[b.planAccess] ?? 999
-        if (pa !== pb) return pa - pb
-        return seededRank(a._id) - seededRank(b._id)
-      })
+      return [...filtered].sort((a, b) => seededRank(a._id) - seededRank(b._id))
     }
 
     return [...filtered].sort((a, b) => seededRank(a._id) - seededRank(b._id))
