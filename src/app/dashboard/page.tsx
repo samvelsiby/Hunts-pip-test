@@ -28,11 +28,37 @@ export default function Dashboard() {
   const [errorMessage, setErrorMessage] = useState('');
   const [showTradingViewModal, setShowTradingViewModal] = useState(false);
   const [showModalAfterPayment, setShowModalAfterPayment] = useState(false);
+  const [isPortalLoading, setIsPortalLoading] = useState(false);
+
+  const handleManageSubscription = async () => {
+    setIsPortalLoading(true);
+    try {
+      const response = await fetch('/api/create-portal-session', {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create portal session');
+      }
+
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        console.error('No URL returned from portal session creation');
+        setIsPortalLoading(false);
+      }
+    } catch (error) {
+      console.error('Error opening portal:', error);
+      setIsPortalLoading(false);
+      alert('Failed to open subscription management. Please try again.');
+    }
+  };
 
   const fetchUserData = useCallback(async () => {
     try {
       setIsLoading(true);
-      
+
       // Only fetch if user is signed in
       if (!isSignedIn || !user) {
         setIsLoading(false);
@@ -62,9 +88,9 @@ export default function Dashboard() {
         credentials: 'include', // Include cookies for authentication
         cache: 'no-store', // Disable caching to always get fresh data
       });
-      
+
       console.log('📥 Dashboard: Subscription response status:', subscriptionResponse.status);
-      
+
       if (subscriptionResponse.ok) {
         const subscriptionData = await subscriptionResponse.json();
         console.log('📥 Dashboard: Subscription data received:', subscriptionData);
@@ -103,16 +129,16 @@ export default function Dashboard() {
       const urlParams = new URLSearchParams(window.location.search);
       const success = urlParams.get('success');
       const sessionId = urlParams.get('session_id');
-      
+
       // If payment was successful, refresh subscription data and show modal
       if (success === 'true' && sessionId) {
         console.log('✅ Payment successful, refreshing subscription data...');
         // Clean up URL params first
         window.history.replaceState({}, '', '/dashboard');
-        
+
         // Set flag to show modal after data is fetched
         setShowModalAfterPayment(true);
-        
+
         // Retry fetching subscription data multiple times with increasing delays
         // Webhook might take a few seconds to process
         const retryDelays = [1000, 3000, 5000]; // 1s, 3s, 5s
@@ -139,14 +165,14 @@ export default function Dashboard() {
         }
         setShowModalAfterPayment(false);
       }, 2000); // Wait 2 seconds for subscription data to load
-      
+
       return () => clearTimeout(timer);
     }
   }, [showModalAfterPayment, isLoading, isLoaded, isSignedIn, subscription]);
 
   const handleSaveUsernameInModal = async (username: string) => {
     const trimmedUsername = username.trim();
-    
+
     if (!trimmedUsername) {
       throw new Error('Please enter a TradingView username');
     }
@@ -169,7 +195,7 @@ export default function Dashboard() {
 
       const contentType = response.headers.get('content-type');
       let data: { success?: boolean; error?: string; username?: string } = {};
-      
+
       if (contentType && contentType.includes('application/json')) {
         const responseText = await response.text();
         if (!responseText || responseText.trim() === '') {
@@ -184,12 +210,12 @@ export default function Dashboard() {
       if (response.ok && data.success) {
         const savedUsername = data.username || trimmedUsername;
         console.log('Successfully saved username:', savedUsername);
-        
+
         setTradingViewUsername(savedUsername);
         setOriginalUsername(savedUsername);
         setSaveStatus('success');
         setErrorMessage('');
-        
+
         // Refetch data to ensure everything is synced
         setTimeout(() => {
           fetchUserData();
@@ -208,7 +234,7 @@ export default function Dashboard() {
 
   const handleSaveUsername = async () => {
     const trimmedUsername = tradingViewUsername.trim();
-    
+
     if (!trimmedUsername) {
       setErrorMessage('Please enter a TradingView username');
       setSaveStatus('error');
@@ -243,19 +269,19 @@ export default function Dashboard() {
       // Check if response is JSON
       const contentType = response.headers.get('content-type');
       let data: { success?: boolean; error?: string; username?: string } = {};
-      
+
       if (contentType && contentType.includes('application/json')) {
         try {
           const responseText = await response.text();
           console.log('Response text (raw):', responseText);
-          
+
           if (!responseText || responseText.trim() === '') {
             console.error('Empty response body');
             setSaveStatus('error');
             setErrorMessage('Empty response from server. Please try again.');
             return;
           }
-          
+
           data = JSON.parse(responseText);
           console.log('Response data (parsed):', data);
         } catch (parseError) {
@@ -281,12 +307,12 @@ export default function Dashboard() {
         // Use the username from the API response to ensure we have the correct value
         const savedUsername = data.username || trimmedUsername;
         console.log('Successfully saved username:', savedUsername);
-        
+
         setTradingViewUsername(savedUsername);
         setOriginalUsername(savedUsername);
         setSaveStatus('success');
         setErrorMessage('');
-        
+
         // Refetch data to ensure everything is synced
         setTimeout(() => {
           fetchUserData();
@@ -343,6 +369,8 @@ export default function Dashboard() {
   const currentPlanInfo = planInfo[planType as keyof typeof planInfo] || planInfo.free;
   const PlanIcon = currentPlanInfo.icon;
 
+
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* TradingView Username Modal - Required after payment */}
@@ -363,7 +391,7 @@ export default function Dashboard() {
               {currentPlanInfo.name} Member
             </AlertTitle>
             <AlertDescription className="text-gray-300 mt-1">
-              You are currently subscribed to the <span className={`font-semibold ${currentPlanInfo.color}`}>{currentPlanInfo.name}</span> plan. 
+              You are currently subscribed to the <span className={`font-semibold ${currentPlanInfo.color}`}>{currentPlanInfo.name}</span> plan.
               {planType === 'premium' && ' Enjoy advanced trading signals and unlimited keyword access.'}
               {planType === 'ultimate' && ' Enjoy all premium features plus AI-powered insights and 24/7 premium support.'}
             </AlertDescription>
@@ -388,7 +416,7 @@ export default function Dashboard() {
                 <span className="text-gray-400">Current Plan</span>
                 <span className={`${currentPlanInfo.color} font-semibold capitalize`}>{planType}</span>
               </div>
-              
+
               <div className="flex justify-between items-center">
                 <span className="text-gray-400">Status</span>
                 <span className="text-green-400 font-semibold capitalize">{subscription?.status || 'Active'}</span>
@@ -423,10 +451,22 @@ export default function Dashboard() {
               )}
             </CardContent>
             <CardFooter>
-              <Button className="w-full" variant="outline" asChild>
-                <Link href="/pricing">
-                  Manage Subscription <ExternalLink className="ml-2 h-4 w-4" />
-                </Link>
+              <Button
+                className="w-full"
+                variant="outline"
+                onClick={handleManageSubscription}
+                disabled={isPortalLoading}
+              >
+                {isPortalLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Redirecting...
+                  </>
+                ) : (
+                  <>
+                    Manage Subscription <ExternalLink className="ml-2 h-4 w-4" />
+                  </>
+                )}
               </Button>
             </CardFooter>
           </Card>
@@ -504,8 +544,8 @@ export default function Dashboard() {
                 <span>No TradingView username set</span>
               )}
             </div>
-            <Button 
-              onClick={handleSaveUsername} 
+            <Button
+              onClick={handleSaveUsername}
               disabled={isLoading || isSaving || !hasChanges}
             >
               {isSaving ? (

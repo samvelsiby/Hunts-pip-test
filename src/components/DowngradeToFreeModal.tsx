@@ -9,7 +9,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Mail, AlertTriangle } from 'lucide-react';
+import { CreditCard, AlertTriangle } from 'lucide-react';
+import { useState } from 'react';
 
 interface DowngradeToFreeModalProps {
   open: boolean;
@@ -22,8 +23,33 @@ export function DowngradeToFreeModal({
   onOpenChange,
   currentPlan,
 }: DowngradeToFreeModalProps) {
+  const [isLoading, setIsLoading] = useState(false);
   const planName = currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1);
-  const supportEmail = 'support@huntspip.com'; // Update with your actual support email
+
+  const handleManageSubscription = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/create-portal-session', {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create portal session');
+      }
+
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert('Failed to redirect to portal');
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error('Error opening portal:', error);
+      alert('Failed to open subscription management. Please try again.');
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -45,26 +71,23 @@ export function DowngradeToFreeModal({
               <span className="font-semibold text-yellow-400">{planName}</span> plan.
             </p>
             <p className="text-sm text-gray-400 mt-2">
-              Switching to the Free plan will downgrade your subscription and you will lose access to premium features.
+              To switch to the Free plan, you need to cancel your current subscription.
             </p>
           </div>
 
           <div className="space-y-3">
             <p className="text-sm text-gray-400">
-              To change your subscription plan (upgrade or downgrade), please contact our support team.
+              You can cancel or manage your subscription at any time through the customer portal.
             </p>
-            
+
             <div className="bg-gray-800/50 border border-gray-700 rounded-md p-4">
               <div className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-green-400" />
+                <CreditCard className="h-5 w-5 text-green-400" />
                 <div>
-                  <p className="text-xs text-gray-400 mb-1">Contact Support</p>
-                  <a
-                    href={`mailto:${supportEmail}?subject=Subscription Change Request&body=Hello,%0D%0A%0D%0AI would like to change my subscription plan.%0D%0ACurrent Plan: ${planName}%0D%0ARequested Plan: Free%0D%0A%0D%0AThank you!`}
-                    className="text-green-400 hover:text-green-300 font-medium text-sm break-all"
-                  >
-                    {supportEmail}
-                  </a>
+                  <p className="text-xs text-gray-400 mb-1">Manage Billing</p>
+                  <p className="text-gray-200 text-sm font-medium">
+                    Cancel subscription, change plan, update payment method
+                  </p>
                 </div>
               </div>
             </div>
@@ -74,22 +97,30 @@ export function DowngradeToFreeModal({
         <DialogFooter>
           <Button
             onClick={() => onOpenChange(false)}
-            className="w-full sm:w-auto bg-gray-800 hover:bg-gray-700 text-white"
+            variant="ghost"
+            className="w-full sm:w-auto text-gray-400 hover:text-white hover:bg-white/10"
           >
             Cancel
           </Button>
           <Button
-            onClick={() => {
-              window.location.href = `mailto:${supportEmail}?subject=Subscription Change Request&body=Hello,%0D%0A%0D%0AI would like to change my subscription plan.%0D%0ACurrent Plan: ${planName}%0D%0ARequested Plan: Free%0D%0A%0D%0AThank you!`;
-            }}
-            className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white"
+            onClick={handleManageSubscription}
+            disabled={isLoading}
+            className="w-full sm:w-auto bg-green-600 hover:bg-green-500 text-white"
           >
-            <Mail className="mr-2 h-4 w-4" />
-            Contact Support
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <div className="h-4 w-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                <span>Opening Portal...</span>
+              </div>
+            ) : (
+              <>
+                <CreditCard className="mr-2 h-4 w-4" />
+                Manage Subscription
+              </>
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
-

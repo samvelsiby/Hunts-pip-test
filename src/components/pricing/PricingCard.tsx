@@ -20,7 +20,7 @@ export const PricingCard = ({
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [showDowngradeModal, setShowDowngradeModal] = useState(false);
   const [currentPlan, setCurrentPlan] = useState<string>('');
-  
+
   const price = tier.price[paymentFrequency];
   const isHighlighted = tier.highlighted;
   const isPopular = tier.popular;
@@ -88,7 +88,7 @@ export const PricingCard = ({
     }
 
     setIsLoading(true);
-    
+
     try {
       // Handle free tier - subscribe directly without payment
       if (tier.id === 'free') {
@@ -109,7 +109,7 @@ export const PricingCard = ({
         } else {
           const error = await response.json();
           console.error('Failed to activate free plan:', error);
-          
+
           // If user has a paid subscription, show modal instead of alert
           if (error.requiresContact && error.currentPlan) {
             setCurrentPlan(error.currentPlan);
@@ -117,7 +117,7 @@ export const PricingCard = ({
             setIsLoading(false);
             return;
           }
-          
+
           alert(error.error || error.message || 'Failed to activate free plan');
           setIsLoading(false);
         }
@@ -126,7 +126,7 @@ export const PricingCard = ({
 
       // Handle paid tiers - create Stripe Checkout Session
       console.log('Creating checkout session for:', tier.id, paymentFrequency);
-      
+
       try {
         const response = await fetch('/api/create-checkout-session', {
           method: 'POST',
@@ -140,9 +140,22 @@ export const PricingCard = ({
         });
 
         if (!response.ok) {
-          const error = await response.json();
-          console.error('Failed to create checkout session:', error);
-          
+          console.error('Checkout session creation failed:', {
+            status: response.status,
+            statusText: response.statusText,
+          });
+
+          let error;
+          try {
+            error = await response.json();
+            console.error('Failed to create checkout session (JSON):', error);
+          } catch (e) {
+            console.error('Failed to parse error response as JSON');
+            const text = await response.text();
+            console.error('Raw error response:', text);
+            error = { message: `Request failed with status ${response.status}` };
+          }
+
           // If user already has a subscription, show modal instead of alert
           if (error.requiresContact && error.currentPlan) {
             setCurrentPlan(error.currentPlan);
@@ -150,7 +163,7 @@ export const PricingCard = ({
             setIsLoading(false);
             return;
           }
-          
+
           // Show user-friendly error messages for other errors
           if (error.message) {
             alert(error.message);
@@ -159,7 +172,7 @@ export const PricingCard = ({
           } else {
             alert('Failed to create checkout session. Please try again.');
           }
-          
+
           setIsLoading(false);
           return;
         }

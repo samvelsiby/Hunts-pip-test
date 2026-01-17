@@ -17,7 +17,7 @@ function getStripe() {
 // Handle GET requests (for testing/health checks) - return 405 Method Not Allowed
 export async function GET() {
   return NextResponse.json(
-    { 
+    {
       error: 'Method Not Allowed',
       message: 'This endpoint only accepts POST requests from Stripe webhooks',
       endpoint: '/api/webhooks/stripe',
@@ -29,7 +29,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const startTime = Date.now();
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-  
+
   try {
     const body = await req.text();
     const signature = req.headers.get('stripe-signature');
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
         signature,
         process.env.STRIPE_WEBHOOK_SECRET
       );
-      
+
       console.log(`✅ [${requestId}] Webhook signature verified:`, {
         eventType: event.type,
         eventId: event.id,
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
         webhookSecretPrefix: process.env.STRIPE_WEBHOOK_SECRET?.substring(0, 10) || 'missing',
         signatureLength: signature?.length || 0,
       });
-      return NextResponse.json({ 
+      return NextResponse.json({
         error: `Webhook Error: ${errorMessage}`,
         hint: 'Check if STRIPE_WEBHOOK_SECRET in Vercel matches the signing secret in Stripe Dashboard'
       }, { status: 400 });
@@ -92,31 +92,35 @@ export async function POST(req: NextRequest) {
     // Handle different payment events
     try {
       let result: Record<string, unknown> = { received: true, eventType: event.type, eventId: event.id };
-      
+
       switch (event.type) {
         case 'checkout.session.completed':
         case 'checkout.session.async_payment_succeeded':
           // Handle both regular and async payment completions
           result = await handleCheckoutSessionCompleted(event.data.object as Stripe.Checkout.Session);
           break;
-        
+
         case 'customer.subscription.created':
         case 'customer.subscription.updated':
           result = await handleSubscriptionUpdate(event.data.object as Stripe.Subscription);
           break;
-        
+
         case 'customer.subscription.deleted':
           result = await handleSubscriptionDeleted(event.data.object as Stripe.Subscription);
           break;
-        
+
         case 'invoice.payment_succeeded':
           result = await handlePaymentSucceeded(event.data.object as Stripe.Invoice);
           break;
-        
+
         case 'invoice.payment_failed':
           result = await handlePaymentFailed(event.data.object as Stripe.Invoice);
           break;
-        
+
+        case 'customer.updated':
+          result = await handleCustomerUpdated(event.data.object as Stripe.Customer);
+          break;
+
         default:
           console.log(`⚠️ Unhandled event type: ${event.type}`);
           result.unhandled = true;
@@ -138,7 +142,7 @@ export async function POST(req: NextRequest) {
         eventId: event?.id || 'unknown',
       });
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      return NextResponse.json({ 
+      return NextResponse.json({
         error: errorMessage,
         eventType: event?.type || 'unknown',
         eventId: event?.id || 'unknown',
@@ -150,7 +154,7 @@ export async function POST(req: NextRequest) {
       error: outerError,
       message: outerError instanceof Error ? outerError.message : 'Unknown error',
     });
-    return NextResponse.json({ 
+    return NextResponse.json({
       error: 'Internal server error',
       message: outerError instanceof Error ? outerError.message : 'Unknown error'
     }, { status: 500 });
@@ -161,7 +165,7 @@ export async function POST(req: NextRequest) {
 async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
   // Extract Clerk user ID from client_reference_id or metadata
   const clerkUserId = session.client_reference_id || session.metadata?.userId;
-  
+
   console.log('📦 Checkout session data:', {
     sessionId: session.id,
     clientReferenceId: clerkUserId,
@@ -172,7 +176,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     paymentStatus: session.payment_status,
     metadata: session.metadata,
   });
-  
+
   if (!clerkUserId) {
     console.error('❌ No client_reference_id or userId in session metadata');
     return { error: 'No user ID found', sessionId: session.id };
@@ -185,8 +189,8 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       paymentStatus: session.payment_status,
       status: session.status,
     });
-    return { 
-      error: 'Payment not completed', 
+    return {
+      error: 'Payment not completed',
       sessionId: session.id,
       paymentStatus: session.payment_status,
       status: session.status,
@@ -202,8 +206,8 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       paymentStatus: session.payment_status,
       status: session.status,
     });
-    return { 
-      error: 'Customer or subscription not found in session', 
+    return {
+      error: 'Customer or subscription not found in session',
       sessionId: session.id,
     };
   }
@@ -234,7 +238,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     // If there are multiple subscriptions, keep only the most recent one
     const mostRecent = existingSubscriptions[0];
     const oldPlanId = mostRecent.plan_id;
-    
+
     // CRITICAL: Always update plan_id with the new subscription level from checkout session
     // This ensures upgrades (premium → ultimate) are properly reflected in the database
     console.log('🔄 Updating subscription with new plan level:', {
@@ -244,7 +248,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       isUpgrade: oldPlanId !== planId,
       subscriptionId,
     });
-    
+
     // Update the most recent subscription with the NEW plan_id from checkout session
     // This is critical for upgrades - always use planId from session metadata
     const { error: updateError } = await supabaseAdmin
@@ -257,19 +261,19 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         updated_at: new Date().toISOString(),
       })
       .eq('id', mostRecent.id);
-    
+
     if (updateError) {
       console.error('❌ Error updating subscription:', updateError);
       throw updateError;
     }
-    
+
     // Verify the update was successful
     const { data: updatedSubscription } = await supabaseAdmin
       .from('user_subscriptions')
       .select('plan_id, status')
       .eq('id', mostRecent.id)
       .maybeSingle();
-    
+
     if (updatedSubscription) {
       console.log('✅ Subscription updated successfully in database:', {
         userId: clerkUserId,
@@ -277,7 +281,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         status: updatedSubscription.status,
         verified: updatedSubscription.plan_id === planId,
       });
-      
+
       if (updatedSubscription.plan_id !== planId) {
         console.error('❌ CRITICAL: Plan ID mismatch after update!', {
           expected: planId,
@@ -287,7 +291,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         // This should never happen, but log it as critical
       }
     }
-    
+
     // Delete duplicate subscriptions (keep only the most recent one)
     if (existingSubscriptions.length > 1) {
       const duplicateIds = existingSubscriptions.slice(1).map(sub => sub.id);
@@ -295,7 +299,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         .from('user_subscriptions')
         .delete()
         .in('id', duplicateIds);
-      
+
       if (deleteError) {
         console.error('❌ Error deleting duplicate subscriptions:', deleteError);
         // Don't throw - log the error but continue
@@ -303,30 +307,30 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         console.log(`✅ Deleted ${existingSubscriptions.length - 1} duplicate subscription(s) for user:`, clerkUserId);
       }
     }
-    
+
     console.log('✅ Updated subscription for user:', {
       userId: clerkUserId,
       oldPlan: oldPlanId,
       newPlan: planId,
       subscriptionId,
     });
-    
+
     // Send Telegram notification for subscription update (if it's a new subscription)
     // Check if this is a new subscription by comparing subscription IDs
     const isNewSubscription = !mostRecent.stripe_subscription_id || mostRecent.stripe_subscription_id !== subscriptionId;
-    
+
     if (isNewSubscription) {
       // Get user name and email from Supabase
       let userName: string | undefined;
       let userEmail: string | undefined;
-      
+
       try {
         const { data: userData } = await supabaseAdmin
           .from('users')
           .select('email, first_name, last_name')
           .eq('clerk_id', clerkUserId)
           .maybeSingle();
-        
+
         if (userData) {
           userEmail = userData.email || undefined;
           if (userData.first_name || userData.last_name) {
@@ -336,19 +340,19 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       } catch (error) {
         console.error('❌ Error fetching user data:', error);
       }
-      
+
       // Fallback to Stripe customer email if not found in Supabase
       if (!userEmail) {
         userEmail = session.customer_email || undefined;
       }
-      
+
       // Send Telegram notification
       const planNames: Record<string, string> = {
         free: 'Free',
         premium: 'Premium',
         ultimate: 'Ultimate',
       };
-      
+
       try {
         await sendSubscriptionNotification({
           clerkUserId,
@@ -376,14 +380,14 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       stripe_customer_id: customerId,
       stripe_subscription_id: subscriptionId,
     });
-    
+
     // Check Supabase connection before insert
     console.log('🔍 Supabase connection check:', {
       hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
       hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
       supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 30) + '...' || 'Missing',
     });
-    
+
     const insertData = {
       user_id: clerkUserId,
       plan_id: planId,
@@ -391,9 +395,9 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       stripe_customer_id: customerId,
       stripe_subscription_id: subscriptionId,
     };
-    
+
     console.log('📤 Inserting subscription data:', insertData);
-    
+
     const { data: insertedData, error } = await supabaseAdmin
       .from('user_subscriptions')
       .insert(insertData)
@@ -412,14 +416,14 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       });
       throw error;
     }
-    
+
     console.log('✅ Created new subscription for user:', {
       clerkUserId,
       insertedData,
       subscriptionId: insertedData?.[0]?.id,
       insertedRecord: insertedData?.[0],
     });
-    
+
     // Verify the insert by querying back
     const { data: verifyData, error: verifyError } = await supabaseAdmin
       .from('user_subscriptions')
@@ -427,7 +431,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       .eq('user_id', clerkUserId)
       .eq('stripe_subscription_id', subscriptionId)
       .maybeSingle();
-    
+
     if (verifyError) {
       console.error('⚠️ Error verifying subscription insert:', verifyError);
     } else if (verifyData) {
@@ -440,18 +444,18 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     } else {
       console.error('❌ Subscription not found after insert! This is a critical error.');
     }
-    
+
     // Get user name and email from Supabase
     let userName: string | undefined;
     let userEmail: string | undefined;
-    
+
     try {
       const { data: userData } = await supabaseAdmin
         .from('users')
         .select('email, first_name, last_name')
         .eq('clerk_id', clerkUserId)
         .maybeSingle();
-      
+
       if (userData) {
         userEmail = userData.email || undefined;
         if (userData.first_name || userData.last_name) {
@@ -462,19 +466,19 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       console.error('❌ Error fetching user data:', error);
       // Continue without user data
     }
-    
+
     // Fallback to Stripe customer email if not found in Supabase
     if (!userEmail) {
       userEmail = session.customer_email || undefined;
     }
-    
+
     // Send Telegram notification for new subscription
     const planNames: Record<string, string> = {
       free: 'Free',
       premium: 'Premium',
       ultimate: 'Ultimate',
     };
-    
+
     try {
       await sendSubscriptionNotification({
         clerkUserId,
@@ -521,7 +525,7 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
 
   // Find user by Stripe customer ID or subscription metadata
   let clerkId = clerkUserId;
-  
+
   if (!clerkId) {
     // Try to find by customer ID in existing subscriptions
     const { data: subscriptionData } = await supabaseAdmin
@@ -529,7 +533,7 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
       .select('user_id')
       .eq('stripe_customer_id', customerId)
       .maybeSingle();
-    
+
     if (subscriptionData) {
       clerkId = subscriptionData.user_id;
       console.log('✅ Found user_id from existing subscription:', clerkId);
@@ -561,10 +565,10 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
   }
 
   // Determine status
-  const status = subscription.status === 'active' ? 'active' : 
-                 subscription.status === 'canceled' ? 'canceled' : 
-                 subscription.status === 'past_due' ? 'past_due' : 
-                 subscription.status === 'unpaid' ? 'unpaid' : 'inactive';
+  const status = subscription.status === 'active' ? 'active' :
+    subscription.status === 'canceled' ? 'canceled' :
+      subscription.status === 'past_due' ? 'past_due' :
+        subscription.status === 'unpaid' ? 'unpaid' : 'inactive';
 
   // Get plan from subscription metadata or existing record
   const planId = subscription.metadata?.planId;
@@ -580,7 +584,7 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
     // If there are multiple subscriptions, keep only the most recent one
     const mostRecent = existingSubscriptions[0];
     const oldPlanId = mostRecent.plan_id;
-    
+
     // CRITICAL: Always update plan_id if provided in subscription metadata
     // This ensures upgrades are properly reflected in the database
     console.log('🔄 Updating subscription from subscription update event:', {
@@ -590,7 +594,7 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
       isUpgrade: planId && oldPlanId !== planId,
       subscriptionId,
     });
-    
+
     // Update the most recent subscription
     const updateData: {
       status: string;
@@ -620,7 +624,7 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
       console.error('❌ Error updating subscription:', error);
       throw error;
     }
-    
+
     // Verify the update was successful (especially plan_id for upgrades)
     if (planId) {
       const { data: updatedSubscription } = await supabaseAdmin
@@ -628,7 +632,7 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
         .select('plan_id, status')
         .eq('id', mostRecent.id)
         .maybeSingle();
-      
+
       if (updatedSubscription) {
         console.log('✅ Subscription updated successfully in database:', {
           userId: clerkId,
@@ -636,7 +640,7 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
           status: updatedSubscription.status,
           verified: updatedSubscription.plan_id === planId,
         });
-        
+
         if (updatedSubscription.plan_id !== planId) {
           console.error('❌ CRITICAL: Plan ID mismatch after update!', {
             expected: planId,
@@ -654,7 +658,7 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
         .from('user_subscriptions')
         .delete()
         .in('id', duplicateIds);
-      
+
       if (deleteError) {
         console.error('❌ Error deleting duplicate subscriptions:', deleteError);
         // Don't throw - log the error but continue
@@ -673,7 +677,7 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
       stripe_customer_id: customerId,
       stripe_subscription_id: subscriptionId,
     });
-    
+
     const { data: insertedData, error } = await supabaseAdmin
       .from('user_subscriptions')
       .insert({
@@ -799,8 +803,23 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
 
   return {
     success: false,
-    error: 'Payment failed',
+    status: 'past_due',
     customerId,
   };
 }
+
+async function handleCustomerUpdated(customer: Stripe.Customer) {
+  console.log('👤 Customer updated:', {
+    customerId: customer.id,
+    email: customer.email,
+    metadata: customer.metadata
+  });
+
+  return {
+    success: true,
+    customerId: customer.id,
+    message: 'Customer update logged'
+  };
+}
+
 
