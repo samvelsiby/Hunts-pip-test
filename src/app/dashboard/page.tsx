@@ -38,7 +38,8 @@ export default function Dashboard() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create portal session');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to create portal session');
       }
 
       const data = await response.json();
@@ -51,7 +52,7 @@ export default function Dashboard() {
     } catch (error) {
       console.error('Error opening portal:', error);
       setIsPortalLoading(false);
-      alert('Failed to open subscription management. Please try again.');
+      alert(error instanceof Error ? error.message : 'Failed to open subscription management. Please try again.');
     }
   };
 

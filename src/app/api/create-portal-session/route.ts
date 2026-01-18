@@ -38,6 +38,8 @@ export async function POST(req: NextRequest) {
             apiVersion: '2025-10-29.clover', // Matching version from existing webhook handler
         });
 
+        console.log('Creating portal session for customer:', customerId); // Debug log
+
         // Create the portal session
         // Return URL defaults to the Referer or origin if not specified
         const returnUrl = req.headers.get('referer') || req.headers.get('origin') || 'https://huntspip.com';
@@ -52,7 +54,7 @@ export async function POST(req: NextRequest) {
     } catch (error) {
         console.error('Error creating portal session:', error);
         return NextResponse.json(
-            { error: 'Internal server error' },
+            { error: error instanceof Error ? error.message : 'Internal server error' },
             { status: 500 }
         );
     }
