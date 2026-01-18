@@ -121,6 +121,21 @@ export async function POST(req: NextRequest) {
           result = await handleCustomerUpdated(event.data.object as Stripe.Customer);
           break;
 
+        case 'charge.refunded':
+          // Handle refunds (e.g., set status to canceled or suspended)
+          result = await handleChargeRefunded(event.data.object as Stripe.Charge);
+          break;
+
+        case 'charge.dispute.created':
+          // Handle disputes (e.g., freeze account)
+          result = await handleDisputeCreated(event.data.object as Stripe.Dispute);
+          break;
+
+        case 'invoice.payment_action_required':
+          // Handle 3D Secure requirements (technically similar to payment_failed but specific action needed)
+          result = await handlePaymentActionRequired(event.data.object as Stripe.Invoice);
+          break;
+
         default:
           console.log(`⚠️ Unhandled event type: ${event.type}`);
           result.unhandled = true;
@@ -809,17 +824,90 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
 }
 
 async function handleCustomerUpdated(customer: Stripe.Customer) {
-  console.log('👤 Customer updated:', {
-    customerId: customer.id,
-    email: customer.email,
-    metadata: customer.metadata
-  });
+  console.log('👤 Customer updated:', customer.id);
+  // Current logic doesn't require specific action for customer updates,
+  // but could be used to sync email changes.
+  return { success: true, updated: true };
+}
 
-  return {
-    success: true,
-    customerId: customer.id,
-    message: 'Customer update logged'
-  };
+// Handle refunds
+async function handleChargeRefunded(charge: Stripe.Charge) {
+  const customerId = charge.customer as string;
+
+  // Only proceed if it's a full refund
+  if (!charge.refunded) {
+    return { success: true, status: 'partial_refund_ignored' };
+  }
+
+  console.log('💰 Charge refunded for customer:', customerId);
+
+  // Update subscription status to canceled (or custom 'refunded' status if supported)
+  const { error } = await supabaseAdmin
+    .from('user_subscriptions')
+    .update({
+      status: 'canceled', // Revoke access immediately
+      updated_at: new Date().toISOString(),
+    })
+    .eq('stripe_customer_id', customerId);
+
+  if (error) {
+    console.error('❌ Error updating subscription after refund:', error);
+    throw error;
+  }
+
+  return { success: true, status: 'refunded_canceled', customerId };
+}
+
+// Handle disputes (chargebacks)
+async function handleDisputeCreated(dispute: Stripe.Dispute) {
+  let targetCustomerId = '';
+
+  if (dispute.charge) {
+    try {
+      const stripe = getStripe();
+      const chargeId = typeof dispute.charge === 'string' ? dispute.charge : dispute.charge.id;
+      const charge = await stripe.charges.retrieve(chargeId);
+      targetCustomerId = charge.customer as string;
+    } catch (e) {
+      console.error('Error fetching charge for dispute:', e);
+    }
+  }
+
+  if (targetCustomerId) {
+    console.log('🚨 Dispute created for customer:', targetCustomerId);
+    const { error } = await supabaseAdmin
+      .from('user_subscriptions')
+      .update({
+        status: 'past_due', // Freeze access
+        updated_at: new Date().toISOString(),
+      })
+      .eq('stripe_customer_id', targetCustomerId);
+
+    if (error) console.error('Error freezing account:', error);
+  }
+
+  return { success: true, status: 'dispute_created' };
+}
+
+// Handle 3D Secure / Payment Action Required
+async function handlePaymentActionRequired(invoice: Stripe.Invoice) {
+  const customerId = invoice.customer as string;
+
+  console.log('⚠️ Payment action required for user:', customerId);
+
+  const { error } = await supabaseAdmin
+    .from('user_subscriptions')
+    .update({
+      status: 'incomplete', // Or keep as past_due
+      updated_at: new Date().toISOString(),
+    })
+    .eq('stripe_customer_id', customerId);
+
+  if (error) {
+    console.error('❌ Error updating subscription:', error);
+  }
+
+  return { success: true, status: 'action_required', customerId };
 }
 
 
