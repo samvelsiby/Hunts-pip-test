@@ -181,11 +181,9 @@ function formatSubscriptionMessage(data: SubscriptionNotification): string {
 }
 
 /**
- * Send subscription notification to WhatsApp group
+ * Send a generic WhatsApp message to group
  */
-export async function sendSubscriptionNotification(
-  data: SubscriptionNotification
-): Promise<boolean> {
+export async function sendWhatsAppMessage(message: string): Promise<boolean> {
   const groupId = process.env.WHATSAPP_GROUP_ID;
   const provider = process.env.WHATSAPP_PROVIDER || 'webhook'; // 'business', 'twilio', or 'webhook'
 
@@ -194,16 +192,15 @@ export async function sendSubscriptionNotification(
     return false;
   }
 
-  const message = formatSubscriptionMessage(data);
   const whatsappMessage: WhatsAppMessage = {
     to: groupId,
     message,
   };
 
-  console.log('📱 Sending WhatsApp notification:', {
+  console.log('📱 Sending WhatsApp message:', {
     provider,
     groupId,
-    planId: data.planId,
+    messageLength: message.length,
   });
 
   try {
@@ -223,15 +220,25 @@ export async function sendSubscriptionNotification(
     }
 
     if (success) {
-      console.log('✅ WhatsApp notification sent successfully');
+      console.log('✅ WhatsApp message sent successfully');
     } else {
-      console.error('❌ Failed to send WhatsApp notification');
+      console.error('❌ Failed to send WhatsApp message');
     }
 
     return success;
   } catch (error) {
-    console.error('❌ Error sending WhatsApp notification:', error);
+    console.error('❌ Error sending WhatsApp message:', error);
     return false;
   }
+}
+
+/**
+ * Send subscription notification to WhatsApp group
+ */
+export async function sendSubscriptionNotification(
+  data: SubscriptionNotification
+): Promise<boolean> {
+  const message = formatSubscriptionMessage(data);
+  return await sendWhatsAppMessage(message);
 }
 

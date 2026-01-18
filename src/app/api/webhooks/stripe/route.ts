@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { supabaseAdmin } from '@/lib/supabase-server';
-import { sendSubscriptionNotification } from '@/lib/telegram';
+import { sendSubscriptionNotification as sendTelegramNotification } from '@/lib/telegram';
+import { sendWhatsAppMessage } from '@/lib/whatsapp';
 import { STRIPE_PRICE_IDS } from '@/config/stripe-prices';
 
 // Lazy initialization to avoid build-time errors
@@ -420,7 +421,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       };
 
       try {
-        await sendSubscriptionNotification({
+        await sendTelegramNotification({
           clerkUserId,
           planId,
           planName: planNames[planId] || planId,
@@ -546,7 +547,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     };
 
     try {
-      await sendSubscriptionNotification({
+      await sendTelegramNotification({
         clerkUserId,
         planId,
         planName: planNames[planId] || planId,
@@ -836,7 +837,9 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 // Handle successful recurring payment
 async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
   const customerId = invoice.customer as string;
-  const subscriptionId = invoice.subscription as string | null;
+  const subscriptionId = (invoice as any).subscription 
+    ? (typeof (invoice as any).subscription === 'string' ? (invoice as any).subscription : (invoice as any).subscription.id)
+    : null;
 
   console.log('💰 Invoice payment succeeded:', {
     invoiceId: invoice.id,
