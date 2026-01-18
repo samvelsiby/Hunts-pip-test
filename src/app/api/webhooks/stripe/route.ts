@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { supabaseAdmin } from '@/lib/supabase-server';
 import { sendSubscriptionNotification } from '@/lib/telegram';
+import { STRIPE_PRICE_IDS } from '@/config/stripe-prices';
 
 // Lazy initialization to avoid build-time errors
 function getStripe() {
@@ -12,6 +13,56 @@ function getStripe() {
   return new Stripe(secretKey, {
     apiVersion: '2025-10-29.clover',
   });
+}
+
+/**
+ * Extract plan_id from Stripe Price ID by reverse lookup
+ * This is useful when subscription metadata doesn't have planId
+ */
+function getPlanIdFromPriceId(priceId: string): string | null {
+  // Reverse lookup: find plan_id and frequency from price_id
+  for (const [planId, frequencies] of Object.entries(STRIPE_PRICE_IDS)) {
+    for (const [frequency, id] of Object.entries(frequencies)) {
+      if (id === priceId) {
+        return planId; // Return plan_id (premium or ultimate)
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Extract plan_id from Stripe subscription
+ * Tries multiple methods: metadata, subscription items, existing record
+ */
+async function extractPlanIdFromSubscription(
+  subscription: Stripe.Subscription,
+  existingPlanId?: string
+): Promise<string | null> {
+  // Method 1: Check subscription metadata (most reliable)
+  if (subscription.metadata?.planId) {
+    console.log('✅ Found planId in subscription metadata:', subscription.metadata.planId);
+    return subscription.metadata.planId;
+  }
+
+  // Method 2: Extract from subscription items (price IDs)
+  if (subscription.items?.data && subscription.items.data.length > 0) {
+    const priceId = subscription.items.data[0].price.id;
+    const planId = getPlanIdFromPriceId(priceId);
+    if (planId) {
+      console.log('✅ Found planId from price ID:', { priceId, planId });
+      return planId;
+    }
+  }
+
+  // Method 3: Use existing plan_id if available
+  if (existingPlanId) {
+    console.log('⚠️ Using existing planId (no metadata or price match):', existingPlanId);
+    return existingPlanId;
+  }
+
+  console.log('⚠️ Could not determine planId from subscription');
+  return null;
 }
 
 // Handle GET requests (for testing/health checks) - return 405 Method Not Allowed
@@ -585,15 +636,18 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
       subscription.status === 'past_due' ? 'past_due' :
         subscription.status === 'unpaid' ? 'unpaid' : 'inactive';
 
-  // Get plan from subscription metadata or existing record
-  const planId = subscription.metadata?.planId;
-
   // Check for existing subscriptions (handle duplicates)
   const { data: existingSubscriptions } = await supabaseAdmin
     .from('user_subscriptions')
     .select('*')
     .eq('user_id', clerkId)
     .order('created_at', { ascending: false });
+
+  // Get existing plan_id for fallback
+  const existingPlanId = existingSubscriptions?.[0]?.plan_id;
+
+  // Extract plan_id using multiple methods (metadata, price ID, existing)
+  const planId = await extractPlanIdFromSubscription(subscription, existingPlanId);
 
   if (existingSubscriptions && existingSubscriptions.length > 0) {
     // If there are multiple subscriptions, keep only the most recent one
@@ -622,12 +676,20 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
       updated_at: new Date().toISOString(),
     };
 
-    // ALWAYS update plan_id if provided in subscription metadata (for upgrades)
+    // ALWAYS update plan_id if we successfully extracted it (for upgrades/changes)
     if (planId) {
       updateData.plan_id = planId;
-      console.log('✅ Updating plan_id to:', planId);
+      if (planId !== oldPlanId) {
+        console.log('🔄 Plan changed:', {
+          old: oldPlanId,
+          new: planId,
+          isUpgrade: ['free', 'premium', 'ultimate'].indexOf(planId) > ['free', 'premium', 'ultimate'].indexOf(oldPlanId),
+        });
+      } else {
+        console.log('✅ Plan unchanged:', planId);
+      }
     } else {
-      console.log('⚠️ No planId in subscription metadata, keeping existing plan:', oldPlanId);
+      console.log('⚠️ Could not determine planId, keeping existing plan:', oldPlanId);
     }
 
     const { error } = await supabaseAdmin
@@ -644,15 +706,19 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
     if (planId) {
       const { data: updatedSubscription } = await supabaseAdmin
         .from('user_subscriptions')
-        .select('plan_id, status')
+        .select('plan_id, status, stripe_subscription_id')
         .eq('id', mostRecent.id)
         .maybeSingle();
 
       if (updatedSubscription) {
+        const planChanged = updatedSubscription.plan_id !== oldPlanId;
         console.log('✅ Subscription updated successfully in database:', {
           userId: clerkId,
-          planId: updatedSubscription.plan_id,
+          oldPlanId,
+          newPlanId: updatedSubscription.plan_id,
           status: updatedSubscription.status,
+          subscriptionId: updatedSubscription.stripe_subscription_id,
+          planChanged,
           verified: updatedSubscription.plan_id === planId,
         });
 
@@ -661,6 +727,14 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
             expected: planId,
             actual: updatedSubscription.plan_id,
             userId: clerkId,
+          });
+        }
+
+        if (planChanged) {
+          console.log('🎉 Subscription plan updated:', {
+            userId: clerkId,
+            from: oldPlanId,
+            to: updatedSubscription.plan_id,
           });
         }
       }
@@ -762,11 +836,20 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 // Handle successful recurring payment
 async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
   const customerId = invoice.customer as string;
+  const subscriptionId = invoice.subscription as string | null;
+
+  console.log('💰 Invoice payment succeeded:', {
+    invoiceId: invoice.id,
+    customerId,
+    subscriptionId,
+    amount: invoice.amount_paid,
+    currency: invoice.currency,
+  });
 
   // Find user by Stripe customer ID
   const { data: subscriptionData } = await supabaseAdmin
     .from('user_subscriptions')
-    .select('user_id, plan_id')
+    .select('user_id, plan_id, stripe_subscription_id')
     .eq('stripe_customer_id', customerId)
     .maybeSingle();
 
@@ -775,25 +858,67 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
     return { error: 'Subscription not found', customerId };
   }
 
+  // Prepare update data
+  const updateData: {
+    status: string;
+    updated_at: string;
+    stripe_subscription_id?: string;
+  } = {
+    status: 'active',
+    updated_at: new Date().toISOString(),
+  };
+
+  // Update subscription_id if provided and different
+  if (subscriptionId && subscriptionId !== subscriptionData.stripe_subscription_id) {
+    console.log('🔄 Updating stripe_subscription_id:', {
+      old: subscriptionData.stripe_subscription_id,
+      new: subscriptionId,
+    });
+    updateData.stripe_subscription_id = subscriptionId;
+  }
+
+  // If subscription_id changed, try to get plan_id from Stripe subscription
+  if (subscriptionId && subscriptionId !== subscriptionData.stripe_subscription_id) {
+    try {
+      const stripe = getStripe();
+      const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+      const planId = await extractPlanIdFromSubscription(subscription, subscriptionData.plan_id);
+      
+      if (planId && planId !== subscriptionData.plan_id) {
+        // Update plan_id if it changed (e.g., upgrade via portal)
+        console.log('🔄 Plan changed, updating plan_id:', {
+          old: subscriptionData.plan_id,
+          new: planId,
+        });
+        (updateData as any).plan_id = planId;
+      }
+    } catch (error) {
+      console.error('⚠️ Error fetching subscription from Stripe:', error);
+      // Continue without plan update
+    }
+  }
+
   // Update subscription status
   const { error } = await supabaseAdmin
     .from('user_subscriptions')
-    .update({
-      status: 'active',
-      updated_at: new Date().toISOString(),
-    })
+    .update(updateData)
     .eq('stripe_customer_id', customerId);
 
   if (error) {
     console.error('❌ Error updating subscription:', error);
+    return { error: 'Database update failed', customerId };
   }
 
-  console.log('✅ Recurring payment succeeded for user:', subscriptionData.user_id);
+  console.log('✅ Recurring payment succeeded and subscription updated:', {
+    userId: subscriptionData.user_id,
+    planId: (updateData as any).plan_id || subscriptionData.plan_id,
+    isRecurring: true,
+  });
 
   return {
     success: true,
     clerkUserId: subscriptionData.user_id,
-    planId: subscriptionData.plan_id,
+    planId: (updateData as any).plan_id || subscriptionData.plan_id,
     isRecurring: true,
   };
 }
