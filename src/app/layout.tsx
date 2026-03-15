@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import SiteLayout from "@/components/layout/SiteLayout";
+import VideoPreloader from "@/components/VideoPreloader";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -44,10 +45,15 @@ export default function RootLayout({
           <link rel="preconnect" href="https://my.spline.design" />
           <link rel="preconnect" href="https://prod.spline.design" crossOrigin="anonymous" />
           <link rel="dns-prefetch" href="https://prod.spline.design" />
+          
+          {/* Preconnect to Cloudflare Stream for faster video loading */}
+          <link rel="preconnect" href="https://customer-pyq7haxijl6gyz2i.cloudflarestream.com" />
+          <link rel="dns-prefetch" href="https://customer-pyq7haxijl6gyz2i.cloudflarestream.com" />
         </head>
         <body
           className={`${manrope.variable} font-sans antialiased`}
         >
+          <VideoPreloader />
           <SiteLayout>{children}</SiteLayout>
         </body>
       </html>

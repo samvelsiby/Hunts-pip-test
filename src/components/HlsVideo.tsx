@@ -13,11 +13,31 @@ export default function HlsVideo({ src, hlsConfig, ...props }: HlsVideoProps) {
 
   const mergedConfig = useMemo<Partial<HlsConfig>>(
     () => ({
-      // Performance-friendly defaults
+      // Optimized performance settings
       enableWorker: true,
       lowLatencyMode: false,
-      backBufferLength: 30,
-      maxBufferLength: 30,
+      
+      // Buffer settings for smooth playback
+      backBufferLength: 60, // Increased back buffer
+      maxBufferLength: 60,  // Increased forward buffer
+      maxBufferSize: 60 * 1000 * 1000, // 60MB buffer size
+      maxBufferHole: 0.5,   // Handle buffer holes better
+      
+      // Fragment loading optimization  
+      fragLoadingTimeOut: 20000,
+      fragLoadingMaxRetry: 6,
+      fragLoadingRetryDelay: 500,
+      
+      // Level selection for adaptive bitrate
+      startLevel: -1, // Auto-select best quality
+      testBandwidth: true,
+      abrEwmaDefaultEstimate: 1000000, // 1Mbps initial estimate
+      
+      // Additional optimizations
+      manifestLoadingTimeOut: 10000,
+      manifestLoadingMaxRetry: 3,
+      liveSyncDurationCount: 3,
+      
       ...hlsConfig,
     }),
     [hlsConfig]

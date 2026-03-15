@@ -29,11 +29,33 @@ export default function LibraryHero() {
         loop
         muted
         playsInline
-        preload="metadata"
+        preload="auto"
+        poster="/video-poster.jpg"
         src={cloudflareStreamHlsUrl(CLOUDFLARE_STREAM_UIDS.tradeChartsLoop)}
         onCanPlay={(e) => {
           setHasCanPlay(true)
           e.currentTarget.play().catch(() => {})
+        }}
+        onLoadStart={() => {
+          // Start loading immediately
+          console.log('Video loading started')
+        }}
+        onProgress={(e) => {
+          // Monitor buffering progress
+          const video = e.currentTarget
+          if (video.buffered.length > 0) {
+            const bufferedEnd = video.buffered.end(video.buffered.length - 1)
+            const duration = video.duration
+            if (duration > 0) {
+              const bufferedPercent = (bufferedEnd / duration) * 100
+              console.log(`Video buffered: ${bufferedPercent.toFixed(1)}%`)
+            }
+          }
+        }}
+        hlsConfig={{
+          // Additional optimizations for background video
+          startLevel: 1, // Start with medium quality for faster loading
+          capLevelToPlayerSize: true, // Optimize based on player size
         }}
       />
 
