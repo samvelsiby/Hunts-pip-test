@@ -4,8 +4,9 @@ import { createTradingViewService } from '@/lib/tradingview-service';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { username: string } }
+  { params }: { params: Promise<{ username: string }> }
 ) {
+  const { username } = await params;
   try {
     const { userId } = await auth();
     
@@ -15,8 +16,6 @@ export async function GET(
         { status: 401 }
       );
     }
-
-    const { username } = params;
     
     if (!username || username.trim().length === 0) {
       return NextResponse.json(

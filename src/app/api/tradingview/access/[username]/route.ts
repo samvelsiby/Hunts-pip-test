@@ -9,8 +9,9 @@ interface RequestBody {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { username: string } }
+  { params }: { params: Promise<{ username: string }> }
 ) {
+  const { username } = await params;
   try {
     const { userId } = await auth();
     
@@ -20,8 +21,6 @@ export async function GET(
         { status: 401 }
       );
     }
-
-    const { username } = params;
     const { searchParams } = new URL(request.url);
     const pineIdsParam = searchParams.get('pine_ids');
     
@@ -91,8 +90,9 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { username: string } }
+  { params }: { params: Promise<{ username: string }> }
 ) {
+  const { username } = await params;
   try {
     const { userId } = await auth();
     
@@ -102,8 +102,6 @@ export async function POST(
         { status: 401 }
       );
     }
-
-    const { username } = params;
     const body: RequestBody = await request.json();
     const { pine_ids, duration } = body;
     
@@ -192,8 +190,9 @@ export async function POST(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { username: string } }
+  { params }: { params: Promise<{ username: string }> }
 ) {
+  const { username } = await params;
   try {
     const { userId } = await auth();
     
@@ -203,8 +202,6 @@ export async function DELETE(
         { status: 401 }
       );
     }
-
-    const { username } = params;
     const body: Pick<RequestBody, 'pine_ids'> = await request.json();
     const { pine_ids } = body;
     

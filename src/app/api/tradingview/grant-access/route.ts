@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Determine script IDs based on tier or use custom ones
-    const scriptIds = custom_script_ids || TIER_SCRIPTS[tier];
+    const scriptIds = custom_script_ids || [...TIER_SCRIPTS[tier]]; // Convert readonly to mutable
     const accessDuration = duration || TIER_DURATIONS[tier];
 
     // Create TradingView service
