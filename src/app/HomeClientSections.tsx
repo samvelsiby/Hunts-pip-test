@@ -7,7 +7,6 @@ const FeaturesComponent = lazy(() => import('@/components/FeaturesComponent'));
 const ServicesComponent = lazy(() => import('@/components/ServicesComponent'));
 const GlobalNetworkSection = lazy(() => import('@/components/GlobalNetworkSection'));
 const BentoGridComponent = lazy(() => import('@/components/BentoGridComponent'));
-const PricingComponent = lazy(() => import('@/components/PricingComponent'));
 const FAQComponent = lazy(() => import('@/components/FAQComponent'));
 
 const SectionLoader = () => (
@@ -42,9 +41,6 @@ export default function HomeClientSections() {
           </Suspense>
           <Suspense fallback={<SectionLoader />}>
             <BentoGridComponent />
-          </Suspense>
-          <Suspense fallback={<SectionLoader />}>
-            <PricingComponent />
           </Suspense>
           <Suspense fallback={<SectionLoader />}>
             <FAQComponent />

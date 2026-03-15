@@ -21,13 +21,6 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         >
           Library
         </Link>
-        <Link 
-          href="/pricing" 
-          className="text-white hover:text-gray-300 text-lg"
-          onClick={onClose}
-        >
-          Pricing
-        </Link>
         <div onClick={onClose}>
           <AuthButtons />
         </div>

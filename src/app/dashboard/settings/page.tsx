@@ -101,18 +101,13 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Plan</CardTitle>
-              <CardDescription>Change or upgrade your plan.</CardDescription>
+              <CardDescription>Manage your account plan.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                You can upgrade/downgrade from the pricing page.
+                Your account has access to all indicators and features.
               </p>
             </CardContent>
-            <CardFooter className="flex gap-3">
-              <Button asChild>
-                <a href="/pricing">Change plan</a>
-              </Button>
-            </CardFooter>
           </Card>
         </TabsContent>
       </Tabs>

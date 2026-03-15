@@ -43,8 +43,7 @@ export default function FooterComponent() {
           <div>
             <h3 className="text-lg font-medium mb-6">Company</h3>
             <ul className="space-y-3">
-              <li><Link href="/pricing" className="text-gray-400 hover:text-white transition-colors text-sm">Pricing</Link></li>
-              
+              <li><Link href="/library" className="text-gray-400 hover:text-white transition-colors text-sm">Library</Link></li>
             </ul>
           </div>
 

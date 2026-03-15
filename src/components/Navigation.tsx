@@ -29,7 +29,6 @@ export default function Navigation({ mobileMenuOpen, setMobileMenuOpen }: Naviga
         <Link href="/library" className="text-white hover:text-gray-300 text-sm">
           Library
         </Link>
-        <Link href="/pricing" className="text-white hover:text-gray-300 text-sm">Pricing</Link>
         <AuthButtons />
       </div>
 

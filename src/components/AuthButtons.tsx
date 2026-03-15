@@ -1,6 +1,6 @@
 'use client';
 
-import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
+import { UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 
 export default function AuthButtons() {
@@ -24,11 +24,6 @@ export default function AuthButtons() {
     );
   }
 
-  return (
-    <SignInButton>
-      <button className="w-full lg:w-auto px-6 py-2 text-white text-sm bg-black border border-white rounded-full hover:bg-gray-900 transition-colors">
-        Login
-      </button>
-    </SignInButton>
-  );
+  // Return null when user is not signed in (hide login button)
+  return null;
 }

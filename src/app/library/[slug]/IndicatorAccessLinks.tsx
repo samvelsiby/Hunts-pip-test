@@ -1,104 +1,17 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
-import { SignInButton, useUser } from '@clerk/nextjs'
 import TradingViewButton from '@/components/TradingViewButton'
-import PurchaseButton from '@/components/PurchaseButton'
 
 type Plan = 'free' | 'premium' | 'ultimate'
-
-const PLAN_RANK: Record<Plan, number> = {
-  free: 0,
-  premium: 1,
-  ultimate: 2,
-}
-
-function normalizePlan(plan: unknown): Plan {
-  if (plan === 'ultimate') return 'ultimate'
-  if (plan === 'premium' || plan === 'pro') return 'premium'
-  return 'free'
-}
 
 export default function IndicatorAccessLinks(props: {
   indicatorPlanAccess: Plan
   tradingViewLink?: string
   themeColor: string
 }) {
-  const { indicatorPlanAccess, tradingViewLink, themeColor } = props
-  const { isLoaded, isSignedIn } = useUser()
+  const { tradingViewLink } = props
 
-  const [userPlan, setUserPlan] = useState<Plan>('free')
-  const [isFetchingPlan, setIsFetchingPlan] = useState(false)
-
-  useEffect(() => {
-    if (!isLoaded || !isSignedIn) return
-
-    let cancelled = false
-    setIsFetchingPlan(true)
-
-    fetch('/api/user/subscription')
-      .then(async (res) => {
-        if (!res.ok) throw new Error(`Failed to fetch subscription: ${res.status}`)
-        return await res.json()
-      })
-      .then((data) => {
-        if (cancelled) return
-        setUserPlan(normalizePlan(data?.plan_type))
-      })
-      .catch(() => {
-        if (cancelled) return
-        setUserPlan('free')
-      })
-      .finally(() => {
-        if (cancelled) return
-        setIsFetchingPlan(false)
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [isLoaded, isSignedIn])
-
-  const hasAccess = useMemo(() => {
-    if (!isSignedIn) return false
-    return PLAN_RANK[userPlan] >= PLAN_RANK[indicatorPlanAccess]
-  }, [indicatorPlanAccess, isSignedIn, userPlan])
-
-  // Requirement: links should be shown ONLY for logged-in users
-  if (!isLoaded) return null
-
-  if (!isSignedIn) {
-    return (
-      <div className="flex flex-col sm:flex-row gap-4">
-        <SignInButton>
-          <button className="inline-flex items-center justify-center px-6 py-3 rounded-lg text-white text-sm font-semibold bg-[#FF5B41] hover:bg-[#DD0000] transition-colors">
-            Sign in to view indicator link
-          </button>
-        </SignInButton>
-      </div>
-    )
-  }
-
-  if (isFetchingPlan) {
-    return (
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="inline-flex items-center justify-center px-6 py-3 rounded-lg text-gray-300 text-sm font-medium bg-black/40 border border-gray-700">
-          Checking your access…
-        </div>
-      </div>
-    )
-  }
-
-  if (!hasAccess) {
-    return (
-      <div className="flex flex-col sm:flex-row gap-4">
-        <PurchaseButton href="/pricing" themeColor={themeColor}>
-          Upgrade to Access
-        </PurchaseButton>
-      </div>
-    )
-  }
-
+  // Show TradingView link to everyone, no restrictions
   return (
     <div className="flex flex-col sm:flex-row gap-4">
       {tradingViewLink ? (
