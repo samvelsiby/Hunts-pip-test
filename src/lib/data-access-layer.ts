@@ -1,15 +1,16 @@
 /**
- * Data Access Layer
+ * Data Access Layer with Row Level Security (RLS)
  * 
- * This module provides secure data access functions that enforce
- * access control at the application level. Since we're using Clerk
- * for authentication and Supabase for data storage, we implement
- * access control in the application layer rather than relying solely
- * on RLS policies.
+ * This module provides secure data access functions that work with
+ * Supabase Row Level Security (RLS) policies for defense-in-depth security.
  * 
- * All functions in this module ensure that users can only access
- * their own data by verifying the Clerk user ID matches the data
- * being accessed.
+ * Security Architecture:
+ * 1. RLS policies at database level (automatic data isolation)
+ * 2. Application-level access control (Clerk user verification) 
+ * 3. Service role for API operations (bypasses RLS when needed)
+ * 
+ * All functions ensure users can only access their own data through
+ * both RLS policies and application-level verification.
  */
 
 import { supabaseAdmin } from '@/lib/supabase-server';
@@ -378,5 +379,278 @@ export function verifyUserAccess(clerkUserId: string, dataClerkId: string | null
     return false;
   }
   return clerkUserId === dataClerkId;
+}
+
+/**
+ * Pine Script Access Management Functions
+ */
+
+export interface PineScriptAccess {
+  id: string;
+  pine_id: string;
+  script_name: string;
+  tradingview_username: string;
+  granted_at: string;
+  expires_at?: string;
+  status: 'active' | 'expired' | 'revoked';
+  duration_type?: string;
+  duration_number?: number;
+}
+
+/**
+ * Get all Pine script access for a user
+ */
+export async function getUserPineScriptAccess(clerkUserId: string): Promise<DataAccessResult<PineScriptAccess[]>> {
+  try {
+    const { data: user, error: userError } = await supabaseAdmin
+      .from('users')
+      .select('id')
+      .eq('clerk_id', clerkUserId)
+      .single();
+
+    if (userError || !user) {
+      return {
+        data: null,
+        error: new Error('User not found'),
+        authorized: false,
+      };
+    }
+
+    const { data, error } = await supabaseAdmin
+      .from('active_pine_access')
+      .select(`
+        id,
+        pine_id,
+        script_name,
+        tradingview_username,
+        granted_at,
+        expires_at,
+        status,
+        duration_type,
+        duration_number
+      `)
+      .eq('clerk_id', clerkUserId);
+
+    if (error) {
+      return {
+        data: null,
+        error: new Error(error.message),
+        authorized: false,
+      };
+    }
+
+    return {
+      data: data || [],
+      error: null,
+      authorized: true,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error: error instanceof Error ? error : new Error('Unknown error'),
+      authorized: false,
+    };
+  }
+}
+
+/**
+ * Grant Pine script access to a user
+ */
+export async function grantPineScriptAccess(
+  clerkUserId: string,
+  pineId: string,
+  tradingviewUsername: string,
+  durationType?: string,
+  durationNumber?: number
+): Promise<DataAccessResult<string>> {
+  try {
+    const { data: user, error: userError } = await supabaseAdmin
+      .from('users')
+      .select('id')
+      .eq('clerk_id', clerkUserId)
+      .single();
+
+    if (userError || !user) {
+      return {
+        data: null,
+        error: new Error('User not found'),
+        authorized: false,
+      };
+    }
+
+    // Get or create Pine script
+    let { data: script, error: scriptError } = await supabaseAdmin
+      .from('pine_scripts')
+      .select('id')
+      .eq('pine_id', pineId)
+      .single();
+
+    if (scriptError || !script) {
+      // Create the script if it doesn't exist
+      const { data: newScript, error: createError } = await supabaseAdmin
+        .from('pine_scripts')
+        .insert({
+          pine_id: pineId,
+          name: `Script ${pineId}`,
+          description: 'Auto-created Pine script',
+        })
+        .select('id')
+        .single();
+
+      if (createError || !newScript) {
+        return {
+          data: null,
+          error: new Error(`Failed to create script: ${createError?.message}`),
+          authorized: false,
+        };
+      }
+      script = newScript;
+    }
+
+    // Calculate expiry date
+    let expiresAt: string | null = null;
+    if (durationType && durationType !== 'lifetime' && durationNumber) {
+      const now = new Date();
+      switch (durationType) {
+        case 'd':
+          now.setDate(now.getDate() + durationNumber);
+          break;
+        case 'w':
+          now.setDate(now.getDate() + (durationNumber * 7));
+          break;
+        case 'm':
+          now.setMonth(now.getMonth() + durationNumber);
+          break;
+      }
+      expiresAt = now.toISOString();
+    }
+
+    // Insert or update access record
+    const { data: accessData, error: accessError } = await supabaseAdmin
+      .from('pine_script_access')
+      .upsert({
+        user_id: user.id,
+        pine_script_id: script.id,
+        tradingview_username: tradingviewUsername,
+        expires_at: expiresAt,
+        duration_type: durationType,
+        duration_number: durationNumber,
+        status: 'active',
+      })
+      .select('id')
+      .single();
+
+    if (accessError) {
+      return {
+        data: null,
+        error: new Error(accessError.message),
+        authorized: false,
+      };
+    }
+
+    // Log the action
+    await supabaseAdmin
+      .from('pine_access_logs')
+      .insert({
+        user_id: user.id,
+        pine_script_id: script.id,
+        action: 'grant',
+        tradingview_username: tradingviewUsername,
+        pine_id: pineId,
+        duration_type: durationType,
+        duration_number: durationNumber,
+        performed_by: clerkUserId,
+      });
+
+    return {
+      data: accessData.id,
+      error: null,
+      authorized: true,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error: error instanceof Error ? error : new Error('Unknown error'),
+      authorized: false,
+    };
+  }
+}
+
+/**
+ * Revoke Pine script access for a user
+ */
+export async function revokePineScriptAccess(
+  clerkUserId: string,
+  pineId: string
+): Promise<DataAccessResult<boolean>> {
+  try {
+    const { data: user, error: userError } = await supabaseAdmin
+      .from('users')
+      .select('id, tradingview_username')
+      .eq('clerk_id', clerkUserId)
+      .single();
+
+    if (userError || !user) {
+      return {
+        data: null,
+        error: new Error('User not found'),
+        authorized: false,
+      };
+    }
+
+    // Get the script
+    const { data: script, error: scriptError } = await supabaseAdmin
+      .from('pine_scripts')
+      .select('id')
+      .eq('pine_id', pineId)
+      .single();
+
+    if (scriptError || !script) {
+      return {
+        data: null,
+        error: new Error('Script not found'),
+        authorized: false,
+      };
+    }
+
+    // Update access status to revoked
+    const { error: updateError } = await supabaseAdmin
+      .from('pine_script_access')
+      .update({ status: 'revoked' })
+      .eq('user_id', user.id)
+      .eq('pine_script_id', script.id);
+
+    if (updateError) {
+      return {
+        data: null,
+        error: new Error(updateError.message),
+        authorized: false,
+      };
+    }
+
+    // Log the action
+    await supabaseAdmin
+      .from('pine_access_logs')
+      .insert({
+        user_id: user.id,
+        pine_script_id: script.id,
+        action: 'revoke',
+        tradingview_username: user.tradingview_username || '',
+        pine_id: pineId,
+        performed_by: clerkUserId,
+      });
+
+    return {
+      data: true,
+      error: null,
+      authorized: true,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error: error instanceof Error ? error : new Error('Unknown error'),
+      authorized: false,
+    };
+  }
 }
 

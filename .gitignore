@@ -100,3 +100,34 @@ temp/
 
 # MCP config files with secrets
 .mcp-config.json.stripe-keys-SECURE.txt
+
+# Development and test files
+test-*.js
+debug-*.js
+*-test.js
+*-debug.js
+*.test.local.js
+fetch-*.js
+grant-*.js
+get-*.js
+manual-*.js
+improved-*.js
+simple-*.js
+
+# Documentation files
+*.guide.md
+*-guide.md
+*_GUIDE.md
+DEPLOY_*.md
+IMPLEMENTATION_*.md
+SECURITY_*.md
+TRADINGVIEW_*.md
+
+# Database files
+*.sql
+
+# Scripts directory
+scripts/
+
+# Claude dev files
+.claude/
