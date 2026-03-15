@@ -179,3 +179,37 @@ body {
   display: none;  /* Chrome, Safari and Opera */
 }
 
+/* Hide video controls and play buttons */
+video::-webkit-media-controls {
+  display: none !important;
+}
+
+video::-webkit-media-controls-panel {
+  display: none !important;
+}
+
+video::-webkit-media-controls-play-button {
+  display: none !important;
+}
+
+video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+}
+
+video::-webkit-media-controls-overlay-play-button {
+  display: none !important;
+}
+
+video::-moz-media-controls {
+  display: none !important;
+}
+
+/* Ensure videos never show controls */
+video {
+  outline: none;
+}
+
+video:focus {
+  outline: none;
+}
+

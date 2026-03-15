@@ -29,33 +29,37 @@ export default function LibraryHero() {
         loop
         muted
         playsInline
+        controls={false}
         preload="auto"
-        poster="/video-poster.jpg"
         src={cloudflareStreamHlsUrl(CLOUDFLARE_STREAM_UIDS.tradeChartsLoop)}
         onCanPlay={(e) => {
           setHasCanPlay(true)
-          e.currentTarget.play().catch(() => {})
+          // Force play immediately
+          e.currentTarget.play().catch((error) => {
+            console.warn('Autoplay failed:', error)
+          })
         }}
-        onLoadStart={() => {
-          // Start loading immediately
-          console.log('Video loading started')
+        onLoadedMetadata={(e) => {
+          // Try to play as soon as metadata loads
+          e.currentTarget.play().catch((error) => {
+            console.warn('Early autoplay failed:', error)
+          })
         }}
-        onProgress={(e) => {
-          // Monitor buffering progress
-          const video = e.currentTarget
-          if (video.buffered.length > 0) {
-            const bufferedEnd = video.buffered.end(video.buffered.length - 1)
-            const duration = video.duration
-            if (duration > 0) {
-              const bufferedPercent = (bufferedEnd / duration) * 100
-              console.log(`Video buffered: ${bufferedPercent.toFixed(1)}%`)
-            }
-          }
+        onLoadedData={(e) => {
+          // Try to play when data loads
+          e.currentTarget.play().catch((error) => {
+            console.warn('Data autoplay failed:', error)
+          })
+        }}
+        style={{
+          // Ensure no controls or play buttons appear
+          pointerEvents: 'none',
         }}
         hlsConfig={{
           // Additional optimizations for background video
-          startLevel: 1, // Start with medium quality for faster loading
+          startLevel: 0, // Start with lowest quality for immediate playback
           capLevelToPlayerSize: true, // Optimize based on player size
+          autoStartLoad: true, // Start loading immediately
         }}
       />
 

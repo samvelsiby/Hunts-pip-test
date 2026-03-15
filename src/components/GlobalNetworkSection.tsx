@@ -34,14 +34,23 @@ export default function GlobalNetworkSection() {
         loop
         muted
         playsInline
+        controls={false}
         preload="auto"
         onCanPlay={(e) => {
           setIsLoaded(true);
           e.currentTarget.play().catch(() => {});
         }}
+        onLoadedMetadata={(e) => {
+          // Try to play as soon as metadata loads
+          e.currentTarget.play().catch(() => {});
+        }}
+        style={{
+          pointerEvents: 'none',
+        }}
         hlsConfig={{
-          startLevel: 1, // Start with medium quality for faster loading
+          startLevel: 0, // Start with lowest quality for immediate playback
           capLevelToPlayerSize: true,
+          autoStartLoad: true,
         }}
       />
 

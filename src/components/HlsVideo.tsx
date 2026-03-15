@@ -47,9 +47,17 @@ export default function HlsVideo({ src, hlsConfig, ...props }: HlsVideoProps) {
     const video = videoRef.current
     if (!video) return
 
+    // Set aggressive autoplay attributes
+    video.setAttribute('autoplay', 'true')
+    video.setAttribute('playsinline', 'true')
+    video.setAttribute('muted', 'true')
+    video.muted = true // Ensure muted for autoplay
+    
     // Safari supports native HLS
     if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = src
+      // Try to play immediately after setting src
+      video.play().catch(() => {})
       return
     }
 
@@ -61,6 +69,11 @@ export default function HlsVideo({ src, hlsConfig, ...props }: HlsVideoProps) {
     const hls = new Hls(mergedConfig)
     hls.loadSource(src)
     hls.attachMedia(video)
+
+    // Try to play when HLS is ready
+    hls.on(Hls.Events.MANIFEST_PARSED, () => {
+      video.play().catch(() => {})
+    })
 
     const onError = (_event: unknown, data: any) => {
       if (!data?.fatal) return
